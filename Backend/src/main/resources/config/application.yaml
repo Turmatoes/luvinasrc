@@ -2,8 +2,6 @@ spring:
   application:
     name: user-manage
 
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
   data:
     jpa:
@@ -16,15 +14,15 @@ spring:
     properties:
       hibernate:
         jdbc.time_zone: UTC
-        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
       naming:
         physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
 
   flyway:
-    enabled: true
+    enabled: false
 
   main:
     allow-circular-references: true

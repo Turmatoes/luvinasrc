@@ -3,6 +3,7 @@ package com.luvina.la.mapper;
 import com.luvina.la.dto.EmployeeDTO;
 import com.luvina.la.entity.Employee;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -14,8 +15,12 @@ import org.mapstruct.factory.Mappers;
 public interface EmployeeMapper {
     EmployeeMapper MAPPER = Mappers.getMapper( EmployeeMapper.class );
 
-    Employee toEntity(EmployeeDTO entity);
-    Employee toDto(EmployeeDTO entity);
-    Iterable<EmployeeDTO> toList(Iterable<Employee> list);
+    @Mapping(source = "departmentId", target = "department.departmentId")
+    Employee toEntity(EmployeeDTO dto);
 
+    @Mapping(source = "department.departmentId", target = "departmentId")
+    @Mapping(source = "department.departmentName", target = "departmentName")
+    EmployeeDTO toDto(Employee entity);
+
+    Iterable<EmployeeDTO> toList(Iterable<Employee> list);
 }
