@@ -1,9 +1,13 @@
 export function storeToken(token: string, tokenType: string) {
-  sessionStorage.setItem('access_token', token);
-  sessionStorage.setItem('token_type', tokenType);
+  if (typeof window !== 'undefined') {
+    sessionStorage.setItem('access_token', token);
+    sessionStorage.setItem('token_type', tokenType);
+  }
 }
 
 export function getToken(): { accessToken: string; tokenType: string } | null {
+  if (typeof window === 'undefined') return null;
+  
   const accessToken = sessionStorage.getItem('access_token');
   const tokenType = sessionStorage.getItem('token_type');
 
@@ -14,8 +18,10 @@ export function getToken(): { accessToken: string; tokenType: string } | null {
 }
 
 export function removeToken() {
-  sessionStorage.removeItem('access_token');
-  sessionStorage.removeItem('token_type');
+  if (typeof window !== 'undefined') {
+    sessionStorage.removeItem('access_token');
+    sessionStorage.removeItem('token_type');
+  }
 }
 
 export function isTokenExpired(token: string): boolean {

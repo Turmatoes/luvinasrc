@@ -312,11 +312,11 @@ button:hover {
 }
 
 .fa-envelope:before {
-  content: url(/assets/images/ic_email.svg);
+  content: url(../images/ic_email.svg);
 }
 
 .fa-lock:before {
-  content: url(/assets/images/ic_lock.svg);
+  content: url(../images/ic_lock.svg);
 }
 
 main {
@@ -744,7 +744,7 @@ border-collapse: separate;
 }
 
 .glyphicon-calendar {
-  background: url(/assets/images/ic_calendar.svg) no-repeat 0 0;
+  background: url(../images/ic_calendar.svg) no-repeat 0 0;
   width: 18px;
   height: 20px;
   display: inline-block;
@@ -800,53 +800,4 @@ cursor: pointer;
     visibility: visible;
     opacity: 1;
   }
-}
-
-.invalid-feedback {
-  display: none;
-  width: 100%;
-  font-size: 12px;
-  color: #e10020;
-  position: absolute;
-  bottom: -18px;
-}
-
-.was-validated :invalid~.invalid-feedback {
-  display: block;
-}
-
-@media (max-width: 992px) {
-  .alert-validate::before {
-    visibility: visible;
-    opacity: 1;
-  }
-}
-
-.datepicker-wrapper {
-  position: relative;
-}
-
-.datepicker-wrapper .react-datepicker-wrapper {
-  width: 100%;
-}
-
-.datepicker-wrapper input {
-  padding-right: 35px; /* Space for the icon */
-  width: 100%;
-  height: 40px;
-  border: 1px solid #d8e2ef;
-  border-radius: 8px;
-  padding-left: 8px;
-}
-
-.datepicker-wrapper .glyphicon-calendar {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-  cursor: pointer;
-  z-index: 10;
-  width: 25px; /* Adjust as needed */
-  height: 25px; /* Adjust as needed */
-  background: url(/assets/images/ic_calendar.svg) no-repeat 0 0;
 }
