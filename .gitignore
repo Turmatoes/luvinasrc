@@ -1,0 +1,7 @@
+.vscode/
+.agent/
+Frontend/.agent/
+Backend/.agent/
+**/node_modules/
+**/.next/
+**/target/
