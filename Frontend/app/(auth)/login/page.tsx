@@ -1,19 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
 import Image from 'next/image';
 import { useGuest } from '@/hooks/useAuth';
 import LoginForm from '@/components/auth/LoginForm';
 
 export default function LoginPage() {
   useGuest();
-
-  useEffect(() => {
-    // Clear all login sessions from both local and session storage
-    // as requested: "clear tất cả login session khỏi local storage"
-    localStorage.clear();
-    sessionStorage.clear();
-  }, []);
 
   return (
     <div className="limiter">
@@ -28,4 +20,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
