@@ -1,4 +1,4 @@
-package com.luvina.la.payload;
+package com.luvina.la.dto;
 
 import java.io.Serializable;
 import java.util.List;
@@ -7,7 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * API Response for get employees list
+ * Response wrapper for employee list API
+ * Contains pagination info and list of employees
  */
 @Data
 @NoArgsConstructor
@@ -17,5 +18,5 @@ public class EmployeeListResponse implements Serializable {
 
     private Integer code;
     private Long totalRecords;
-    private List<EmployeeListDTO> employees;
+    private List<EmployeeDTO> employees;
 }

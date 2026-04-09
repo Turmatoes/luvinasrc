@@ -1,21 +1,11 @@
 package com.luvina.la.controller;
 
-import com.luvina.la.config.jwt.AuthUserDetails;
-import com.luvina.la.config.jwt.JwtTokenProvider;
-import com.luvina.la.config.jwt.UserDetailsServiceImpl;
 import com.luvina.la.payload.LoginRequest;
 import com.luvina.la.payload.LoginResponse;
+import com.luvina.la.service.AuthService;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,51 +14,29 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class AuthController {
-    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
-    final JwtTokenProvider tokenProvider;
-    final AuthenticationManager authenticationManager;
-    final UserDetailsServiceImpl userDetailsService;
+    private final AuthService authService;
 
-    AuthController(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider,
-            UserDetailsServiceImpl userDetailsService) {
-        this.authenticationManager = authenticationManager;
-        this.tokenProvider = jwtTokenProvider;
-        this.userDetailsService = userDetailsService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     /**
      * Login api
      *
-     * @param loginRequest
-     * @param request
-     * @return
+     * @param loginRequest Login credentials
+     * @param request HTTP servlet request
+     * @return LoginResponse with accessToken or error codes
      */
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
-        Map<String, String> errors = new HashMap<>();
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.getUsername(),
-                            loginRequest.getPassword()));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String accessToken = tokenProvider.generateToken((AuthUserDetails) authentication.getPrincipal());
-            return new LoginResponse(accessToken);
-        } catch (UsernameNotFoundException | BadCredentialsException ex) {
-            log.warn(ex.getMessage());
-            errors.put("code", "ER016");
-        } catch (Exception ex) {
-            log.warn(ex.getMessage());
-            errors.put("code", "ER023");
-        }
-        return new LoginResponse(errors);
+        return authService.authenticate(loginRequest);
     }
 
     /**
-     * test token API
+     * Test token API
      *
-     * @return
+     * @return Test response
      */
     @RequestMapping("/test-auth")
     public Map<String, String> testAuth() {

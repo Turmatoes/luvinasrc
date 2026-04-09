@@ -1,24 +1,22 @@
 package com.luvina.la.controller;
 
-import com.luvina.la.payload.EmployeeListDTO;
-import com.luvina.la.payload.EmployeeListResponse;
-import com.luvina.la.repository.EmployeeListProjection;
-import com.luvina.la.repository.EmployeeRepository;
+import com.luvina.la.dto.EmployeeDTO;
+import com.luvina.la.dto.EmployeeListResponse;
+import com.luvina.la.service.EmployeeService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
 public class EmployeeController {
 
-    private final EmployeeRepository employeeRepository;
+    private final EmployeeService employeeService;
 
-    public EmployeeController(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
     }
 
     /**
@@ -39,30 +37,15 @@ public class EmployeeController {
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset) {
         
         // Get total count of non-admin employees
-        Long totalRecords = employeeRepository.countNonAdminEmployees();
+        Long totalRecords = employeeService.countNonAdminEmployees();
         
-        // Get employee list with pagination
-        List<EmployeeListProjection> projections = employeeRepository.getEmployeeList(
+        // Get employee list with pagination and filtering
+        List<EmployeeDTO> employees = employeeService.getEmployeeList(
                 employeeName.isEmpty() ? null : employeeName,
                 departmentId,
                 limit,
                 offset
         );
-        
-        // Convert projections to DTO
-        List<EmployeeListDTO> employees = projections.stream()
-                .map(p -> new EmployeeListDTO(
-                        p.getEmployeeId(),
-                        p.getEmployeeName(),
-                        p.getEmployeeBirthDate(),
-                        p.getDepartmentName(),
-                        p.getEmployeeEmail(),
-                        p.getEmployeeTelephone(),
-                        p.getCertificationName(),
-                        p.getEndDate(),
-                        p.getScore()
-                ))
-                .collect(Collectors.toList());
         
         // Build response
         EmployeeListResponse response = new EmployeeListResponse();

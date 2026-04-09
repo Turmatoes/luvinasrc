@@ -3,12 +3,21 @@ package com.luvina.la.dto;
 import java.io.Serializable;
 import java.time.LocalDate;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
+/**
+ * DTO for employee data
+ * Used for both individual employee details and employee list items
+ */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class EmployeeDTO implements Serializable {
 
     private static final long serialVersionUID = 6868189362900231672L;
 
+    // Individual employee fields (full detail)
     private Long employeeId;
     private Long departmentId;
     private String departmentName;
@@ -19,4 +28,26 @@ public class EmployeeDTO implements Serializable {
     private String employeeTelephone;
     private String employeeLoginId;
     private String employeeLoginPassword;
+
+    // Employee list fields (certification info)
+    private String certificationName;
+    private LocalDate endDate;
+    private Double score;
+
+    /**
+     * Constructor for employee list items (without login credentials)
+     */
+    public EmployeeDTO(Long employeeId, String employeeName, LocalDate employeeBirthDate,
+            String departmentName, String employeeEmail, String employeeTelephone,
+            String certificationName, LocalDate endDate, Double score) {
+        this.employeeId = employeeId;
+        this.employeeName = employeeName;
+        this.employeeBirthDate = employeeBirthDate;
+        this.departmentName = departmentName;
+        this.employeeEmail = employeeEmail;
+        this.employeeTelephone = employeeTelephone;
+        this.certificationName = certificationName;
+        this.endDate = endDate;
+        this.score = score;
+    }
 }

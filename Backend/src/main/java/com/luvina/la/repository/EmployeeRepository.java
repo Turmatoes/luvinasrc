@@ -1,7 +1,6 @@
 package com.luvina.la.repository;
 
 import com.luvina.la.entity.Employee;
-import com.luvina.la.payload.EmployeeListDTO;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
@@ -21,15 +20,15 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
 
     // Get employee list with department and certification info (excluding admins)
     @Query(value = "SELECT " +
-            "e.employee_id as employeeId, " +
-            "e.employee_name as employeeName, " +
-            "e.employee_birth_date as employeeBirthDate, " +
-            "d.department_name as departmentName, " +
-            "e.employee_email as employeeEmail, " +
-            "e.employee_telephone as employeeTelephone, " +
-            "c.certification_name as certificationName, " +
-            "ec.end_date as endDate, " +
-            "ec.score as score " +
+            "e.employee_id, " +
+            "e.employee_name, " +
+            "e.employee_birth_date, " +
+            "d.department_name, " +
+            "e.employee_email, " +
+            "e.employee_telephone, " +
+            "c.certification_name, " +
+            "ec.end_date, " +
+            "ec.score " +
             "FROM employees e " +
             "INNER JOIN departments d ON e.department_id = d.department_id " +
             "LEFT JOIN employees_certifications ec ON e.employee_id = ec.employee_id " +
@@ -40,7 +39,7 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
             "ORDER BY e.employee_id ASC, ec.end_date DESC " +
             "LIMIT :limit OFFSET :offset",
             nativeQuery = true)
-    List<EmployeeListProjection> getEmployeeList(
+    List<Object[]> getEmployeeList(
             @Param("employeeName") String employeeName,
             @Param("departmentId") Long departmentId,
             @Param("limit") Integer limit,
