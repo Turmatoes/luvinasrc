@@ -49,7 +49,7 @@ public class EmployeeController {
     public EmployeeListResponse getEmployeeList(
             @RequestParam(value = "employeeName", required = false, defaultValue = "") String employeeName,
             @RequestParam(value = "departmentId", required = false) Long departmentId,
-            @RequestParam(value = "limit", required = false, defaultValue = "5") Integer limit,
+            @RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit,
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset) {
         
         // Lấy tổng số nhân viên không phải quản trị
