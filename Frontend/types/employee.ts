@@ -1,42 +1,48 @@
 // types/employee.ts
 
+// API Response DTO - matches backend EmployeeListDTO
+export interface EmployeeListDTO {
+  employeeId: number;
+  employeeName: string;
+  employeeBirthDate?: string; // DATE format (YYYY-MM-DD)
+  departmentName: string;
+  employeeEmail: string;
+  employeeTelephone?: string;
+  certificationName?: string;
+  endDate?: string; // DATE format (YYYY-MM-DD)
+  score?: number;
+}
+
+// API Response - matches backend EmployeeListResponse
+export interface EmployeeListResponse {
+  code: number;
+  totalRecords: number;
+  employees: EmployeeListDTO[];
+}
+
 // Backend/Database representation
 export interface EmployeeDB {
   employee_id: number;
   department_id: number;
-  employee_name: string; // Required
+  employee_name: string;
   employee_name_kana?: string;
-  employee_birth_date?: string; // DATE format
-  employee_email: string; // Required
+  employee_birth_date?: string;
+  employee_email: string;
   employee_telephone?: string;
-  employee_login_id: string; // Required, links to login users
-  employee_login_password?: string; // Not managed by frontend
-}
-
-// Frontend display representation (as shown in UI)
-export interface Employee {
-  id: string; // Maps to employee_id
-  name: string; // Maps to employee_name (Required)
-  nameKana?: string; // Maps to employee_name_kana
-  dateOfBirth?: string; // Maps to employee_birth_date (YYYY-MM-DD)
-  group?: string; // Derived from department_id via department lookup
-  email: string; // Maps to employee_email (Required)
-  phone?: string; // Maps to employee_telephone
-  japaneseProficiency?: string; // Derived from certifications
-  expirationDate?: string; // Derived from employees_certifications.end_date (YYYY-MM-DD)
-  score?: number; // Derived from employees_certifications.score
+  employee_login_id: string;
+  employee_login_password?: string;
+  role?: number; // 1: Admin, 0: Employee
 }
 
 // API request/response types
 export interface EmployeeCreateRequest {
-  employee_name: string; // Required
-  department_id: number; // Required
-  employee_email: string; // Required
+  employee_name: string;
+  department_id: number;
+  employee_email: string;
   employee_name_kana?: string;
-  employee_birth_date?: string; // DATE format
+  employee_birth_date?: string;
   employee_telephone?: string;
-  employee_login_id: string; // Required
-  // Note: employee_login_password not included (managed separately)
+  employee_login_id: string;
 }
 
 export interface EmployeeUpdateRequest {

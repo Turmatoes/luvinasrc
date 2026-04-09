@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 public class AuthController {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
@@ -57,11 +57,10 @@ public class AuthController {
             return new LoginResponse(accessToken);
         } catch (UsernameNotFoundException | BadCredentialsException ex) {
             log.warn(ex.getMessage());
-            errors.put("code", "100");
+            errors.put("code", "ER016");
         } catch (Exception ex) {
             log.warn(ex.getMessage());
-            // unknow error
-            errors.put("code", "000");
+            errors.put("code", "ER023");
         }
         return new LoginResponse(errors);
     }

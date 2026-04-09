@@ -48,4 +48,7 @@ public class Employee implements Serializable {
 
     @Column(name = "employee_login_password", length = 100)
     private String employeeLoginPassword;
+
+    @Column(name = "role", columnDefinition = "TINYINT DEFAULT 0")
+    private Integer role; // 1: Admin, 0: Employee
 }

@@ -22,7 +22,8 @@ spring:
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
 
   flyway:
-    enabled: false
+    enabled: true
+    validate-on-migrate: false
 
   main:
     allow-circular-references: true

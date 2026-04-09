@@ -29,6 +29,12 @@ spring:
       cacheServerConfiguration: true
       elideSetAutoCommits: true
       maintainTimeStats: false
+  
+  # Flyway configuration
+  flyway:
+    validateOnMigrate: false
+    repair: true
+    locations: classpath:db/migration
 
 management:
     endpoint.metrics.enabled: true

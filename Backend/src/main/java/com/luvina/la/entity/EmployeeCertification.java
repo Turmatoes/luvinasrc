@@ -33,12 +33,12 @@ public class EmployeeCertification implements Serializable {
     @JoinColumn(name = "certification_id", nullable = false)
     private Certification certification;
 
-    @Column(name = "start_date")
+    @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
-    @Column(name = "end_date")
+    @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
-    @Column(name = "score", precision = 5, scale = 2)
+    @Column(name = "score", nullable = false, precision = 5, scale = 2)
     private BigDecimal score;
 }

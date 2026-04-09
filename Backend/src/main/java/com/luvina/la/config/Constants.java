@@ -19,7 +19,8 @@ public class Constants {
         // config endpoints public
         public static final String[] ENDPOINTS_PUBLIC = new String[] {
                         "/",
-                        "/login/**",
+                        "/api/login",
+                        "/api/test/**",
                         "/error/**"
         };
 

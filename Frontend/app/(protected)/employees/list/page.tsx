@@ -3,10 +3,37 @@
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { apiClient } from '@/lib/api/client';
+import { EmployeeListResponse } from '@/types/employee';
+import React from 'react';
 
 export default function EmployeeListPage() {
   useAuth();
   const router = useRouter();
+  const [data, setData] = useState<EmployeeListResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const response = await apiClient.get<EmployeeListResponse>('/employees');
+        setData(response.data);
+      } catch (err) {
+        console.error('Failed to fetch employees:', err);
+        setError('Failed to load employees');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEmployees();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+  if (!data) return <div>No data</div>;
 
   return (
     <>
@@ -51,66 +78,21 @@ export default function EmployeeListPage() {
             <div>点数</div>
           </div>
           <div className="css-grid-table-body">
-            {/* Sample Data */}
-            <div className="bor-l-none text-center">
-              <Link href="/employees/detail">1</Link>
-            </div>
-            <div>Nguyễn Thị Mai Hương</div>
-            <div>1983/07/08</div>
-            <div>Phòng QAT</div>
-            <div>ntmhuong@luvina.net</div>
-            <div>0914326386</div>
-            <div>Trình độ tiếng nhật cấp 4</div>
-            <div>2011/07/08</div>
-            <div>290</div>
-
-            <div className="bor-l-none text-center">
-              <Link href="/employees/detail">2</Link>
-            </div>
-            <div>Lê Thị Xoa</div>
-            <div>1983/07/08</div>
-            <div>Phòng DEV1</div>
-            <div>xoalt@luvina.net</div>
-            <div>1234567894</div>
-            <div>Trình độ tiếng nhật cấp 4</div>
-            <div>2011/07/08</div>
-            <div>290</div>
-
-            <div className="bor-l-none text-center">
-              <Link href="/employees/detail">3</Link>
-            </div>
-            <div>Đặng Thị Hân</div>
-            <div>1983/07/08</div>
-            <div>Phòng QAT</div>
-            <div>handt@luvina.net</div>
-            <div>0914326386</div>
-            <div>Trình độ tiếng nhật cấp 4</div>
-            <div>2011/07/08</div>
-            <div>290</div>
-
-            <div className="bor-l-none text-center">
-              <Link href="/employees/detail">4</Link>
-            </div>
-            <div>Lê Nghiêm Thủy</div>
-            <div>1983/07/08</div>
-            <div>Phòng DEV1</div>
-            <div>thuyln@luvina.net</div>
-            <div>1234567894</div>
-            <div>Trình độ tiếng nhật cấp 4</div>
-            <div>2011/07/08</div>
-            <div>290</div>
-
-            <div className="bor-l-none text-center">
-              <Link href="/employees/detail">5</Link>
-            </div>
-            <div>Lê Phương Anh</div>
-            <div>1983/07/08</div>
-            <div>Phòng DEV1</div>
-            <div>anhlp@luvina.net</div>
-            <div>1234567894</div>
-            <div>Trình độ tiếng nhật cấp 4</div>
-            <div>2011/07/08</div>
-            <div>290</div>
+            {data.employees.map((emp, idx) => (
+              <React.Fragment key={`${emp.employeeId}-${idx}`}>
+                <div className="bor-l-none text-center">
+                  <Link href={`/employees/detail?id=${emp.employeeId}`}>{emp.employeeId}</Link>
+                </div>
+                <div>{emp.employeeName}</div>
+                <div>{emp.employeeBirthDate || 'N/A'}</div>
+                <div>{emp.departmentName || 'N/A'}</div>
+                <div>{emp.employeeEmail || 'N/A'}</div>
+                <div>{emp.employeeTelephone || 'N/A'}</div>
+                <div>{emp.certificationName || 'N/A'}</div>
+                <div>{emp.endDate || 'N/A'}</div>
+                <div>{emp.score ?? 'N/A'}</div>
+              </React.Fragment>
+            ))}
           </div>
           <div className="pagin">
             <Link className="btn btn-sm btn-pre btn-falcon-default btn-disabled" href="#">
