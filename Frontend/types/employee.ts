@@ -1,5 +1,11 @@
 // types/employee.ts
 
+// Department DTO - matches backend DepartmentDTO
+export interface DepartmentDTO {
+  departmentId: number;
+  departmentName: string;
+}
+
 // API Response DTO - matches backend EmployeeListDTO
 export interface EmployeeListDTO {
   employeeId: number;
