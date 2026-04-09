@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: user-manage
+  
+  jpa:
+    hibernate:
+      # validate: validate the schema on startup
+      # We use 'validate' mode since Flyway handles the actual schema migration
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+        show_sql: false
+        jdbc:
+          batch_size: 20
+          fetch_size: 200
+        order_inserts: true
+        order_updates: true
+
+  flyway:
+    # Auto-run migrations on startup
+    enabled: true
+
+  # JPA/Hibernate logging
+logging:
+  level:
+    ROOT: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

@@ -6,6 +6,7 @@ logging:
 spring:
   datasource:
     # jdbc properties to connect to database
+    # createDatabaseIfNotExist=true: tự tạo database nếu không tồn tại
     jdbcUrl: jdbc:mysql://localhost:3307/user-manage?createDatabaseIfNotExist=true
     username: root
     password: mysql
@@ -26,6 +27,29 @@ spring:
       cacheServerConfiguration: true
       elideSetAutoCommits: true
       maintainTimeStats: false
+
+  jpa:
+    hibernate:
+      # validate: kiểm tra schema có hợp lệ không (Flyway sẽ tạo bảng từ migration)
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: false
+        show_sql: false
+        jdbc:
+          batch_size: 20
+          fetch_size: 200
+        order_inserts: true
+        order_updates: true
+
+  # Flyway configuration
+  # Flyway sẽ chạy các migration tự động khi ứng dụng khởi động
+  flyway:
+    validateOnMigrate: false
+    repair: false
+    locations: classpath:db/migration
+    enabled: true
 
 management:
   endpoint.metrics.enabled: true

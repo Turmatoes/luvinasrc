@@ -1,16 +1,6 @@
 -- =============================================================
--- V1 - Initialize database schema + Clear old data + Insert sample data
+-- V1 - Initialize database schema
 -- =============================================================
-
--- Clear old data first (for fresh initialization)
-SET FOREIGN_KEY_CHECKS = 0;
-
-DELETE FROM employees_certifications;
-DELETE FROM employees;
-DELETE FROM certifications;
-DELETE FROM departments;
-
-SET FOREIGN_KEY_CHECKS = 1;
 
 -- 1. Tạo bảng thông tin phòng ban (departments)
 CREATE TABLE IF NOT EXISTS `departments` (
@@ -58,6 +48,18 @@ CREATE TABLE IF NOT EXISTS `employees_certifications` (
     CONSTRAINT FK_emp_cert_certification FOREIGN KEY (certification_id)
         REFERENCES certifications(certification_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =====================================================================
+-- Clear old data (after tables are created)
+-- =====================================================================
+SET FOREIGN_KEY_CHECKS = 0;
+
+TRUNCATE TABLE employees_certifications;
+TRUNCATE TABLE employees;
+TRUNCATE TABLE certifications;
+TRUNCATE TABLE departments;
+
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- =====================================================================
 -- NOTE: Sample data (admin + employees + certifications) is populated 
