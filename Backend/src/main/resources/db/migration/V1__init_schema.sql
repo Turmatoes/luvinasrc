@@ -1,6 +1,16 @@
 -- =============================================================
--- V1 - Initialize database schema
+-- V1 - Initialize database schema + Clear old data + Insert sample data
 -- =============================================================
+
+-- Clear old data first (for fresh initialization)
+SET FOREIGN_KEY_CHECKS = 0;
+
+DELETE FROM employees_certifications;
+DELETE FROM employees;
+DELETE FROM certifications;
+DELETE FROM departments;
+
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- 1. Tạo bảng thông tin phòng ban (departments)
 CREATE TABLE IF NOT EXISTS `departments` (
