@@ -51,6 +51,8 @@ spring:
   flyway:
     validateOnMigrate: false
     repair: true
+    baselineOnMigrate: true
+    baselineVersion: 1
     locations: classpath:db/migration
     enabled: true
 

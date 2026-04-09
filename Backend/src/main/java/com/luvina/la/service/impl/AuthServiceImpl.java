@@ -57,6 +57,8 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponse authenticate(LoginRequest loginRequest) {
         Map<String, String> errors = new HashMap<>();
         try {
+            log.info("Login attempt for user: {}", loginRequest.getUsername());
+            
             // Xác thực thông tin đăng nhập
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -68,15 +70,17 @@ public class AuthServiceImpl implements AuthService {
 
             // Tạo tóken JWT
             String accessToken = jwtTokenProvider.generateToken((AuthUserDetails) authentication.getPrincipal());
+            log.info("Login successful for user: {}, token: {}", loginRequest.getUsername(), accessToken.substring(0, 20) + "...");
             return new LoginResponse(accessToken);
 
         } catch (UsernameNotFoundException | BadCredentialsException ex) {
             // Ghi nhật ká sai thông tin xác thực
-            log.warn(ex.getMessage());
+            log.warn("Login failed for user: {} - {}", loginRequest.getUsername(), ex.getMessage());
             errors.put("code", "ER016");
         } catch (Exception ex) {
             // Ghi nhật ká lỗi không xác định
-            log.warn(ex.getMessage());
+            log.warn("Login failed for user: {} - {}", loginRequest.getUsername(), ex.getMessage());
+            ex.printStackTrace();
             errors.put("code", "ER023");
         }
         return new LoginResponse(errors);

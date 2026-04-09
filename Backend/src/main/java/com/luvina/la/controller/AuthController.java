@@ -12,6 +12,8 @@ import com.luvina.la.service.AuthService;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @author nxplong
  */
 public class AuthController {
+    
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     private final AuthService authService;
 
@@ -42,7 +46,12 @@ public class AuthController {
      */
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
-        return authService.authenticate(loginRequest);
+        log.info("Login request received - username: {}", loginRequest.getUsername());
+        LoginResponse response = authService.authenticate(loginRequest);
+        log.info("Login response: accessToken={}, errors={}", 
+            response.getAccessToken() != null ? response.getAccessToken().substring(0, 20) + "..." : "null",
+            response.getErrors());
+        return response;
     }
 
     /**

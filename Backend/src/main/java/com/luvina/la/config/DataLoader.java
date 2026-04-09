@@ -35,7 +35,10 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (!employeeRepository.findByEmployeeLoginId("admin").isPresent()) {
+        // Check if admin already exists by counting total employees
+        // If none exist, create initial data
+        long totalEmployees = employeeRepository.count();
+        if (totalEmployees == 0) {
             // Create departments
             Department dept1 = new Department();
             dept1.setDepartmentName("Phòng IT");
@@ -91,8 +94,8 @@ public class DataLoader implements CommandLineRunner {
             admin.setRole(1);
             admin = employeeRepository.save(admin);
 
-            // Create 20 regular employees (role = 0, will appear in employee list)
-            Employee[] employees = new Employee[20];
+            // Create 30 regular employees (role = 0, will appear in employee list)
+            Employee[] employees = new Employee[30];
             String[][] empData = {
                 {"emp001", "Nguyễn Thị Mai Hương", "グエンティマイフォン", "ntmhuong@luvina.net", "0914326386", "1983-07-08"},
                 {"emp002", "Lê Thị Xoa", "レティソア", "xoalt@luvina.net", "0914326387", "1983-06-15"},
@@ -113,12 +116,22 @@ public class DataLoader implements CommandLineRunner {
                 {"emp017", "Đinh Văn Sơn", "ディンヴァンソン", "vson@luvina.net", "0914326402", "1986-12-30"},
                 {"emp018", "Lâm Trọng Nghĩa", "ラムトロンニギア", "tnghia@luvina.net", "0914326403", "1988-11-18"},
                 {"emp019", "Nông Thị Hồng", "ノンティホン", "thong@luvina.net", "0914326404", "1991-02-09"},
-                {"emp020", "Võ Minh Đức", "ボミンドゥック", "mduc@luvina.net", "0914326405", "1989-07-26"}
+                {"emp020", "Võ Minh Đức", "ボミンドゥック", "mduc@luvina.net", "0914326405", "1989-07-26"},
+                {"emp021", "Trần Hồng Nhạn", "トランホンニャン", "hnhan@luvina.net", "0914326406", "1984-11-03"},
+                {"emp022", "Lê Thị Hương Giang", "レティフォンザン", "hgiang@luvina.net", "0914326407", "1992-09-14"},
+                {"emp023", "Phạm Minh Châu", "ファムミンチャウ", "mchau@luvina.net", "0914326408", "1990-04-27"},
+                {"emp024", "Nguyễn Văn Thắng", "グエンヴァンタン", "vthang@luvina.net", "0914326409", "1987-08-11"},
+                {"emp025", "Đào Thị Thu Hà", "ダオティトゥハ", "thua@luvina.net", "0914326410", "1989-06-19"},
+                {"emp026", "Hoàng Văn Quyết", "ホアンヴァンクエット", "vquyet@luvina.net", "0914326411", "1986-03-05"},
+                {"emp027", "Bùi Thị Yên", "ブイティイェン", "tyen@luvina.net", "0914326412", "1991-10-22"},
+                {"emp028", "Vũ Thị Thảo", "ブティタオ", "tthao@luvina.net", "0914326413", "1988-12-08"},
+                {"emp029", "Lương Thị Hạnh", "ルオンティハイン", "thhanh@luvina.net", "0914326414", "1985-02-17"},
+                {"emp030", "Tô Văn Mạnh", "トヴァンマイン", "vmanh@luvina.net", "0914326415", "1990-07-29"}
             };
 
             Department[] depts = {dept1, dept2, dept3, dept4};
             
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < 30; i++) {
                 Employee emp = new Employee();
                 emp.setEmployeeLoginId(empData[i][0]);
                 emp.setEmployeeLoginPassword(passwordEncoder.encode("123"));
@@ -150,7 +163,14 @@ public class DataLoader implements CommandLineRunner {
                 {12, 1, 2024, 3, 1, 2026, 2, 28, 270},   // emp013 - cert2
                 {14, 4, 2022, 8, 10, 2024, 8, 9, 315},   // emp015 - cert5
                 {16, 0, 2023, 11, 5, 2025, 11, 4, 260},  // emp017 - cert1
-                {18, 2, 2023, 10, 20, 2025, 10, 19, 295} // emp019 - cert3
+                {18, 2, 2023, 10, 20, 2025, 10, 19, 295},// emp019 - cert3
+                {20, 3, 2023, 2, 5, 2025, 2, 4, 288},    // emp021 - cert4
+                {21, 1, 2024, 4, 15, 2026, 4, 14, 255},  // emp022 - cert2
+                {22, 4, 2022, 7, 10, 2024, 7, 9, 318},   // emp023 - cert5
+                {23, 0, 2023, 6, 20, 2025, 6, 19, 262},  // emp024 - cert1
+                {24, 2, 2023, 9, 1, 2025, 8, 31, 292},   // emp025 - cert3
+                {25, 3, 2023, 8, 15, 2025, 8, 14, 298},  // emp026 - cert4
+                {26, 1, 2024, 2, 10, 2026, 2, 9, 268}    // emp027 - cert2
             };
 
             for (int[] data : empCertData) {
@@ -163,8 +183,8 @@ public class DataLoader implements CommandLineRunner {
                 employeeCertificationRepository.save(empCert);
             }
 
-            System.out.println("✓ Created admin account (admin/123) and 20 sample employees");
-            System.out.println("✓ Added Japanese language certifications to 13 employees");
+            System.out.println("✓ Created admin account (admin/123) and 30 sample employees");
+            System.out.println("✓ Added Japanese language certifications to 20 employees");
             System.out.println("✓ 7 employees without certifications");
         }
     }

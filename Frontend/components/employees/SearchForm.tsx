@@ -9,8 +9,10 @@ interface SearchFormProps {
   employeeName: string;
   onDepartmentChange: (departmentId: number | null) => void;
   onEmployeeNameChange: (name: string) => void;
-  onSearch: () => void;
+  onSearch: (name: string, departmentId: number | null) => void;
 }
+
+const MAX_FULLNAME_LENGTH = 125;
 
 export default function SearchForm({
   departments,
@@ -22,19 +24,28 @@ export default function SearchForm({
 }: SearchFormProps) {
   const router = useRouter();
 
+  const handleFullnameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Limit to MAX_FULLNAME_LENGTH characters
+    if (value.length <= MAX_FULLNAME_LENGTH) {
+      onEmployeeNameChange(value);
+    }
+  };
+
   const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     onDepartmentChange(value === '' ? null : Number(value));
   };
 
-  const handleSearch = () => {
-    onSearch();
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch(employeeName, selectedDepartmentId);
   };
 
   return (
     <div className="search-memb">
       <h1 className="title">会員名称で会員を検索します。検索条件無しの場合は全て表示されます。</h1>
-      <form className="c-form" onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
+      <form className="c-form" onSubmit={handleSearch}>
         <ul className="d-flex">
           <li className="form-group row">
             <label className="col-form-label">氏名:</label>
@@ -42,7 +53,9 @@ export default function SearchForm({
               <input 
                 type="text" 
                 value={employeeName}
-                onChange={(e) => onEmployeeNameChange(e.target.value)}
+                onChange={handleFullnameChange}
+                maxLength={MAX_FULLNAME_LENGTH}
+                placeholder="従業員名を入力..."
               />
             </div>
           </li>
@@ -65,8 +78,7 @@ export default function SearchForm({
           <li className="form-group row">
             <div className="btn-group">
               <button 
-                type="button" 
-                onClick={handleSearch}
+                type="submit"
                 className="btn btn-primary btn-sm"
               >
                 検索
