@@ -1,3 +1,9 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * AuthServiceImpl.java, April 9, 2026 nxplong
+ */
+
 package com.luvina.la.service.impl;
 
 import com.luvina.la.config.jwt.AuthUserDetails;
@@ -18,8 +24,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
- * Implementation of authentication service
- * Handles user login and JWT token generation
+ * Thực hiện dịch vụ xác thực (AuthService).
+ * Xử lý đăng nhập người dùng và tạo tóken JWT.
+ * 
+ * @author nxplong
  */
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -28,38 +36,46 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
 
+    /**
+     * Constructor khởi tạo AuthServiceImpl.
+     *
+     * @param authenticationManager Quản lý xác thực Spring Security
+     * @param jwtTokenProvider Nhà cung cấp tóken JWT
+     */
     public AuthServiceImpl(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     /**
-     * Authenticate user with credentials and generate JWT token
-     *
-     * @param loginRequest Login credentials (username and password)
-     * @return LoginResponse with accessToken or error codes
+     * Xác thực người dùng với thông tin xác thực và tạo tóken JWT.
+     * 
+     * @param loginRequest Thông tin đăng nhập (tên dũng và mật khẩu)
+     * @return LoginResponse chứa access token hoặc mã lỗi
      */
     @Override
     public LoginResponse authenticate(LoginRequest loginRequest) {
         Map<String, String> errors = new HashMap<>();
         try {
-            // Authenticate credentials
+            // Xác thực thông tin đăng nhập
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getUsername(),
                             loginRequest.getPassword()));
 
-            // Set authentication in security context
+            // Đặt xác thực trong ngữ cảnh bảo mật
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // Generate JWT token
+            // Tạo tóken JWT
             String accessToken = jwtTokenProvider.generateToken((AuthUserDetails) authentication.getPrincipal());
             return new LoginResponse(accessToken);
 
         } catch (UsernameNotFoundException | BadCredentialsException ex) {
+            // Ghi nhật ká sai thông tin xác thực
             log.warn(ex.getMessage());
             errors.put("code", "ER016");
         } catch (Exception ex) {
+            // Ghi nhật ká lỗi không xác định
             log.warn(ex.getMessage());
             errors.put("code", "ER023");
         }

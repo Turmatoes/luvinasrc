@@ -1,3 +1,9 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * EmployeeController.java, April 9, 2026 nxplong
+ */
+
 package com.luvina.la.controller;
 
 import com.luvina.la.dto.EmployeeDTO;
@@ -11,23 +17,33 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+/**
+ * Lớp EmployeeController xử lý các yêu cầu liên quản đến danh sách nhân viên.
+ * 
+ * @author nxplong
+ */
 public class EmployeeController {
 
     private final EmployeeService employeeService;
 
+    /**
+     * Constructor khởi tạo EmployeeController.
+     *
+     * @param employeeService Dịch vụ xử lý nhân viên
+     */
     public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
 
     /**
-     * Get employee list with filtering and pagination
-     * Excludes admin users (role = 1)
+     * Lấy danh sách nhân viên với lọc và phân trang.
+     * Loại trừ nhân viên quản trị (role = 1).
      * 
-     * @param employeeName Filter by employee name (optional)
-     * @param departmentId Filter by department id (optional)
-     * @param limit Number of records per page (default: 5)
-     * @param offset Page offset (default: 0)
-     * @return EmployeeListResponse with total records and employee list
+     * @param employeeName Tên nhân viên lôc (không bắt buộc)
+     * @param departmentId Mã phòng ban lôc (không bắt buộc)
+     * @param limit Số bản ghi trên trang (mặc định: 5)
+     * @param offset Số trang (mặc định: 0)
+     * @return EmployeeListResponse chứa tổng số bản ghi và danh sách nhân viên
      */
     @GetMapping("/employees")
     public EmployeeListResponse getEmployeeList(
@@ -36,10 +52,10 @@ public class EmployeeController {
             @RequestParam(value = "limit", required = false, defaultValue = "5") Integer limit,
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset) {
         
-        // Get total count of non-admin employees
+        // Lấy tổng số nhân viên không phải quản trị
         Long totalRecords = employeeService.countNonAdminEmployees();
         
-        // Get employee list with pagination and filtering
+        // Lấy danh sách nhân viên với lọc và phân trang
         List<EmployeeDTO> employees = employeeService.getEmployeeList(
                 employeeName.isEmpty() ? null : employeeName,
                 departmentId,
@@ -47,7 +63,7 @@ public class EmployeeController {
                 offset
         );
         
-        // Build response
+        // Xây dựng phản hồi
         EmployeeListResponse response = new EmployeeListResponse();
         response.setCode(200);
         response.setTotalRecords(totalRecords);

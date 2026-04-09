@@ -1,3 +1,9 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * EmployeeDTO.java, April 9, 2026 nxplong
+ */
+
 package com.luvina.la.dto;
 
 import java.io.Serializable;
@@ -7,8 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 /**
- * DTO for employee data
- * Used for both individual employee details and employee list items
+ * Đối tượng truyền dữ liệu (Data Transfer Object) cho thông tin nhân viên.
+ * Được sử dụng cho cả chi tiết nhân viên và mục danh sách nhân viên.
  */
 @Data
 @NoArgsConstructor

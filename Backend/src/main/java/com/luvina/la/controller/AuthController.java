@@ -1,3 +1,9 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * AuthController.java, April 9, 2026 nxplong
+ */
+
 package com.luvina.la.controller;
 
 import com.luvina.la.payload.LoginRequest;
@@ -13,6 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
+/**
+ * Lớp AuthController xử lý các yêu cầu liên quan đến xác thực.
+ * 
+ * @author nxplong
+ */
 public class AuthController {
 
     private final AuthService authService;
@@ -22,11 +33,12 @@ public class AuthController {
     }
 
     /**
-     * Login api
-     *
-     * @param loginRequest Login credentials
-     * @param request HTTP servlet request
-     * @return LoginResponse with accessToken or error codes
+     * Phương thức đăng nhập.
+     * Xác thực thông tin đăng nhập và trả về access token.
+     * 
+     * @param loginRequest Thông tin đăng nhập (tên đăng nhập và mật khẩu)
+     * @param request Yêu cầu HTTP servlet
+     * @return LoginResponse chứa access token hoặc mã lỗi
      */
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
@@ -34,9 +46,10 @@ public class AuthController {
     }
 
     /**
-     * Test token API
-     *
-     * @return Test response
+     * Phương thức cây lạ xác thực tóken.
+     * Kiểm tra xem tóken JWT hiện tại có hợp lệ không.
+     * 
+     * @return Map chứa thông báo xác thực thành công
      */
     @RequestMapping("/test-auth")
     public Map<String, String> testAuth() {

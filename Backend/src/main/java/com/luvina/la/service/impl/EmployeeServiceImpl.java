@@ -1,3 +1,9 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * EmployeeServiceImpl.java, April 9, 2026 nxplong
+ */
+
 package com.luvina.la.service.impl;
 
 import com.luvina.la.dto.EmployeeDTO;
@@ -10,31 +16,38 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 /**
- * Implementation of employee service
- * Handles business logic for employee operations
+ * Thực hiện dịch vụ nhân viên (EmployeeService).
+ * Xử lý logic kinh doanh cho các thao tác nhân viên.
+ * 
+ * @author nxplong
  */
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
 
+    /**
+     * Constructor khởi tạo EmployeeServiceImpl.
+     *
+     * @param employeeRepository Repository xử lý dự liệu nhân viên
+     */
     public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
     }
 
     /**
-     * Get employee list with filtering and pagination
-     * Converts repository Object[] to DTOs
-     *
-     * @param employeeName Filter by employee name (optional)
-     * @param departmentId Filter by department id (optional)
-     * @param limit Number of records per page
-     * @param offset Page offset
-     * @return List of employee DTOs
+     * Lấy danh sách nhân viên với lọc và phân trang.
+     * Chuyển đổi dự liệu Object[] từ repository thành DTO.
+     * 
+     * @param employeeName Tên nhân viên lôc (không bắt buộc)
+     * @param departmentId Mã phòng ban lôc (không bắt buộc)
+     * @param limit Số bản ghi trên trang
+     * @param offset Số trang
+     * @return Danh sách EmployeeDTO
      */
     @Override
     public List<EmployeeDTO> getEmployeeList(String employeeName, Long departmentId, Integer limit, Integer offset) {
-        // Fetch raw data from repository as Object[]
+        // Lấy dự liệu thô từ repository dưới dạng Object[]
         List<Object[]> rows = employeeRepository.getEmployeeList(
                 employeeName,
                 departmentId,
@@ -42,7 +55,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 offset
         );
 
-        // Convert Object[] rows to EmployeeDTO using convenience constructor
+        // Chuyển đổi Object[] thành EmployeeDTO sử dụng constructor tiện lợi
         return rows.stream()
                 .map(row -> new EmployeeDTO(
                         ((Number) row[0]).longValue(),         // employeeId
@@ -59,9 +72,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
-     * Count total number of non-admin employees
-     *
-     * @return Total count of employees where role = 0 or role IS NULL
+     * Đếm tổng số nhân viên không phải quản trị.
+     * 
+     * @return Tổng số nhân viên có role = 0 hoặc role IS NULL
      */
     @Override
     public Long countNonAdminEmployees() {
@@ -69,11 +82,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
-     * Convert java.sql.Date to java.time.LocalDate
-     * Handles null values and different date type inputs
-     *
-     * @param obj Object that may be a java.sql.Date
-     * @return LocalDate converted from input, or null if input is null
+     * Chuyển đổi java.sql.Date sang java.time.LocalDate.
+     * Xử lý giá trị null và các kiểu dự liệu ngày khác nhau.
+     * 
+     * @param obj Object có thể là java.sql.Date
+     * @return LocalDate được chuyển đổi từ đầu vào, hoặc null nếu đầu vào là null
      */
     private LocalDate convertSqlDateToLocalDate(Object obj) {
         if (obj == null) {

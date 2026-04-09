@@ -1,3 +1,9 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * MainApplication.java, April 9, 2026 nxplong
+ */
+
 package com.luvina.la;
 
 import com.luvina.la.config.Constants;
@@ -15,16 +21,33 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 @SpringBootApplication
+/**
+ * Lớp ứng dụng chính (Main Application).
+ * Khởi tạo ứng dụng Spring Boot và cấu hình profile dev/prod.
+ * 
+ * @author nxplong
+ */
 public class MainApplication implements InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(MainApplication.class);
 
     private final Environment env;
 
+    /**
+     * Constructor khởi tạo MainApplication.
+     *
+     * @param env Biến môi trường Spring
+     */
     public MainApplication(Environment env) {
         this.env = env;
     }
 
+    /**
+     * Kiểm tra cấu hình profile của ứng dụng sau khi khởi tạo.
+     * Nếu cả dev và prod profile được kích hoạt, sẽ ghi lỗi.
+     *
+     * @throws Exception Nếu có lỗi trong quá trình khởi tạo
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
         Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
@@ -35,6 +58,11 @@ public class MainApplication implements InitializingBean {
         }
     }
 
+    /**
+     * Phương thức main - điểm khởi động ứng dụng Spring Boot.
+     *
+     * @param args Các tham số dòng lệnh
+     */
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(MainApplication.class);
         DefaultProfileUtil.addDefaultProfile(app);
@@ -42,6 +70,12 @@ public class MainApplication implements InitializingBean {
         logApplicationStartup(env);
     }
 
+    /**
+     * Ghi nhật ký thông tin khởi động ứng dụng.
+     * Hiển thị các URL truy cập, profile đang chạy.
+     *
+     * @param env Biến môi trường Spring
+     */
     private static void logApplicationStartup(Environment env) {
         String protocol = "http";
         String serverPort = env.getProperty("server.port");
