@@ -1,6 +1,8 @@
 package com.luvina.la.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -30,4 +32,13 @@ public class EmployeeCertification implements Serializable {
     @ManyToOne
     @JoinColumn(name = "certification_id", nullable = false)
     private Certification certification;
+
+    @Column(name = "start_date")
+    private LocalDate startDate;
+
+    @Column(name = "end_date")
+    private LocalDate endDate;
+
+    @Column(name = "score", precision = 5, scale = 2)
+    private BigDecimal score;
 }

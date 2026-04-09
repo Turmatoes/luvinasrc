@@ -7,6 +7,11 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+/**
+ * Lớp AuthUserDetails là một lớp triển khai UserDetails của Spring Security.
+ * Lớp này chứa thông tin chi tiết về người dùng (Employee) và các quyền hạn
+ * (authorities) của họ.
+ */
 @Data
 @AllArgsConstructor
 public class AuthUserDetails implements UserDetails {

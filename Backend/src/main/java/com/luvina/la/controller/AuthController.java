@@ -1,6 +1,5 @@
 package com.luvina.la.controller;
 
-
 import com.luvina.la.config.jwt.AuthUserDetails;
 import com.luvina.la.config.jwt.JwtTokenProvider;
 import com.luvina.la.config.jwt.UserDetailsServiceImpl;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api/auth")
 public class AuthController {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
@@ -30,7 +30,8 @@ public class AuthController {
     final AuthenticationManager authenticationManager;
     final UserDetailsServiceImpl userDetailsService;
 
-    AuthController(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserDetailsServiceImpl userDetailsService) {
+    AuthController(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider,
+            UserDetailsServiceImpl userDetailsService) {
         this.authenticationManager = authenticationManager;
         this.tokenProvider = jwtTokenProvider;
         this.userDetailsService = userDetailsService;
@@ -50,9 +51,7 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getUsername(),
-                            loginRequest.getPassword()
-                    )
-            );
+                            loginRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String accessToken = tokenProvider.generateToken((AuthUserDetails) authentication.getPrincipal());
             return new LoginResponse(accessToken);
