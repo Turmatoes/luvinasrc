@@ -1,8 +1,8 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useEffect, useState } from 'react';
-import { apiClient } from '@/lib/api/client';
+import { useEmployeeApi } from '@/hooks/useEmployeeApi';
+import { useCallback, useEffect, useState } from 'react';
 import { EmployeeListResponse, DepartmentDTO } from '@/types/employee';
 import SearchForm from '@/components/employees/SearchForm';
 import EmployeeTable, { SortDirection, SortKey } from '@/components/employees/EmployeeTable';
@@ -17,6 +17,7 @@ const DEFAULT_SORT: Record<SortKey, SortDirection> = {
 
 export default function EmployeeListPage() {
   useAuth();
+  const { fetchDepartments, fetchEmployees } = useEmployeeApi();
   
   // Data state
   const [data, setData] = useState<EmployeeListResponse | null>(null);
@@ -33,10 +34,10 @@ export default function EmployeeListPage() {
 
   // Fetch departments on mount
   useEffect(() => {
-    const fetchDepartments = async () => {
+    const loadDepartments = async () => {
       try {
-        const response = await apiClient.get<DepartmentDTO[]>('/departments');
-        setDepartments(response.data);
+        const response = await fetchDepartments();
+        setDepartments(response);
         setDepartmentError(null);
       } catch (err) {
         console.error('Failed to fetch departments:', err);
@@ -44,11 +45,11 @@ export default function EmployeeListPage() {
       }
     };
 
-    fetchDepartments();
-  }, []);
+    loadDepartments();
+  }, [fetchDepartments]);
 
   // Fetch employees based on search filters and pagination
-  const fetchEmployees = async (
+  const loadEmployees = useCallback(async (
     name: string,
     deptId: number | null,
     page: number,
@@ -57,26 +58,14 @@ export default function EmployeeListPage() {
     setLoading(true);
     setEmployeeError(null);
     try {
-      const params: {
-        limit: number;
-        offset: number;
-        employeeName: string | null;
-        departmentId: number | null;
-        sortEmployeeName: SortDirection;
-        sortCertificationName: SortDirection;
-        sortEndDate: SortDirection;
-      } = {
-        limit: LIMIT_PER_PAGE,
-        offset: (page - 1) * LIMIT_PER_PAGE,
-        employeeName: name.trim() || null,
+      const response = await fetchEmployees({
+        employeeName: name,
         departmentId: deptId,
-        sortEmployeeName: sortState.employeeName,
-        sortCertificationName: sortState.certificationName,
-        sortEndDate: sortState.endDate,
-      };
-      
-      const response = await apiClient.get<EmployeeListResponse>('/employees', { params });
-      setData(response.data);
+        page,
+        limit: LIMIT_PER_PAGE,
+        sort: sortState,
+      });
+      setData(response);
     } catch (err) {
       console.error('Failed to fetch employees:', err);
       setEmployeeError('従業員を取得できません');
@@ -84,25 +73,25 @@ export default function EmployeeListPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchEmployees]);
 
   // Initial load
   useEffect(() => {
-    fetchEmployees('', null, 1, DEFAULT_SORT);
-  }, []);
+    loadEmployees('', null, 1, DEFAULT_SORT);
+  }, [loadEmployees]);
 
   // Handle search
   const handleSearch = (name: string, deptId: number | null) => {
     setEmployeeName(name);
     setSelectedDepartmentId(deptId);
     setCurrentPage(1);
-    fetchEmployees(name, deptId, 1, sort);
+    loadEmployees(name, deptId, 1, sort);
   };
 
   // Handle pagination
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    fetchEmployees(employeeName, selectedDepartmentId, page, sort);
+    loadEmployees(employeeName, selectedDepartmentId, page, sort);
   };
 
   const handleSort = (key: SortKey) => {
@@ -113,7 +102,7 @@ export default function EmployeeListPage() {
 
     setSort(nextSort);
     setCurrentPage(1);
-    fetchEmployees(employeeName, selectedDepartmentId, 1, nextSort);
+    loadEmployees(employeeName, selectedDepartmentId, 1, nextSort);
   };
 
   const handleDepartmentChange = (departmentId: number | null) => {
