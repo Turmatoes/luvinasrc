@@ -39,37 +39,37 @@ public class EmployeeServiceImpl implements EmployeeService {
      * Lấy danh sách nhân viên với lọc và phân trang.
      * Chuyển đổi dự liệu Object[] từ repository thành DTO.
      * 
-     * @param employeeName Tên nhân viên lôc (không bắt buộc)
-     * @param departmentId Mã phòng ban lôc (không bắt buộc)
-     * @param limit Số bản ghi trên trang
-     * @param offset Số trang
+     * @param employeeName Tên nhân viên
+     * @param departmentId Mã phòng ban
+     * @param limit        Số bản ghi trên trang
+     * @param offset       Số trang
      * @return Danh sách EmployeeDTO
      */
     @Override
-    public List<EmployeeDTO> getEmployeeList(String employeeName, Long departmentId, String sortEmployeeName, String sortCertificationName, String sortEndDate, Integer limit, Integer offset) {
+    public List<EmployeeDTO> getListEmployee(String employeeName, Long departmentId, String sortEmployeeName,
+            String sortCertificationName, String sortEndDate, Integer limit, Integer offset) {
         // Lấy dự liệu thô từ repository dưới dạng Object[]
-        List<Object[]> rows = employeeRepository.getEmployeeList(
+        List<Object[]> rows = employeeRepository.getListEmployee(
                 employeeName,
                 departmentId,
                 sortEmployeeName,
                 sortCertificationName,
                 sortEndDate,
                 limit,
-                offset
-        );
+                offset);
 
-        // Chuyển đổi Object[] thành EmployeeDTO sử dụng constructor tiện lợi
+        // Chuyển đổi Object[] thành EmployeeDTO sử dụng constructor
         return rows.stream()
                 .map(row -> new EmployeeDTO(
-                        ((Number) row[0]).longValue(),         // employeeId
-                        (String) row[1],                        // employeeName
-                        convertSqlDateToLocalDate(row[2]),      // employeeBirthDate
-                        (String) row[3],                        // departmentName
-                        (String) row[4],                        // employeeEmail
-                        (String) row[5],                        // employeeTelephone
-                        (String) row[6],                        // certificationName
-                        convertSqlDateToLocalDate(row[7]),      // endDate
-                        row[8] != null ? ((Number) row[8]).doubleValue() : null  // score
+                        ((Number) row[0]).longValue(), // employeeId
+                        (String) row[1], // employeeName
+                        convertSqlDateToLocalDate(row[2]), // employeeBirthDate
+                        (String) row[3], // departmentName
+                        (String) row[4], // employeeEmail
+                        (String) row[5], // employeeTelephone
+                        (String) row[6], // certificationName
+                        convertSqlDateToLocalDate(row[7]), // endDate
+                        row[8] != null ? ((Number) row[8]).doubleValue() : null // score
                 ))
                 .collect(Collectors.toList());
     }
@@ -87,8 +87,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     /**
      * Đếm tổng số nhân viên không phải quản trị với bộ lọc.
      * 
-     * @param employeeName Tên nhân viên lôc (không bắt buộc)
-     * @param departmentId Mã phòng ban lôc (không bắt buộc)
+     * @param employeeName Tên nhân viên
+     * @param departmentId Mã phòng ban
      * @return Tổng số nhân viên có role = 0 hoặc role IS NULL theo bộ lọc
      */
     @Override

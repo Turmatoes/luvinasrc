@@ -12,7 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@ComponentScan({"com.luvina.la"})
+@ComponentScan({ "com.luvina.la" })
 @EntityScan("com.luvina.la.entity")
 @EnableJpaRepositories("com.luvina.la.repository")
 @ConfigurationProperties("spring.datasource")

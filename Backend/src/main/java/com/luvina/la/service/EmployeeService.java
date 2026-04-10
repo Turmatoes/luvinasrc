@@ -21,11 +21,11 @@ public interface EmployeeService {
      * 
      * @param employeeName Tên nhân viên lôc (không bắt buộc)
      * @param departmentId Mã phòng ban lôc (không bắt buộc)
-     * @param limit Số bản ghi trên trang
-     * @param offset Số trang
+     * @param limit        Số bản ghi trên trang
+     * @param offset       Số trang
      * @return Danh sách EmployeeDTO
      */
-    List<EmployeeDTO> getEmployeeList(
+    List<EmployeeDTO> getListEmployee(
             String employeeName,
             Long departmentId,
             String sortEmployeeName,

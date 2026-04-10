@@ -25,11 +25,11 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
 
         Optional<Employee> findByEmployeeId(Long employeeId);
 
-        // Lấy tổng số nhân viên (where role = 0 or role IS NULL)
+        // Lấy tổng số nhân viên (where role = 0 or role IS NULL để lọc admin)
         @Query("SELECT COUNT(e) FROM Employee e WHERE e.role IS NULL OR e.role = 0")
         Long countNonAdminEmployees();
 
-        // Lấy tổng số nhân viên (where role = 0 or role IS NULL)
+        // Lấy tổng số nhân viên (where role = 0 or role IS NULL để lọc admin)
         @Query(value = "SELECT COUNT(e.employee_id) " +
                         "FROM employees e " +
                         "INNER JOIN departments d ON e.department_id = d.department_id " +
@@ -41,7 +41,7 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                         @Param("employeeName") String employeeName,
                         @Param("departmentId") Long departmentId);
 
-        // Lấy danh sách nhân viên (where role = 0 or role IS NULL)
+        // Lấy danh sách nhân viên (where role = 0 or role IS NULL để lọc admin)
         @Query(value = "SELECT " +
                         "e.employee_id, " +
                         "e.employee_name, " +
@@ -61,20 +61,21 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                         +
                         "AND (:departmentId IS NULL OR e.department_id = :departmentId) " +
                         "ORDER BY " +
-                        // Priority 1: employee_name
+                        // TH 1: Lọc theo employee_name
                         "CASE WHEN :sortEmployeeName = 'asc' THEN e.employee_name END ASC, " +
                         "CASE WHEN :sortEmployeeName = 'desc' THEN e.employee_name END DESC, " +
-                        // Priority 2: Japanese skill = certification_level (smaller is higher). Nulls always last.
+                        // TH 2: Lọc theo Japanese skill = certification_level (smaller is higher).
+                        // Nulls always last.
                         "(c.certification_level IS NULL) ASC, " +
                         "CASE WHEN :sortCertificationName = 'desc' THEN c.certification_level END ASC, " +
                         "CASE WHEN :sortCertificationName = 'asc' THEN c.certification_level END DESC, " +
-                        // Priority 3: end_date. Nulls always last.
+                        // TH 3: Lọc theo end_date. Nulls always last.
                         "(ec.end_date IS NULL) ASC, " +
                         "CASE WHEN :sortEndDate = 'asc' THEN ec.end_date END ASC, " +
                         "CASE WHEN :sortEndDate = 'desc' THEN ec.end_date END DESC, " +
                         "e.employee_id ASC " +
                         "LIMIT :limit OFFSET :offset", nativeQuery = true)
-        List<Object[]> getEmployeeList(
+        List<Object[]> getListEmployee(
                         @Param("employeeName") String employeeName,
                         @Param("departmentId") Long departmentId,
                         @Param("sortEmployeeName") String sortEmployeeName,

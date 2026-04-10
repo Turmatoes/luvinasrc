@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author nxplong
  */
 public class AuthController {
-    
+
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     private final AuthService authService;
@@ -41,22 +41,22 @@ public class AuthController {
      * Xác thực thông tin đăng nhập và trả về access token.
      * 
      * @param loginRequest Thông tin đăng nhập (tên đăng nhập và mật khẩu)
-     * @param request Yêu cầu HTTP servlet
+     * @param request      Yêu cầu HTTP servlet
      * @return LoginResponse chứa access token hoặc mã lỗi
      */
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         log.info("Login request received - username: {}", loginRequest.getUsername());
         LoginResponse response = authService.authenticate(loginRequest);
-        log.info("Login response: accessToken={}, errors={}", 
-            response.getAccessToken() != null ? response.getAccessToken().substring(0, 20) + "..." : "null",
-            response.getErrors());
+        log.info("Login response: accessToken={}, errors={}",
+                response.getAccessToken() != null ? response.getAccessToken().substring(0, 20) + "..." : "null",
+                response.getErrors());
         return response;
     }
 
     /**
      * Phương thức cây lạ xác thực tóken.
-     * Kiểm tra xem tóken JWT hiện tại có hợp lệ không.
+     * Kiểm tra xem token JWT hiện tại có hợp lệ không.
      * 
      * @return Map chứa thông báo xác thực thành công
      */

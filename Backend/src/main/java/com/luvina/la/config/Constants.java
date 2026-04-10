@@ -1,9 +1,6 @@
 
 package com.luvina.la.config;
 
-/**
- * Lớp Constants chứa các hằng số được sử dụng trong ứng dụng.
- */
 public class Constants {
 
         private Constants() {
@@ -16,7 +13,6 @@ public class Constants {
         public static final String JWT_SECRET = "Luvina-Academe";
         public static final long JWT_EXPIRATION = 160 * 60 * 60; // 7 day
 
-        // config endpoints public
         public static final String[] ENDPOINTS_PUBLIC = new String[] {
                         "/",
                         "/api/login",
@@ -24,12 +20,10 @@ public class Constants {
                         "/error/**"
         };
 
-        // config endpoints for USER role
         public static final String[] ENDPOINTS_WITH_ROLE = new String[] {
                         "/user/**"
         };
 
-        // user attributies put to token
         public static final String[] ATTRIBUTIES_TO_TOKEN = new String[] {
                         "employeeId",
                         "employeeName",

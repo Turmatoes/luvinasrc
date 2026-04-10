@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Thực hiện dịch vụ xác thực (AuthService).
- * Xử lý đăng nhập người dùng và tạo tóken JWT.
+ * Xử lý đăng nhập người dùng và tạo token JWT.
  * 
  * @author nxplong
  */
@@ -40,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
      * Constructor khởi tạo AuthServiceImpl.
      *
      * @param authenticationManager Quản lý xác thực Spring Security
-     * @param jwtTokenProvider Nhà cung cấp tóken JWT
+     * @param jwtTokenProvider      Nhà cung cấp token JWT
      */
     public AuthServiceImpl(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
         this.authenticationManager = authenticationManager;
@@ -48,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     /**
-     * Xác thực người dùng với thông tin xác thực và tạo tóken JWT.
+     * Xác thực người dùng với thông tin xác thực và tạo token JWT.
      * 
      * @param loginRequest Thông tin đăng nhập (tên dũng và mật khẩu)
      * @return LoginResponse chứa access token hoặc mã lỗi
@@ -58,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
         Map<String, String> errors = new HashMap<>();
         try {
             log.info("Login attempt for user: {}", loginRequest.getUsername());
-            
+
             // Xác thực thông tin đăng nhập
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -68,17 +68,18 @@ public class AuthServiceImpl implements AuthService {
             // Đặt xác thực trong ngữ cảnh bảo mật
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // Tạo tóken JWT
+            // Tạo token JWT
             String accessToken = jwtTokenProvider.generateToken((AuthUserDetails) authentication.getPrincipal());
-            log.info("Login successful for user: {}, token: {}", loginRequest.getUsername(), accessToken.substring(0, 20) + "...");
+            log.info("Login successful for user: {}, token: {}", loginRequest.getUsername(),
+                    accessToken.substring(0, 20) + "...");
             return new LoginResponse(accessToken);
 
         } catch (UsernameNotFoundException | BadCredentialsException ex) {
-            // Ghi nhật ká sai thông tin xác thực
+            // Ghi nhật ký sai thông tin xác thực
             log.warn("Login failed for user: {} - {}", loginRequest.getUsername(), ex.getMessage());
             errors.put("code", "ER016");
         } catch (Exception ex) {
-            // Ghi nhật ká lỗi không xác định
+            // Ghi nhật ký lỗi không xác định
             log.warn("Login failed for user: {} - {}", loginRequest.getUsername(), ex.getMessage());
             ex.printStackTrace();
             errors.put("code", "ER023");

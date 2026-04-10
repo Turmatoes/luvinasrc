@@ -7,7 +7,6 @@
 package com.luvina.la.payload;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Data;
@@ -19,9 +18,9 @@ import lombok.Data;
 @Data
 public class LoginResponse {
 
-    /** Tóken truy cập JWT */
+    /** Token truy cập JWT */
     private String accessToken;
-    /** Kiểu tóken (thương là Bearer) */
+    /** Kiểu token (thương là Bearer) */
     private String tokenType;
     /** Đường danh đẹn các lỗi có từ phía server */
     private List<Object> errors = new ArrayList<>();

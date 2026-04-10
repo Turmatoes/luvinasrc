@@ -41,8 +41,8 @@ public class EmployeeController {
      * 
      * @param employeeName Tên nhân viên lôc (không bắt buộc)
      * @param departmentId Mã phòng ban lôc (không bắt buộc)
-     * @param limit Số bản ghi trên trang (mặc định: 5)
-     * @param offset Số trang (mặc định: 0)
+     * @param limit        Số bản ghi trên trang (mặc định: 5)
+     * @param offset       Số trang (mặc định: 0)
      * @return EmployeeListResponse chứa tổng số bản ghi và danh sách nhân viên
      */
     @GetMapping("/employees")
@@ -54,7 +54,7 @@ public class EmployeeController {
             @RequestParam(value = "sortEndDate", required = false, defaultValue = "asc") String sortEndDate,
             @RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit,
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset) {
-        
+
         // Lấy tổng số nhân viên không phải quản trị với bộ lọc
         String normalizedSortEmployeeName = normalizeSort(sortEmployeeName);
         String normalizedSortCertificationName = normalizeSort(sortCertificationName);
@@ -62,29 +62,33 @@ public class EmployeeController {
 
         Long totalRecords = employeeService.countEmployeesWithFilter(
                 employeeName.isEmpty() ? null : employeeName,
-                departmentId
-        );
-        
+                departmentId);
+
         // Lấy danh sách nhân viên với lọc và phân trang
-        List<EmployeeDTO> employees = employeeService.getEmployeeList(
+        List<EmployeeDTO> employees = employeeService.getListEmployee(
                 employeeName.isEmpty() ? null : employeeName,
                 departmentId,
                 normalizedSortEmployeeName,
                 normalizedSortCertificationName,
                 normalizedSortEndDate,
                 limit,
-                offset
-        );
-        
+                offset);
+
         // Xây dựng phản hồi
         EmployeeListResponse response = new EmployeeListResponse();
         response.setCode(200);
         response.setTotalRecords(totalRecords);
         response.setEmployees(employees);
-        
+
         return response;
     }
 
+    /**
+     * Chuẩn hóa chuỗi sắp xếp.
+     * 
+     * @param sort Chuỗi sắp xếp (asc hoặc desc)
+     * @return Chuỗi đã chuẩn hóa
+     */
     private String normalizeSort(String sort) {
         if (sort == null) {
             return "asc";

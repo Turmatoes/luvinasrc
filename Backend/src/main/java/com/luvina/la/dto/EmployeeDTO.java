@@ -24,7 +24,6 @@ public class EmployeeDTO implements Serializable {
 
     private static final long serialVersionUID = 6868189362900231672L;
 
-    // Individual employee fields (full detail)
     private Long employeeId;
     private Long departmentId;
     private String departmentName;
@@ -36,13 +35,14 @@ public class EmployeeDTO implements Serializable {
     private String employeeLoginId;
     private String employeeLoginPassword;
 
-    // Employee list fields (certification info)
     private String certificationName;
     private LocalDate endDate;
     private Double score;
 
     /**
-     * Constructor for employee list items (without login credentials)
+     * DTO Employee chứa thông tin nhân viên.
+     * 
+     * @author nxplong
      */
     public EmployeeDTO(Long employeeId, String employeeName, LocalDate employeeBirthDate,
             String departmentName, String employeeEmail, String employeeTelephone,
