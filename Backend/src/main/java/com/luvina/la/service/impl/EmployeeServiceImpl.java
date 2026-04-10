@@ -82,6 +82,18 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
+     * Đếm tổng số nhân viên không phải quản trị với bộ lọc.
+     * 
+     * @param employeeName Tên nhân viên lôc (không bắt buộc)
+     * @param departmentId Mã phòng ban lôc (không bắt buộc)
+     * @return Tổng số nhân viên có role = 0 hoặc role IS NULL theo bộ lọc
+     */
+    @Override
+    public Long countEmployeesWithFilter(String employeeName, Long departmentId) {
+        return employeeRepository.countEmployeesWithFilter(employeeName, departmentId);
+    }
+
+    /**
      * Chuyển đổi java.sql.Date sang java.time.LocalDate.
      * Xử lý giá trị null và các kiểu dự liệu ngày khác nhau.
      * 

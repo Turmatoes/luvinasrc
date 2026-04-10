@@ -52,8 +52,11 @@ public class EmployeeController {
             @RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit,
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset) {
         
-        // Lấy tổng số nhân viên không phải quản trị
-        Long totalRecords = employeeService.countNonAdminEmployees();
+        // Lấy tổng số nhân viên không phải quản trị với bộ lọc
+        Long totalRecords = employeeService.countEmployeesWithFilter(
+                employeeName.isEmpty() ? null : employeeName,
+                departmentId
+        );
         
         // Lấy danh sách nhân viên với lọc và phân trang
         List<EmployeeDTO> employees = employeeService.getEmployeeList(

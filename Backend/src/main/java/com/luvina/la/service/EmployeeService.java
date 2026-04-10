@@ -33,4 +33,13 @@ public interface EmployeeService {
      * @return Tổng số nhân viên có role = 0 hoặc role IS NULL
      */
     Long countNonAdminEmployees();
+
+    /**
+     * Đếm tổng số nhân viên không phải quản trị với bộ lọc.
+     * 
+     * @param employeeName Tên nhân viên lôc (không bắt buộc)
+     * @param departmentId Mã phòng ban lôc (không bắt buộc)
+     * @return Tổng số nhân viên có role = 0 hoặc role IS NULL theo bộ lọc
+     */
+    Long countEmployeesWithFilter(String employeeName, Long departmentId);
 }

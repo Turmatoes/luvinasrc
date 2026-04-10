@@ -18,6 +18,19 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
     @Query("SELECT COUNT(e) FROM Employee e WHERE e.role IS NULL OR e.role = 0")
     Long countNonAdminEmployees();
 
+    // Get total count of non-admin employees with filters (where role = 0 or role IS NULL)
+    @Query(value = "SELECT COUNT(e.employee_id) " +
+            "FROM employees e " +
+            "INNER JOIN departments d ON e.department_id = d.department_id " +
+            "WHERE (e.role IS NULL OR e.role = 0) " +
+            "AND (e.employee_name LIKE CONCAT('%', :employeeName, '%') OR :employeeName = '' OR :employeeName IS NULL) " +
+            "AND (e.department_id = :departmentId OR :departmentId IS NULL)",
+            nativeQuery = true)
+    Long countEmployeesWithFilter(
+            @Param("employeeName") String employeeName,
+            @Param("departmentId") Long departmentId
+    );
+
     // Get employee list with department and certification info (excluding admins)
     @Query(value = "SELECT " +
             "e.employee_id, " +
