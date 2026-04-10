@@ -34,7 +34,7 @@ spring:
   jpa:
     hibernate:
       # validate: kiểm tra schema có hợp lệ không (Flyway sẽ tạo bảng từ migration)
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect

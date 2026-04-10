@@ -61,34 +61,22 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                         +
                         "AND (:departmentId IS NULL OR e.department_id = :departmentId) " +
                         "ORDER BY " +
-                        "CASE WHEN :sortBy = 'employeeName' AND :sortEmployeeName = 'asc' THEN e.employee_name END ASC, "
-                        +
-                        "CASE WHEN :sortBy = 'employeeName' AND :sortEmployeeName = 'desc' THEN e.employee_name END DESC, "
-                        +
-                        "CASE WHEN :sortBy = 'certificationName' THEN (c.certification_level IS NULL) END ASC, " +
-                        "CASE WHEN :sortBy = 'certificationName' AND :sortCertificationName = 'desc' THEN c.certification_level END ASC, "
-                        +
-                        "CASE WHEN :sortBy = 'certificationName' AND :sortCertificationName = 'asc' THEN c.certification_level END DESC, "
-                        +
-                        "CASE WHEN :sortBy = 'endDate' AND :sortEndDate = 'asc' THEN ec.end_date END ASC, " +
-                        "CASE WHEN :sortBy = 'endDate' AND :sortEndDate = 'desc' THEN ec.end_date END DESC, " +
-                        "CASE WHEN :sortBy <> 'employeeName' AND :sortEmployeeName = 'asc' THEN e.employee_name END ASC, "
-                        +
-                        "CASE WHEN :sortBy <> 'employeeName' AND :sortEmployeeName = 'desc' THEN e.employee_name END DESC, "
-                        +
-                        "CASE WHEN :sortBy <> 'certificationName' THEN (c.certification_level IS NULL) END ASC, " +
-                        "CASE WHEN :sortBy <> 'certificationName' AND :sortCertificationName = 'desc' THEN c.certification_level END ASC, "
-                        +
-                        "CASE WHEN :sortBy <> 'certificationName' AND :sortCertificationName = 'asc' THEN c.certification_level END DESC, "
-                        +
-                        "CASE WHEN :sortBy <> 'endDate' AND :sortEndDate = 'asc' THEN ec.end_date END ASC, " +
-                        "CASE WHEN :sortBy <> 'endDate' AND :sortEndDate = 'desc' THEN ec.end_date END DESC, " +
+                        // Priority 1: employee_name
+                        "CASE WHEN :sortEmployeeName = 'asc' THEN e.employee_name END ASC, " +
+                        "CASE WHEN :sortEmployeeName = 'desc' THEN e.employee_name END DESC, " +
+                        // Priority 2: Japanese skill = certification_level (smaller is higher). Nulls always last.
+                        "(c.certification_level IS NULL) ASC, " +
+                        "CASE WHEN :sortCertificationName = 'desc' THEN c.certification_level END ASC, " +
+                        "CASE WHEN :sortCertificationName = 'asc' THEN c.certification_level END DESC, " +
+                        // Priority 3: end_date. Nulls always last.
+                        "(ec.end_date IS NULL) ASC, " +
+                        "CASE WHEN :sortEndDate = 'asc' THEN ec.end_date END ASC, " +
+                        "CASE WHEN :sortEndDate = 'desc' THEN ec.end_date END DESC, " +
                         "e.employee_id ASC " +
                         "LIMIT :limit OFFSET :offset", nativeQuery = true)
         List<Object[]> getEmployeeList(
                         @Param("employeeName") String employeeName,
                         @Param("departmentId") Long departmentId,
-                        @Param("sortBy") String sortBy,
                         @Param("sortEmployeeName") String sortEmployeeName,
                         @Param("sortCertificationName") String sortCertificationName,
                         @Param("sortEndDate") String sortEndDate,

@@ -49,7 +49,6 @@ public class EmployeeController {
     public EmployeeListResponse getEmployeeList(
             @RequestParam(value = "employeeName", required = false, defaultValue = "") String employeeName,
             @RequestParam(value = "departmentId", required = false) Long departmentId,
-            @RequestParam(value = "sortBy", required = false, defaultValue = "employeeName") String sortBy,
             @RequestParam(value = "sortEmployeeName", required = false, defaultValue = "asc") String sortEmployeeName,
             @RequestParam(value = "sortCertificationName", required = false, defaultValue = "desc") String sortCertificationName,
             @RequestParam(value = "sortEndDate", required = false, defaultValue = "asc") String sortEndDate,
@@ -57,7 +56,6 @@ public class EmployeeController {
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset) {
         
         // Lấy tổng số nhân viên không phải quản trị với bộ lọc
-        String normalizedSortBy = normalizeSortBy(sortBy);
         String normalizedSortEmployeeName = normalizeSort(sortEmployeeName);
         String normalizedSortCertificationName = normalizeSort(sortCertificationName);
         String normalizedSortEndDate = normalizeSort(sortEndDate);
@@ -71,7 +69,6 @@ public class EmployeeController {
         List<EmployeeDTO> employees = employeeService.getEmployeeList(
                 employeeName.isEmpty() ? null : employeeName,
                 departmentId,
-                normalizedSortBy,
                 normalizedSortEmployeeName,
                 normalizedSortCertificationName,
                 normalizedSortEndDate,
@@ -96,14 +93,4 @@ public class EmployeeController {
         return lower.equals("desc") ? "desc" : "asc";
     }
 
-    private String normalizeSortBy(String sortBy) {
-        if (sortBy == null) {
-            return "employeeName";
-        }
-        String value = sortBy.trim();
-        if (value.equals("employeeName") || value.equals("certificationName") || value.equals("endDate")) {
-            return value;
-        }
-        return "employeeName";
-    }
 }

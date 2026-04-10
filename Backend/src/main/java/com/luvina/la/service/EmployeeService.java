@@ -28,7 +28,6 @@ public interface EmployeeService {
     List<EmployeeDTO> getEmployeeList(
             String employeeName,
             Long departmentId,
-            String sortBy,
             String sortEmployeeName,
             String sortCertificationName,
             String sortEndDate,

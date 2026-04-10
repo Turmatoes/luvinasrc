@@ -14,7 +14,6 @@ const DEFAULT_SORT: Record<SortKey, SortDirection> = {
   certificationName: 'desc',
   endDate: 'asc',
 };
-const DEFAULT_SORT_BY: SortKey = 'employeeName';
 
 export default function EmployeeListPage() {
   useAuth();
@@ -31,7 +30,6 @@ export default function EmployeeListPage() {
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useState<Record<SortKey, SortDirection>>(DEFAULT_SORT);
-  const [sortBy, setSortBy] = useState<SortKey>(DEFAULT_SORT_BY);
 
   // Fetch departments on mount
   useEffect(() => {
@@ -54,8 +52,7 @@ export default function EmployeeListPage() {
     name: string,
     deptId: number | null,
     page: number,
-    sortState: Record<SortKey, SortDirection>,
-    sortByKey: SortKey
+    sortState: Record<SortKey, SortDirection>
   ) => {
     setLoading(true);
     setEmployeeError(null);
@@ -65,7 +62,6 @@ export default function EmployeeListPage() {
         offset: number;
         employeeName: string | null;
         departmentId: number | null;
-        sortBy: SortKey;
         sortEmployeeName: SortDirection;
         sortCertificationName: SortDirection;
         sortEndDate: SortDirection;
@@ -74,7 +70,6 @@ export default function EmployeeListPage() {
         offset: (page - 1) * LIMIT_PER_PAGE,
         employeeName: name.trim() || null,
         departmentId: deptId,
-        sortBy: sortByKey,
         sortEmployeeName: sortState.employeeName,
         sortCertificationName: sortState.certificationName,
         sortEndDate: sortState.endDate,
@@ -93,7 +88,7 @@ export default function EmployeeListPage() {
 
   // Initial load
   useEffect(() => {
-    fetchEmployees('', null, 1, DEFAULT_SORT, DEFAULT_SORT_BY);
+    fetchEmployees('', null, 1, DEFAULT_SORT);
   }, []);
 
   // Handle search
@@ -101,13 +96,13 @@ export default function EmployeeListPage() {
     setEmployeeName(name);
     setSelectedDepartmentId(deptId);
     setCurrentPage(1);
-    fetchEmployees(name, deptId, 1, sort, sortBy);
+    fetchEmployees(name, deptId, 1, sort);
   };
 
   // Handle pagination
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    fetchEmployees(employeeName, selectedDepartmentId, page, sort, sortBy);
+    fetchEmployees(employeeName, selectedDepartmentId, page, sort);
   };
 
   const handleSort = (key: SortKey) => {
@@ -117,9 +112,8 @@ export default function EmployeeListPage() {
     };
 
     setSort(nextSort);
-    setSortBy(key);
     setCurrentPage(1);
-    fetchEmployees(employeeName, selectedDepartmentId, 1, nextSort, key);
+    fetchEmployees(employeeName, selectedDepartmentId, 1, nextSort);
   };
 
   const handleDepartmentChange = (departmentId: number | null) => {

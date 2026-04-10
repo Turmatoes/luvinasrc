@@ -145,6 +145,58 @@ public class DataLoader implements CommandLineRunner {
                 employees[i] = employeeRepository.save(emp);
             }
 
+            // Create 4 employees with the same name for sorting verification
+            // - Same name: "Nguyễn Anh Thứ"
+            // - 3 different Japanese levels, with 2 employees at level 4
+            // - 4 different end dates
+            Employee anhThu1 = new Employee();
+            anhThu1.setEmployeeLoginId("anhthu01");
+            anhThu1.setEmployeeLoginPassword(passwordEncoder.encode("123"));
+            anhThu1.setEmployeeName("Nguyễn Anh Thứ");
+            anhThu1.setEmployeeNameKana("ã‚¢ãƒ³ãƒãƒ¥ãƒ¼");
+            anhThu1.setEmployeeEmail("anhthu01@luvina.net");
+            anhThu1.setEmployeeTelephone("0915000001");
+            anhThu1.setEmployeeBirthDate(LocalDate.of(1990, 1, 10));
+            anhThu1.setDepartment(dept1);
+            anhThu1.setRole(0);
+            anhThu1 = employeeRepository.save(anhThu1);
+
+            Employee anhThu2 = new Employee();
+            anhThu2.setEmployeeLoginId("anhthu02");
+            anhThu2.setEmployeeLoginPassword(passwordEncoder.encode("123"));
+            anhThu2.setEmployeeName("Nguyễn Anh Thứ");
+            anhThu2.setEmployeeNameKana("ã‚¢ãƒ³ãƒãƒ¥ãƒ¼");
+            anhThu2.setEmployeeEmail("anhthu02@luvina.net");
+            anhThu2.setEmployeeTelephone("0915000002");
+            anhThu2.setEmployeeBirthDate(LocalDate.of(1990, 1, 10));
+            anhThu2.setDepartment(dept2);
+            anhThu2.setRole(0);
+            anhThu2 = employeeRepository.save(anhThu2);
+
+            Employee anhThu3 = new Employee();
+            anhThu3.setEmployeeLoginId("anhthu03");
+            anhThu3.setEmployeeLoginPassword(passwordEncoder.encode("123"));
+            anhThu3.setEmployeeName("Nguyễn Anh Thứ");
+            anhThu3.setEmployeeNameKana("ã‚¢ãƒ³ãƒãƒ¥ãƒ¼");
+            anhThu3.setEmployeeEmail("anhthu03@luvina.net");
+            anhThu3.setEmployeeTelephone("0915000003");
+            anhThu3.setEmployeeBirthDate(LocalDate.of(1990, 1, 10));
+            anhThu3.setDepartment(dept3);
+            anhThu3.setRole(0);
+            anhThu3 = employeeRepository.save(anhThu3);
+
+            Employee anhThu4 = new Employee();
+            anhThu4.setEmployeeLoginId("anhthu04");
+            anhThu4.setEmployeeLoginPassword(passwordEncoder.encode("123"));
+            anhThu4.setEmployeeName("Nguyễn Anh Thứ");
+            anhThu4.setEmployeeNameKana("ã‚¢ãƒ³ãƒãƒ¥ãƒ¼");
+            anhThu4.setEmployeeEmail("anhthu04@luvina.net");
+            anhThu4.setEmployeeTelephone("0915000004");
+            anhThu4.setEmployeeBirthDate(LocalDate.of(1990, 1, 10));
+            anhThu4.setDepartment(dept4);
+            anhThu4.setRole(0);
+            anhThu4 = employeeRepository.save(anhThu4);
+
             // Add certifications for employees
             // Some employees have certifications, some don't
             Certification[] certs = {cert1, cert2, cert3, cert4, cert5};
@@ -183,8 +235,43 @@ public class DataLoader implements CommandLineRunner {
                 employeeCertificationRepository.save(empCert);
             }
 
-            System.out.println("✓ Created admin account (admin/123) and 30 sample employees");
-            System.out.println("✓ Added Japanese language certifications to 20 employees");
+            // Certifications for the 4 "Nguyễn Anh Thứ" employees
+            // Japanese levels: 2, 4, 4, 5 (3 distinct levels, duplicated level 4)
+            // End dates: all different
+            EmployeeCertification anhThuCert1 = new EmployeeCertification();
+            anhThuCert1.setEmployee(anhThu1);
+            anhThuCert1.setCertification(cert2); // level 2
+            anhThuCert1.setStartDate(LocalDate.of(2024, 1, 10));
+            anhThuCert1.setEndDate(LocalDate.of(2025, 1, 31));
+            anhThuCert1.setScore(BigDecimal.valueOf(280));
+            employeeCertificationRepository.save(anhThuCert1);
+
+            EmployeeCertification anhThuCert2 = new EmployeeCertification();
+            anhThuCert2.setEmployee(anhThu2);
+            anhThuCert2.setCertification(cert4); // level 4
+            anhThuCert2.setStartDate(LocalDate.of(2024, 2, 10));
+            anhThuCert2.setEndDate(LocalDate.of(2025, 2, 28));
+            anhThuCert2.setScore(BigDecimal.valueOf(290));
+            employeeCertificationRepository.save(anhThuCert2);
+
+            EmployeeCertification anhThuCert3 = new EmployeeCertification();
+            anhThuCert3.setEmployee(anhThu3);
+            anhThuCert3.setCertification(cert4); // level 4
+            anhThuCert3.setStartDate(LocalDate.of(2024, 3, 10));
+            anhThuCert3.setEndDate(LocalDate.of(2025, 3, 31));
+            anhThuCert3.setScore(BigDecimal.valueOf(295));
+            employeeCertificationRepository.save(anhThuCert3);
+
+            EmployeeCertification anhThuCert4 = new EmployeeCertification();
+            anhThuCert4.setEmployee(anhThu4);
+            anhThuCert4.setCertification(cert5); // level 5
+            anhThuCert4.setStartDate(LocalDate.of(2024, 4, 10));
+            anhThuCert4.setEndDate(LocalDate.of(2025, 4, 30));
+            anhThuCert4.setScore(BigDecimal.valueOf(270));
+            employeeCertificationRepository.save(anhThuCert4);
+
+            System.out.println("✓ Created admin account (admin/123) and 34 sample employees");
+            System.out.println("✓ Added Japanese language certifications to 24 employees");
             System.out.println("✓ 7 employees without certifications");
         }
     }

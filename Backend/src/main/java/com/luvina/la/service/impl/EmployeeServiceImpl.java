@@ -46,12 +46,11 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @return Danh sách EmployeeDTO
      */
     @Override
-    public List<EmployeeDTO> getEmployeeList(String employeeName, Long departmentId, String sortBy, String sortEmployeeName, String sortCertificationName, String sortEndDate, Integer limit, Integer offset) {
+    public List<EmployeeDTO> getEmployeeList(String employeeName, Long departmentId, String sortEmployeeName, String sortCertificationName, String sortEndDate, Integer limit, Integer offset) {
         // Lấy dự liệu thô từ repository dưới dạng Object[]
         List<Object[]> rows = employeeRepository.getEmployeeList(
                 employeeName,
                 departmentId,
-                sortBy,
                 sortEmployeeName,
                 sortCertificationName,
                 sortEndDate,
