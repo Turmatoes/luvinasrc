@@ -49,12 +49,32 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
             "WHERE (e.role IS NULL OR e.role = 0) " +
             "AND (:employeeName IS NULL OR :employeeName = '' OR e.employee_name LIKE CONCAT('%', :employeeName, '%')) " +
             "AND (:departmentId IS NULL OR e.department_id = :departmentId) " +
-            "ORDER BY e.employee_id ASC, ec.end_date DESC " +
+            "ORDER BY " +
+            // Primary sort (sortBy)
+            "CASE WHEN :sortBy = 'employeeName' AND :sortEmployeeName = 'asc' THEN e.employee_name END ASC, " +
+            "CASE WHEN :sortBy = 'employeeName' AND :sortEmployeeName = 'desc' THEN e.employee_name END DESC, " +
+            "CASE WHEN :sortBy = 'certificationName' AND :sortCertificationName = 'asc' THEN c.certification_name END ASC, " +
+            "CASE WHEN :sortBy = 'certificationName' AND :sortCertificationName = 'desc' THEN c.certification_name END DESC, " +
+            "CASE WHEN :sortBy = 'endDate' AND :sortEndDate = 'asc' THEN ec.end_date END ASC, " +
+            "CASE WHEN :sortBy = 'endDate' AND :sortEndDate = 'desc' THEN ec.end_date END DESC, " +
+            // Secondary sort (other columns keep their direction)
+            "CASE WHEN :sortBy <> 'employeeName' AND :sortEmployeeName = 'asc' THEN e.employee_name END ASC, " +
+            "CASE WHEN :sortBy <> 'employeeName' AND :sortEmployeeName = 'desc' THEN e.employee_name END DESC, " +
+            "CASE WHEN :sortBy <> 'certificationName' AND :sortCertificationName = 'asc' THEN c.certification_name END ASC, " +
+            "CASE WHEN :sortBy <> 'certificationName' AND :sortCertificationName = 'desc' THEN c.certification_name END DESC, " +
+            "CASE WHEN :sortBy <> 'endDate' AND :sortEndDate = 'asc' THEN ec.end_date END ASC, " +
+            "CASE WHEN :sortBy <> 'endDate' AND :sortEndDate = 'desc' THEN ec.end_date END DESC, " +
+            // stable fallback
+            "e.employee_id ASC " +
             "LIMIT :limit OFFSET :offset",
             nativeQuery = true)
     List<Object[]> getEmployeeList(
             @Param("employeeName") String employeeName,
             @Param("departmentId") Long departmentId,
+            @Param("sortBy") String sortBy,
+            @Param("sortEmployeeName") String sortEmployeeName,
+            @Param("sortCertificationName") String sortCertificationName,
+            @Param("sortEndDate") String sortEndDate,
             @Param("limit") Integer limit,
             @Param("offset") Integer offset
     );

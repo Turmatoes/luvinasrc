@@ -5,10 +5,16 @@ import { useEffect, useState } from 'react';
 import { apiClient } from '@/lib/api/client';
 import { EmployeeListResponse, DepartmentDTO } from '@/types/employee';
 import SearchForm from '@/components/employees/SearchForm';
-import EmployeeTable from '@/components/employees/EmployeeTable';
+import EmployeeTable, { SortDirection, SortKey } from '@/components/employees/EmployeeTable';
 import Pagination from '@/components/employees/Pagination';
 
 const LIMIT_PER_PAGE = 20;
+const DEFAULT_SORT: Record<SortKey, SortDirection> = {
+  employeeName: 'asc',
+  certificationName: 'asc',
+  endDate: 'asc',
+};
+const DEFAULT_SORT_BY: SortKey = 'employeeName';
 
 export default function EmployeeListPage() {
   useAuth();
@@ -24,6 +30,8 @@ export default function EmployeeListPage() {
   const [employeeName, setEmployeeName] = useState('');
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sort, setSort] = useState<Record<SortKey, SortDirection>>(DEFAULT_SORT);
+  const [sortBy, setSortBy] = useState<SortKey>(DEFAULT_SORT_BY);
 
   // Fetch departments on mount
   useEffect(() => {
@@ -42,20 +50,35 @@ export default function EmployeeListPage() {
   }, []);
 
   // Fetch employees based on search filters and pagination
-  const fetchEmployees = async (name: string, deptId: number | null, page: number) => {
+  const fetchEmployees = async (
+    name: string,
+    deptId: number | null,
+    page: number,
+    sortState: Record<SortKey, SortDirection>,
+    sortByKey: SortKey
+  ) => {
     setLoading(true);
     setEmployeeError(null);
     try {
-      const params: Record<string, any> = {
+      const params: {
+        limit: number;
+        offset: number;
+        employeeName: string | null;
+        departmentId: number | null;
+        sortBy: SortKey;
+        sortEmployeeName: SortDirection;
+        sortCertificationName: SortDirection;
+        sortEndDate: SortDirection;
+      } = {
         limit: LIMIT_PER_PAGE,
         offset: (page - 1) * LIMIT_PER_PAGE,
+        employeeName: name.trim() || null,
+        departmentId: deptId,
+        sortBy: sortByKey,
+        sortEmployeeName: sortState.employeeName,
+        sortCertificationName: sortState.certificationName,
+        sortEndDate: sortState.endDate,
       };
-      
-      // Add employeeName parameter (always send, null if empty)
-      params.employeeName = name.trim() || null;
-      
-      // Add departmentId parameter (always send, null if not selected)
-      params.departmentId = deptId;
       
       const response = await apiClient.get<EmployeeListResponse>('/employees', { params });
       setData(response.data);
@@ -70,7 +93,7 @@ export default function EmployeeListPage() {
 
   // Initial load
   useEffect(() => {
-    fetchEmployees('', null, 1);
+    fetchEmployees('', null, 1, DEFAULT_SORT, DEFAULT_SORT_BY);
   }, []);
 
   // Handle search
@@ -78,13 +101,25 @@ export default function EmployeeListPage() {
     setEmployeeName(name);
     setSelectedDepartmentId(deptId);
     setCurrentPage(1);
-    fetchEmployees(name, deptId, 1);
+    fetchEmployees(name, deptId, 1, sort, sortBy);
   };
 
   // Handle pagination
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    fetchEmployees(employeeName, selectedDepartmentId, page);
+    fetchEmployees(employeeName, selectedDepartmentId, page, sort, sortBy);
+  };
+
+  const handleSort = (key: SortKey) => {
+    const nextSort: Record<SortKey, SortDirection> = {
+      ...sort,
+      [key]: sort[key] === 'asc' ? 'desc' : 'asc',
+    };
+
+    setSort(nextSort);
+    setSortBy(key);
+    setCurrentPage(1);
+    fetchEmployees(employeeName, selectedDepartmentId, 1, nextSort, key);
   };
 
   const handleDepartmentChange = (departmentId: number | null) => {
@@ -131,7 +166,7 @@ export default function EmployeeListPage() {
 
       {!loading && data && data.employees.length > 0 && (
         <>
-          <EmployeeTable data={data} />
+          <EmployeeTable data={data} sort={sort} onSort={handleSort} />
           
           {totalPages > 1 && (
             <Pagination 

@@ -49,10 +49,19 @@ public class EmployeeController {
     public EmployeeListResponse getEmployeeList(
             @RequestParam(value = "employeeName", required = false, defaultValue = "") String employeeName,
             @RequestParam(value = "departmentId", required = false) Long departmentId,
+            @RequestParam(value = "sortBy", required = false, defaultValue = "employeeName") String sortBy,
+            @RequestParam(value = "sortEmployeeName", required = false, defaultValue = "asc") String sortEmployeeName,
+            @RequestParam(value = "sortCertificationName", required = false, defaultValue = "asc") String sortCertificationName,
+            @RequestParam(value = "sortEndDate", required = false, defaultValue = "asc") String sortEndDate,
             @RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit,
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset) {
         
         // Lấy tổng số nhân viên không phải quản trị với bộ lọc
+        String normalizedSortBy = normalizeSortBy(sortBy);
+        String normalizedSortEmployeeName = normalizeSort(sortEmployeeName);
+        String normalizedSortCertificationName = normalizeSort(sortCertificationName);
+        String normalizedSortEndDate = normalizeSort(sortEndDate);
+
         Long totalRecords = employeeService.countEmployeesWithFilter(
                 employeeName.isEmpty() ? null : employeeName,
                 departmentId
@@ -62,6 +71,10 @@ public class EmployeeController {
         List<EmployeeDTO> employees = employeeService.getEmployeeList(
                 employeeName.isEmpty() ? null : employeeName,
                 departmentId,
+                normalizedSortBy,
+                normalizedSortEmployeeName,
+                normalizedSortCertificationName,
+                normalizedSortEndDate,
                 limit,
                 offset
         );
@@ -73,5 +86,24 @@ public class EmployeeController {
         response.setEmployees(employees);
         
         return response;
+    }
+
+    private String normalizeSort(String sort) {
+        if (sort == null) {
+            return "asc";
+        }
+        String lower = sort.trim().toLowerCase();
+        return lower.equals("desc") ? "desc" : "asc";
+    }
+
+    private String normalizeSortBy(String sortBy) {
+        if (sortBy == null) {
+            return "employeeName";
+        }
+        String value = sortBy.trim();
+        if (value.equals("employeeName") || value.equals("certificationName") || value.equals("endDate")) {
+            return value;
+        }
+        return "employeeName";
     }
 }

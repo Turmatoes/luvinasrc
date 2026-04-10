@@ -25,7 +25,15 @@ public interface EmployeeService {
      * @param offset Số trang
      * @return Danh sách EmployeeDTO
      */
-    List<EmployeeDTO> getEmployeeList(String employeeName, Long departmentId, Integer limit, Integer offset);
+    List<EmployeeDTO> getEmployeeList(
+            String employeeName,
+            Long departmentId,
+            String sortBy,
+            String sortEmployeeName,
+            String sortCertificationName,
+            String sortEndDate,
+            Integer limit,
+            Integer offset);
 
     /**
      * Đếm tổng số nhân viên không phải quản trị.
