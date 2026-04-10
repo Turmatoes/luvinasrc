@@ -20,7 +20,7 @@ export default function EmployeeListPage() {
   const [departmentError, setDepartmentError] = useState<string | null>(null);
   const [employeeError, setEmployeeError] = useState<string | null>(null);
   
-  // Search filter state - Keep separate for managed search
+  // Search filter state
   const [employeeName, setEmployeeName] = useState('');
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -51,14 +51,11 @@ export default function EmployeeListPage() {
         offset: (page - 1) * LIMIT_PER_PAGE,
       };
       
-      // Only add parameters if they have values
-      if (name.trim()) {
-        params.employeeName = name.trim();
-      }
+      // Add employeeName parameter (always send, null if empty)
+      params.employeeName = name.trim() || null;
       
-      if (deptId !== null) {
-        params.departmentId = deptId;
-      }
+      // Add departmentId parameter (always send, null if not selected)
+      params.departmentId = deptId;
       
       const response = await apiClient.get<EmployeeListResponse>('/employees', { params });
       setData(response.data);
@@ -71,12 +68,12 @@ export default function EmployeeListPage() {
     }
   };
 
-  // Initial load - fetch employees on first mount
+  // Initial load
   useEffect(() => {
     fetchEmployees('', null, 1);
   }, []);
 
-  // Handle search button click - reset page and fetch
+  // Handle search
   const handleSearch = (name: string, deptId: number | null) => {
     setEmployeeName(name);
     setSelectedDepartmentId(deptId);
@@ -98,20 +95,17 @@ export default function EmployeeListPage() {
     setEmployeeName(name);
   };
 
-  // Determine if pagination should be shown
-  const shouldShowPagination = data && data.totalRecords > LIMIT_PER_PAGE;
+  // Calculate pagination
   const totalPages = data ? Math.ceil(data.totalRecords / LIMIT_PER_PAGE) : 0;
 
   return (
     <>
-      {/* Show department fetch error if exists */}
       {departmentError && (
         <div className="alert alert-danger" role="alert">
           {departmentError}
         </div>
       )}
       
-      {/* Show employee fetch error if exists */}
       {employeeError && (
         <div className="alert alert-danger" role="alert">
           {employeeError}
@@ -139,7 +133,7 @@ export default function EmployeeListPage() {
         <>
           <EmployeeTable data={data} />
           
-          {shouldShowPagination && (
+          {totalPages > 1 && (
             <Pagination 
               currentPage={currentPage}
               totalPages={totalPages}
