@@ -1,3 +1,8 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ * 
+ * EmployeeListResponse.java, April 9, 2026 nxplong
+ */
 package com.luvina.la.dto;
 
 import java.io.Serializable;
@@ -7,8 +12,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Response wrapper for employee list API
- * Contains pagination info and list of employees
+ * DTO EmployeeListResponse chứa thông tin danh sách nhân viên.
+ * 
+ * @author nxplong
  */
 @Data
 @NoArgsConstructor

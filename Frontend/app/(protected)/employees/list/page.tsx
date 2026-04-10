@@ -11,7 +11,7 @@ import Pagination from '@/components/employees/Pagination';
 const LIMIT_PER_PAGE = 20;
 const DEFAULT_SORT: Record<SortKey, SortDirection> = {
   employeeName: 'asc',
-  certificationName: 'asc',
+  certificationName: 'desc',
   endDate: 'asc',
 };
 const DEFAULT_SORT_BY: SortKey = 'employeeName';

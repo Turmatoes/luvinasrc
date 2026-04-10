@@ -1,3 +1,8 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ * 
+ * EmployeeMapper.java, April 9, 2026 nxplong
+ */
 package com.luvina.la.mapper;
 
 import com.luvina.la.dto.EmployeeDTO;
@@ -7,13 +12,13 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
- * use:
- *  EmployeeMapper.MAPPER.toEntity(dto);
- *  EmployeeMapper.MAPPER.toList(list);
+ * Interface EmployeeMapper chứa thông tin nhân viên.
+ * 
+ * @author nxplong
  */
 @Mapper
 public interface EmployeeMapper {
-    EmployeeMapper MAPPER = Mappers.getMapper( EmployeeMapper.class );
+    EmployeeMapper MAPPER = Mappers.getMapper(EmployeeMapper.class);
 
     @Mapping(source = "departmentId", target = "department.departmentId")
     Employee toEntity(EmployeeDTO dto);

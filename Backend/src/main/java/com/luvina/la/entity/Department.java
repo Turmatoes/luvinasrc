@@ -1,4 +1,10 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ * 
+ * Department.java, April 9, 2026 nxplong
+ */
 package com.luvina.la.entity;
+
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +14,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
 
+/**
+ * Entity Department chứa thông tin phòng ban.
+ * 
+ * @author nxplong
+ */
 @Entity
 @Table(name = "departments")
 @Data

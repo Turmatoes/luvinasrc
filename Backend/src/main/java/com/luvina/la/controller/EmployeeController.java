@@ -51,7 +51,7 @@ public class EmployeeController {
             @RequestParam(value = "departmentId", required = false) Long departmentId,
             @RequestParam(value = "sortBy", required = false, defaultValue = "employeeName") String sortBy,
             @RequestParam(value = "sortEmployeeName", required = false, defaultValue = "asc") String sortEmployeeName,
-            @RequestParam(value = "sortCertificationName", required = false, defaultValue = "asc") String sortCertificationName,
+            @RequestParam(value = "sortCertificationName", required = false, defaultValue = "desc") String sortCertificationName,
             @RequestParam(value = "sortEndDate", required = false, defaultValue = "asc") String sortEndDate,
             @RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit,
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset) {

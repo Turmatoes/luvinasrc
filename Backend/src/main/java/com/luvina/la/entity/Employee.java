@@ -1,3 +1,8 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * Employee.java, April 9, 2026 nxplong
+ */
 package com.luvina.la.entity;
 
 import java.io.Serializable;
@@ -12,6 +17,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
+/**
+ * Lớp Employee chứa thông tin nhân viên.
+ * 
+ * @author nxplong
+ */
 @Entity
 @Table(name = "employees")
 @Data

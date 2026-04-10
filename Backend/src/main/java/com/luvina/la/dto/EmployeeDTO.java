@@ -13,8 +13,9 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 /**
- * Đối tượng truyền dữ liệu (Data Transfer Object) cho thông tin nhân viên.
- * Được sử dụng cho cả chi tiết nhân viên và mục danh sách nhân viên.
+ * DTO Employee chứa thông tin nhân viên.
+ * 
+ * @author nxplong
  */
 @Data
 @NoArgsConstructor

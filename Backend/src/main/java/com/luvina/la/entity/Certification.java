@@ -1,3 +1,8 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ * 
+ * Certification.java, April 9, 2026 nxplong
+ */
 package com.luvina.la.entity;
 
 import java.io.Serializable;
@@ -9,6 +14,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
 
+/**
+ * Entity Certification chứa thông tin chứng chỉ.
+ * 
+ * @author nxplong
+ */
 @Entity
 @Table(name = "certifications")
 @Data

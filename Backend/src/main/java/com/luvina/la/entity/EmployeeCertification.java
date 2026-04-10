@@ -1,3 +1,8 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ * 
+ * EmployeeCertification.java, April 9, 2026 nxplong
+ */
 package com.luvina.la.entity;
 
 import java.io.Serializable;
@@ -13,6 +18,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
+/**
+ * Entity EmployeeCertification chứa thông tin chứng chỉ của nhân viên.
+ * 
+ * @author nxplong
+ */
 @Entity
 @Table(name = "employees_certifications")
 @Data
