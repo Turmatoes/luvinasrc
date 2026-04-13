@@ -6,6 +6,7 @@
 package com.luvina.la.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +25,7 @@ public class EmployeeListResponse implements Serializable {
 
     private String code;
     private String message;
+    private List<String> params = new ArrayList<>();
     private Long totalRecords;
     private List<EmployeeDTO> employees;
 }
