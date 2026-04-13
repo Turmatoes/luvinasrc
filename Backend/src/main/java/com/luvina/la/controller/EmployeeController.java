@@ -76,7 +76,7 @@ public class EmployeeController {
 
         // Xây dựng phản hồi
         EmployeeListResponse response = new EmployeeListResponse();
-        response.setCode(200);
+        response.setCode("200");
         response.setTotalRecords(totalRecords);
         response.setEmployees(employees);
 

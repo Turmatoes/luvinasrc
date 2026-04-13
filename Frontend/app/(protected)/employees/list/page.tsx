@@ -7,6 +7,7 @@ import { EmployeeListResponse, DepartmentDTO } from '@/types/employee';
 import SearchForm from '@/components/employees/SearchForm';
 import EmployeeTable, { SortDirection, SortKey } from '@/components/employees/EmployeeTable';
 import Pagination from '@/components/employees/Pagination';
+import { getMessage } from '@/lib/utils/messageHelper';
 
 const LIMIT_PER_PAGE = 20;
 const DEFAULT_SORT: Record<SortKey, SortDirection> = {
@@ -41,7 +42,7 @@ export default function EmployeeListPage() {
         setDepartmentError(null);
       } catch (err) {
         console.error('Failed to fetch departments:', err);
-        setDepartmentError('部門を取得できません');
+        setDepartmentError(getMessage('ER023'));
       }
     };
 
@@ -66,9 +67,10 @@ export default function EmployeeListPage() {
         sort: sortState,
       });
       setData(response);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to fetch employees:', err);
-      setEmployeeError('従業員を取得できません');
+      const errorCode = err.response?.data?.code || 'ER023';
+      setEmployeeError(getMessage(errorCode));
       setData(null);
     } finally {
       setLoading(false);
@@ -143,7 +145,7 @@ export default function EmployeeListPage() {
 
       {!loading && data && data.employees.length === 0 && (
         <div className="alert alert-info" role="alert">
-          検索条件に該当するユーザが見つかりません。
+          {getMessage('MSG005')}
         </div>
       )}
 
@@ -163,4 +165,3 @@ export default function EmployeeListPage() {
     </>
   );
 }
-

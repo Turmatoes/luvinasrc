@@ -22,7 +22,8 @@ import lombok.NoArgsConstructor;
 public class EmployeeListResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Integer code;
+    private String code;
+    private String message;
     private Long totalRecords;
     private List<EmployeeDTO> employees;
 }

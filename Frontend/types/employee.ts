@@ -21,7 +21,8 @@ export interface EmployeeListDTO {
 
 // API Response - matches backend EmployeeListResponse
 export interface EmployeeListResponse {
-  code: number;
+  code: string;
+  message?: string;
   totalRecords: number;
   employees: EmployeeListDTO[];
 }
