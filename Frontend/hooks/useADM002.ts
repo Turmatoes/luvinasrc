@@ -14,12 +14,12 @@ const DEFAULT_SORT: Record<SortKey, SortDirection> = {
 };
 
 /**
- * Custom Hook useEmployee quản lý toàn bộ trạng thái và logic nghiệp vụ cho Nhân viên.
+ * Custom Hook useADM002 quản lý toàn bộ trạng thái và logic nghiệp vụ cho Nhân viên.
  * Thực hiện theo mô hình: UI -> Hook -> API.
  * 
  * @returns Object chứa dữ liệu và các hàm thao tác
  */
-export function useEmployee() {
+export function useADM002() {
   // Trạng thái dữ liệu
   const [data, setData] = useState<EmployeeListResponse | null>(null);
   const [departments, setDepartments] = useState<DepartmentDTO[]>([]);

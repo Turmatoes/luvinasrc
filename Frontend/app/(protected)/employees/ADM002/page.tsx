@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useEmployee } from '@/hooks/useEmployee';
+import { useADM002 } from '@/hooks/useADM002';
 import SearchForm from '@/components/employees/SearchForm';
 import EmployeeTable from '@/components/employees/EmployeeTable';
 import Pagination from '@/components/employees/Pagination';
@@ -30,7 +30,7 @@ export default function EmployeeListPage() {
     handleSort,
     handleDepartmentChange,
     handleEmployeeNameChange,
-  } = useEmployee();
+  } = useADM002();
 
   return (
     <>

@@ -10,7 +10,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const showHeaderFooter = !pathname.includes('/login');
+  const showHeaderFooter = !pathname.includes('/ADM001');
   
   return (
     <html lang="ja">

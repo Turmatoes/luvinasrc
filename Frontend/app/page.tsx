@@ -10,9 +10,9 @@ export default function Home() {
   useEffect(() => {
     const token = getToken();
     if (token) {
-      router.replace('/employees/list');
+      router.replace('/employees/ADM002');
     } else {
-      router.replace('/login');
+      router.replace('/ADM001');
     }
   }, [router]);
 

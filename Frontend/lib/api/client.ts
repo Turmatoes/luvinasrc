@@ -34,7 +34,7 @@ export function setupInterceptors(client: ReturnType<typeof axios.create>) {
         if (typeof window !== 'undefined') {
           sessionStorage.removeItem('access_token');
           sessionStorage.removeItem('token_type');
-          window.location.href = '/login';
+          window.location.href = '/ADM001';
         }
       }
       return Promise.reject(error);

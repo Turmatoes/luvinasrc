@@ -66,7 +66,7 @@ export default function EmployeeTable({ data, sort, onSort }: Props) {
           {data.employees.map((emp, idx) => (
             <React.Fragment key={`${emp.employeeId}-${idx}`}>
               <div className="bor-l-none text-center">
-                <Link href={`/employees/detail?id=${emp.employeeId}`}>{emp.employeeId}</Link>
+                <Link href={`/employees/ADM003?id=${emp.employeeId}`}>{emp.employeeId}</Link>
               </div>
               <div>{emp.employeeName}</div>
               <div>{emp.employeeBirthDate || ''}</div>

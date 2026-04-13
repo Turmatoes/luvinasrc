@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export function proxy(request: NextRequest) {
   // Route protection logic
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || 
+  const isAuthRoute = request.nextUrl.pathname.startsWith('/ADM001') || 
                       request.nextUrl.pathname.startsWith('/logout');
   const isProtectedRoute = request.nextUrl.pathname.startsWith('/employees');
   
