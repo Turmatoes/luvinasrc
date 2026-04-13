@@ -9,11 +9,14 @@ package com.luvina.la.controller;
 import com.luvina.la.dto.EmployeeDTO;
 import com.luvina.la.dto.EmployeeListResponse;
 import com.luvina.la.service.EmployeeService;
+import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api")
@@ -25,14 +28,17 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final MessageSource messageSource;
 
     /**
      * Constructor khởi tạo EmployeeController.
      *
      * @param employeeService Dịch vụ xử lý nhân viên
+     * @param messageSource   Nguồn thông báo đa ngôn ngữ
      */
-    public EmployeeController(EmployeeService employeeService) {
+    public EmployeeController(EmployeeService employeeService, MessageSource messageSource) {
         this.employeeService = employeeService;
+        this.messageSource = messageSource;
     }
 
     /**
@@ -55,28 +61,39 @@ public class EmployeeController {
             @RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit,
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset) {
 
-        // Lấy tổng số nhân viên không phải quản trị với bộ lọc
-        String normalizedSortEmployeeName = normalizeSort(sortEmployeeName);
-        String normalizedSortCertificationName = normalizeSort(sortCertificationName);
-        String normalizedSortEndDate = normalizeSort(sortEndDate);
+        // 1. Validate tham số sắp xếp (Sort)
+        if (!isValidSort(sortEmployeeName) || !isValidSort(sortCertificationName) || !isValidSort(sortEndDate)) {
+            return buildErrorResponse("ER021");
+        }
 
+        // 2.1 Lấy tổng số nhân viên
         Long totalRecords = employeeService.countEmployeesWithFilter(
                 employeeName.isEmpty() ? null : employeeName,
                 departmentId);
 
-        // Lấy danh sách nhân viên với lọc và phân trang
-        List<EmployeeDTO> employees = employeeService.getListEmployee(
-                employeeName.isEmpty() ? null : employeeName,
-                departmentId,
-                normalizedSortEmployeeName,
-                normalizedSortCertificationName,
-                normalizedSortEndDate,
-                limit,
-                offset);
+        List<EmployeeDTO> employees = new ArrayList<>();
+        String code = "200";
 
-        // Xây dựng phản hồi
+        if (totalRecords > 0) {
+            // Kiểm tra tính hợp lệ của Offset (ER022)
+            if (offset >= totalRecords) {
+                return buildErrorResponse("ER022");
+            }
+
+            // Lấy danh sách từ DB
+            employees = employeeService.getListEmployee(
+                    employeeName.isEmpty() ? null : employeeName,
+                    departmentId,
+                    sortEmployeeName.toLowerCase(),
+                    sortCertificationName.toLowerCase(),
+                    sortEndDate.toLowerCase(),
+                    limit,
+                    offset);
+        }
+
+        // 2.2 Trả về kết quả hiển thị lên màn hình
         EmployeeListResponse response = new EmployeeListResponse();
-        response.setCode("200");
+        response.setCode(code);
         response.setTotalRecords(totalRecords);
         response.setEmployees(employees);
 
@@ -84,17 +101,29 @@ public class EmployeeController {
     }
 
     /**
-     * Chuẩn hóa chuỗi sắp xếp.
+     * Kiểm tra tính hợp lệ của tham số sắp xếp.
      * 
-     * @param sort Chuỗi sắp xếp (asc hoặc desc)
-     * @return Chuỗi đã chuẩn hóa
+     * @param sort Giá trị sắp xếp
+     * @return true nếu hợp lệ (asc hoặc desc), ngược lại false
      */
-    private String normalizeSort(String sort) {
-        if (sort == null) {
-            return "asc";
-        }
-        String lower = sort.trim().toLowerCase();
-        return lower.equals("desc") ? "desc" : "asc";
+    private boolean isValidSort(String sort) {
+        if (sort == null || sort.isEmpty())
+            return true;
+        String val = sort.trim().toLowerCase();
+        return "asc".equals(val) || "desc".equals(val);
+    }
+
+    /**
+     * Xây dựng đối tượng phản hồi lỗi.
+     * 
+     * @param errorCode Mã lỗi (ERxxx)
+     * @return EmployeeListResponse chứa mã lỗi và thông báo tương ứng
+     */
+    private EmployeeListResponse buildErrorResponse(String errorCode) {
+        EmployeeListResponse response = new EmployeeListResponse();
+        response.setCode(errorCode);
+        response.setMessage(messageSource.getMessage(errorCode, null, Locale.JAPANESE));
+        return response;
     }
 
 }
