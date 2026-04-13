@@ -1,8 +1,16 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * SearchForm.tsx, April 13, 2026 nxplong
+ */
 'use client';
 
 import { useRouter } from 'next/navigation';
 import { DepartmentDTO } from '@/types/employee';
 
+/**
+ * Interface cho props của SearchForm.
+ */
 interface SearchFormProps {
   departments: DepartmentDTO[];
   selectedDepartmentId: number | null;
@@ -14,6 +22,17 @@ interface SearchFormProps {
 
 const MAX_FULLNAME_LENGTH = 125;
 
+/**
+ * Component hiển thị form tìm kiếm nhân viên.
+ * 
+ * @param departments Danh sách phòng ban
+ * @param selectedDepartmentId ID phòng ban được chọn
+ * @param employeeName Tên nhân viên
+ * @param onDepartmentChange Hàm xử lý khi thay đổi phòng ban
+ * @param onEmployeeNameChange Hàm xử lý khi thay đổi tên nhân viên
+ * @param onSearch Hàm xử lý khi tìm kiếm
+ * @returns Component hiển thị form tìm kiếm
+ */
 export default function SearchForm({
   departments,
   selectedDepartmentId,
@@ -26,7 +45,7 @@ export default function SearchForm({
 
   const handleFullnameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Limit to MAX_FULLNAME_LENGTH characters
+    // Giới hạn ký tự nhập vào
     if (value.length <= MAX_FULLNAME_LENGTH) {
       onEmployeeNameChange(value);
     }
@@ -50,8 +69,8 @@ export default function SearchForm({
           <li className="form-group row">
             <label className="col-form-label">氏名:</label>
             <div className="col-sm">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={employeeName}
                 onChange={handleFullnameChange}
                 maxLength={MAX_FULLNAME_LENGTH}
@@ -62,7 +81,7 @@ export default function SearchForm({
           <li className="form-group row">
             <label className="col-form-label">グループ:</label>
             <div className="col-sm">
-              <select 
+              <select
                 value={selectedDepartmentId ?? ''}
                 onChange={handleDepartmentChange}
               >
@@ -77,15 +96,15 @@ export default function SearchForm({
           </li>
           <li className="form-group row">
             <div className="btn-group">
-              <button 
+              <button
                 type="submit"
                 className="btn btn-primary btn-sm"
               >
                 検索
               </button>
-              <button 
-                type="button" 
-                onClick={() => router.push('/employees/ADM004')} 
+              <button
+                type="button"
+                onClick={() => router.push('/employees/ADM004')}
                 className="btn btn-secondary btn-sm"
               >
                 新規追加

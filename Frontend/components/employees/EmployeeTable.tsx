@@ -1,3 +1,8 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * EmployeeTable.tsx, April 13, 2026 nxplong
+ */
 'use client';
 
 import Link from 'next/link';
@@ -13,10 +18,24 @@ interface Props {
   onSort: (key: SortKey) => void;
 }
 
+/**
+ * Hàm hiển thị icon sắp xếp.
+ * 
+ * @param direction Hướng sắp xếp ('asc' hoặc 'desc')
+ * @returns Icon hiển thị tương ứng
+ */
 function sortIcon(direction: SortDirection) {
   return direction === 'asc' ? '▲▽' : '△▼';
 }
 
+/**
+ * Component hiển thị danh sách nhân viên.
+ * 
+ * @param data Dữ liệu danh sách nhân viên
+ * @param sort Trạng thái sắp xếp
+ * @param onSort Hàm xử lý khi sắp xếp
+ * @returns Component hiển thị danh sách nhân viên
+ */
 export default function EmployeeTable({ data, sort, onSort }: Props) {
   return (
     <div className="row row-table">

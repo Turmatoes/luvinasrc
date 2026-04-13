@@ -1,6 +1,18 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * Header.tsx, April 13, 2026 nxplong
+ */
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 
+/**
+ * Component hiển thị header của trang.
+ * 
+ * @returns Component hiển thị header
+ */
 const Header = () => {
   return (
     <nav className="nav-bar">

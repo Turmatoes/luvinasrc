@@ -1,3 +1,8 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * page.tsx, April 13, 2026 nxplong
+ */
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
@@ -42,7 +47,7 @@ export default function EmployeeListPage() {
       )}
 
       {/* Form tìm kiếm */}
-      <SearchForm 
+      <SearchForm
         departments={departments}
         selectedDepartmentId={filters.departmentId}
         employeeName={filters.employeeName}
@@ -65,9 +70,9 @@ export default function EmployeeListPage() {
       {!loading && data && data.employees.length > 0 && (
         <>
           <EmployeeTable data={data} sort={filters.sort} onSort={handleSort} />
-          
+
           {totalPages > 1 && (
-            <Pagination 
+            <Pagination
               currentPage={filters.currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}

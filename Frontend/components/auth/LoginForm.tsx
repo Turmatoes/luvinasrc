@@ -1,3 +1,8 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * LoginForm.tsx, April 13, 2026 nxplong
+ */
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -7,12 +12,22 @@ import { apiClient } from '@/lib/api/client';
 import { storeToken } from '@/lib/auth/token';
 import { loginSchema, LoginForm as LoginFormType } from '@/lib/validation/auth';
 
+/**
+ * Component hiển thị form đăng nhập.
+ * 
+ * @returns Component hiển thị form đăng nhập
+ */
 export default function LoginForm() {
   const router = useRouter();
   const { register, handleSubmit, formState: { errors }, setError } = useForm<LoginFormType>({
     resolver: zodResolver(loginSchema),
   });
 
+  /**
+   * Xử lý khi submit form đăng nhập.
+   * 
+   * @param data Dữ liệu đăng nhập
+   */
   const onSubmit = async (data: LoginFormType) => {
     try {
       const response = await apiClient.post<{ accessToken: string; tokenType: string }>('/login', data);

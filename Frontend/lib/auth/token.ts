@@ -1,3 +1,15 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * token.ts, April 13, 2026 nxplong
+ */
+
+/**
+ * Lưu token vào session storage.
+ * 
+ * @param token Token cần lưu
+ * @param tokenType Loại token
+ */
 export function storeToken(token: string, tokenType: string) {
   if (typeof window !== 'undefined') {
     sessionStorage.setItem('access_token', token);
@@ -5,9 +17,14 @@ export function storeToken(token: string, tokenType: string) {
   }
 }
 
+/**
+ * Lấy token từ session storage.
+ * 
+ * @returns Object chứa access token và token type, hoặc null nếu không có token
+ */
 export function getToken(): { accessToken: string; tokenType: string } | null {
   if (typeof window === 'undefined') return null;
-  
+
   const accessToken = sessionStorage.getItem('access_token');
   const tokenType = sessionStorage.getItem('token_type');
 
@@ -17,6 +34,9 @@ export function getToken(): { accessToken: string; tokenType: string } | null {
   return null;
 }
 
+/**
+ * Xóa token khỏi session storage.
+ */
 export function removeToken() {
   if (typeof window !== 'undefined') {
     sessionStorage.removeItem('access_token');
@@ -24,6 +44,12 @@ export function removeToken() {
   }
 }
 
+/**
+ * Kiểm tra xem token đã hết hạn chưa.
+ * 
+ * @param token Token cần kiểm tra
+ * @returns true nếu token đã hết hạn, ngược lại false
+ */
 export function isTokenExpired(token: string): boolean {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));

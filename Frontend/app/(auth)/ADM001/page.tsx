@@ -1,9 +1,20 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * page.tsx, April 13, 2026 nxplong
+ */
 'use client';
 
 import Image from 'next/image';
 import { useGuest } from '@/hooks/useAuth';
 import LoginForm from '@/components/auth/LoginForm';
 
+/**
+ * Trang đăng nhập.
+ * Chỉ hiển thị khi người dùng chưa đăng nhập.
+ * 
+ * @returns Component hiển thị trang đăng nhập
+ */
 export default function LoginPage() {
   useGuest();
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * useADM002.ts, April 13, 2026 nxplong
+ */
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';

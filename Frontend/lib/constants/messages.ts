@@ -1,9 +1,14 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * messages.ts, April 13, 2026 nxplong
+ */
 /**
- * Dictionary of system messages (translated to Japanese).
- * Mapping from Error/Message codes to Japanese text.
+ * Các thông báo hệ thống.
+ * Mapping từ Error/Message codes sang tiếng Việt.
  */
 export const MESSAGES: Record<string, string> = {
-  // Error Codes
+  // Mã lỗi
   ER001: '{0}を入力してください',
   ER002: '{0}を入力してください',
   ER003: '{0}は既に存在しています。',
@@ -28,7 +33,7 @@ export const MESSAGES: Record<string, string> = {
   ER022: 'ページが見つかりません。',
   ER023: 'システムエラーが発生しました。',
 
-  // Success Message Codes
+  // Mã thông báo
   MSG001: 'ユーザの登録が完了しました。',
   MSG002: 'ユーザの更新が完了しました。',
   MSG003: 'ユーザの削除が完了しました。',

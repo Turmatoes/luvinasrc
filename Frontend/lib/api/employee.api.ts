@@ -1,3 +1,8 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * employee.api.ts, April 13, 2026 nxplong
+ */
 import { apiClient } from './client';
 import { DepartmentDTO, EmployeeListResponse } from '@/types/employee';
 import { SortDirection } from '@/components/employees/EmployeeTable';

@@ -1,3 +1,8 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * Pagination.tsx, April 13, 2026 nxplong
+ */
 'use client';
 
 interface PaginationProps {
@@ -6,49 +11,57 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
+/**
+ * Component hiển thị phân trang.
+ * 
+ * @param currentPage Trang hiện tại
+ * @param totalPages Tổng số trang
+ * @param onPageChange Hàm xử lý khi chuyển trang
+ * @returns Component hiển thị phân trang
+ */
 export default function Pagination({
   currentPage,
   totalPages,
   onPageChange,
 }: PaginationProps) {
   if (totalPages <= 1) {
-    return null; // Don't show pagination if only one page
+    return null; // Không hiển thị phân trang nếu chỉ có 1 trang
   }
 
-  // Generate page numbers to display
+  // Tạo danh sách các trang cần hiển thị
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
-    const maxVisible = 5; // Max page numbers to show (not including prev/next)
+    const maxVisible = 5; // Số trang tối đa hiển thị (không bao gồm prev/next)
 
     if (totalPages <= maxVisible) {
-      // Show all pages if total <= 5
+      // Hiển thị tất cả các trang nếu tổng số trang <= 5
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
-      // Always show first page
+      // Luôn hiển thị trang đầu tiên
       pages.push(1);
 
-      // Calculate range around current page
+      // Tính toán phạm vi các trang xung quanh trang hiện tại
       const startPage = Math.max(2, currentPage - 1);
       const endPage = Math.min(totalPages - 1, currentPage + 1);
 
-      // Add ellipsis if needed
+      // Thêm dấu ba chấm nếu cần
       if (startPage > 2) {
         pages.push('...');
       }
 
-      // Add pages around current
+      // Thêm các trang xung quanh trang hiện tại
       for (let i = startPage; i <= endPage; i++) {
         pages.push(i);
       }
 
-      // Add ellipsis if needed
+      // Thêm dấu ba chấm nếu cần
       if (endPage < totalPages - 1) {
         pages.push('...');
       }
 
-      // Always show last page
+      // Luôn hiển thị trang cuối cùng
       pages.push(totalPages);
     }
 
@@ -59,7 +72,7 @@ export default function Pagination({
 
   return (
     <div className="pagin">
-      {/* Previous button */}
+      {/* Nút Previous */}
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
@@ -86,7 +99,7 @@ export default function Pagination({
         </svg>
       </button>
 
-      {/* Page numbers */}
+      {/* Các số trang */}
       {pageNumbers.map((page, index) => (
         <button
           key={index}
@@ -96,8 +109,8 @@ export default function Pagination({
             page === currentPage
               ? 'btn btn-sm btn-falcon-default btn-disabled'
               : page === '...'
-              ? 'btn btn-sm btn-falcon-default btn-disabled'
-              : 'btn btn-sm text-primary btn-falcon-default'
+                ? 'btn btn-sm btn-falcon-default btn-disabled'
+                : 'btn btn-sm text-primary btn-falcon-default'
           }
           style={{
             cursor:
@@ -128,7 +141,7 @@ export default function Pagination({
         </button>
       ))}
 
-      {/* Next button */}
+      {/* Nút Next */}
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}

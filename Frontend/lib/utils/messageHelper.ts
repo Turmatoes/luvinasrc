@@ -1,11 +1,16 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * messageHelper.ts, April 13, 2026 nxplong
+ */
 import { MESSAGES } from '../constants/messages';
 
 /**
- * Gets a message by code and replaces placeholders with provided parameters.
+ * Lấy thông báo theo mã và thay thế các tham số.
  * 
- * @param code Message code (e.g., 'ER001', 'MSG005')
- * @param params Optional parameters to replace {0}, {1}, etc. in order
- * @returns The formatted message or the code if not found in dictionary
+ * @param code Mã thông báo (ví dụ: 'ER001', 'MSG005')
+ * @param params Các tham số để thay thế {0}, {1}, etc. theo thứ tự
+ * @returns Thông báo đã được định dạng hoặc mã nếu không tìm thấy trong dictionary
  */
 export function getMessage(code: string, params: (string | number)[] = []): string {
   let message = MESSAGES[code] || code;
@@ -23,7 +28,10 @@ export function getMessage(code: string, params: (string | number)[] = []): stri
 }
 
 /**
- * Helper to check if a string is a message code.
+ * Kiểm tra xem một chuỗi có phải là mã thông báo không.
+ * 
+ * @param value Chuỗi cần kiểm tra
+ * @returns true nếu là mã thông báo, ngược lại false
  */
 export function isMessageCode(value: string): boolean {
   return value in MESSAGES;
