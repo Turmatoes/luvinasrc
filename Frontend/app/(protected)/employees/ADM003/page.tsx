@@ -2,10 +2,19 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
+import { MESSAGES } from '@/lib/constants/messages';
 
 export default function EmployeeDetailPage() {
   useAuth();
   const router = useRouter();
+
+  const handleDelete = () => {
+    if (window.confirm(MESSAGES.MSG004)) {
+      // Mock delete success
+      router.push('/employees/adm006');
+    }
+  };
+
   return (
     <div className="row">
       <form className="c-form box-shadow">
@@ -58,9 +67,9 @@ export default function EmployeeDetailPage() {
           </li>
           <li className="form-group row d-flex">
             <div className="btn-group col-sm col-sm-10 ml">
-              <button type="button" onClick={() => router.push('/employees/ADM004')} className="btn btn-primary btn-sm">編集</button>
-              <button type="button" className="btn btn-secondary btn-sm">削除</button>
-              <button type="button" onClick={() => router.push('/employees/ADM002')} className="btn btn-secondary btn-sm">戻る</button>
+              <button type="button" onClick={() => router.push('/employees/adm004')} className="btn btn-primary btn-sm">編集</button>
+              <button type="button" onClick={handleDelete} className="btn btn-secondary btn-sm">削除</button>
+              <button type="button" onClick={() => router.push('/employees/adm002')} className="btn btn-secondary btn-sm">戻る</button>
             </div>
           </li>
         </ul>

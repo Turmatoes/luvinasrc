@@ -21,9 +21,9 @@ export default function Home() {
   useEffect(() => {
     const token = getToken();
     if (token) {
-      router.replace('/employees/ADM002');
+      router.replace('/employees/adm002');
     } else {
-      router.replace('/ADM001');
+      router.replace('/adm001');
     }
   }, [router]);
 

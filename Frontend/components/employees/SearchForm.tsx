@@ -104,7 +104,7 @@ export default function SearchForm({
               </button>
               <button
                 type="button"
-                onClick={() => router.push('/employees/ADM004')}
+                onClick={() => router.push('/employees/adm004')}
                 className="btn btn-secondary btn-sm"
               >
                 新規追加

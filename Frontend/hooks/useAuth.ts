@@ -17,7 +17,7 @@ const useAuth = () => {
   useEffect(() => {
     const token = getToken();
     if (!token || isTokenExpired(token?.accessToken)) {
-      router.push('/ADM001');
+      router.push('/adm001');
     }
   }, [router]);
 };
@@ -28,7 +28,7 @@ const useGuest = () => {
   useEffect(() => {
     const token = getToken();
     if (token && !isTokenExpired(token?.accessToken)) {
-      router.push('/employees/ADM002');
+      router.push('/employees/adm002');
     }
   }, [router]);
 }

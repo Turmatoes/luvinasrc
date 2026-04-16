@@ -61,8 +61,8 @@ export default function EmployeeConfirmPage() {
           </li>
           <li className="form-group row d-flex">
             <div className="btn-group col-sm col-sm-10 ml">
-              <button type="button" onClick={() => router.push('/employees/ADM006')} className="btn btn-primary btn-sm">OK</button>
-              <button type="button" onClick={() => router.push('/employees/ADM004')} className="btn btn-secondary btn-sm">戻る</button>
+              <button type="button" onClick={() => router.push('/employees/adm006')} className="btn btn-primary btn-sm">OK</button>
+              <button type="button" onClick={() => router.push('/employees/adm004')} className="btn btn-secondary btn-sm">戻る</button>
             </div>
           </li>
         </ul>

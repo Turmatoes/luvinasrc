@@ -20,7 +20,7 @@ export default function LogoutPage() {
 
   useEffect(() => {
     removeToken();
-    router.push('/ADM001');
+    router.push('/adm001');
   }, [router]);
 
   return <div>Logging out...</div>;

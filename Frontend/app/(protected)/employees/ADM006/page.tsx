@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
+import { MESSAGES } from '@/lib/constants/messages';
 
 export default function EmployeeCompletePage() {
   useAuth();
@@ -9,9 +10,10 @@ export default function EmployeeCompletePage() {
   return (
     <div className="box-shadow">
       <div className="notification-box">
-        <h1 className="msg-title">ユーザの登録が完了しました。 or ユーザの更新が完了しました。 or ユーザの削除が完了しました。</h1>
+        <h1 className="msg-title">{MESSAGES.MSG001} or {MESSAGES.MSG002} or {MESSAGES.MSG003}</h1>
         <div className="notification-box-btn">
-          <button type="button" onClick={() => router.push('/employees/ADM002')} className="btn btn-primary btn-sm">OK</button>
+          <button type="button" onClick={() => router.push('/employees/adm002')} className="btn btn-primary btn-sm">OK</button>
+
         </div>
       </div>
     </div>

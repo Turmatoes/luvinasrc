@@ -1,7 +1,7 @@
 /*
  * Copyright(C) 2010 Luvina Software Company
  *
- * useADM002.ts, April 13, 2026 nxplong
+ * useAdm002.ts, April 13, 2026 nxplong
  */
 'use client';
 
@@ -19,12 +19,12 @@ const DEFAULT_SORT: Record<SortKey, SortDirection> = {
 };
 
 /**
- * Custom Hook useADM002 quản lý toàn bộ trạng thái và logic nghiệp vụ cho Nhân viên.
+ * Custom Hook useAdm002 quản lý toàn bộ trạng thái và logic nghiệp vụ cho Nhân viên.
  * Thực hiện theo mô hình: UI -> Hook -> API.
  * 
  * @returns Object chứa dữ liệu và các hàm thao tác
  */
-export function useADM002() {
+export function useAdm002() {
   // Trạng thái dữ liệu
   const [data, setData] = useState<EmployeeListResponse | null>(null);
   const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
