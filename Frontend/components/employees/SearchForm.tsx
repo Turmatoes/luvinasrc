@@ -7,6 +7,7 @@
 
 import { useRouter } from 'next/navigation';
 import { DepartmentDTO } from '@/types/employee';
+import { MAX_FULLNAME_LENGTH } from '@/lib/constants/config';
 
 /**
  * Interface cho props của SearchForm.
@@ -20,7 +21,7 @@ interface SearchFormProps {
   onSearch: (name: string, departmentId: number | null) => void;
 }
 
-const MAX_FULLNAME_LENGTH = 125;
+
 
 /**
  * Component hiển thị form tìm kiếm nhân viên.

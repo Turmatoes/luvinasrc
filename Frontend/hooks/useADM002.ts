@@ -10,8 +10,9 @@ import { employeeApi } from '@/lib/api/employee.api';
 import { EmployeeListResponse, DepartmentDTO } from '@/types/employee';
 import { SortDirection, SortKey } from '@/components/employees/EmployeeTable';
 import { getMessage } from '@/lib/utils/messageHelper';
+import { LIMIT_PER_PAGE } from '@/lib/constants/config';
 
-const LIMIT_PER_PAGE = 20;
+
 const DEFAULT_SORT: Record<SortKey, SortDirection> = {
   employeeName: 'asc',
   certificationName: 'desc',
