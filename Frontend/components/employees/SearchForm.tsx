@@ -75,7 +75,6 @@ export default function SearchForm({
                 value={employeeName}
                 onChange={handleFullnameChange}
                 maxLength={MAX_FULLNAME_LENGTH}
-                placeholder="従業員名を入力..."
               />
             </div>
           </li>
