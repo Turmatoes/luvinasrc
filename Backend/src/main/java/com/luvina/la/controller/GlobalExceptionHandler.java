@@ -1,7 +1,7 @@
 /*
  * Copyright(C) 2010 Luvina Software Company
  * 
- * GlobalExceptionHandler.java, April 13, 2026 Ame
+ * GlobalExceptionHandler.java, April 13, 2026 nxplong
  */
 package com.luvina.la.controller;
 
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * Lớp GlobalExceptionHandler xử lý các ngoại lệ tập trung cho toàn bộ ứng dụng.
  * Trả về phản hồi lỗi theo định dạng chuẩn đã quy định.
  * 
- * @author Ame
+ * @author nxplong
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -41,16 +41,17 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<EmployeeListResponse> handleSystemError(Exception ex) {
-        // Lấy thông báo lỗi từ messages.properties (mặc định là Tiếng Nhật theo cấu hình)
+        // Lấy thông báo lỗi từ messages.properties (mặc định là Tiếng Nhật theo cấu
+        // hình)
         String message = messageSource.getMessage("ER023", null, LocaleContextHolder.getLocale());
-        
+
         EmployeeListResponse response = new EmployeeListResponse();
         response.setCode("ER023");
         response.setMessage(message);
-        
+
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    
+
     /**
      * Xử lý các lỗi RuntimeException khác nếu cần cụ thể hóa.
      * Hiện tại được gộp chung vào xử lý Exception nhưng có thể mở rộng tại đây.
