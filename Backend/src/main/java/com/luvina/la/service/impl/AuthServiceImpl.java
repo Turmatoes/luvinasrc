@@ -11,6 +11,7 @@ import com.luvina.la.config.jwt.JwtTokenProvider;
 import com.luvina.la.payload.LoginRequest;
 import com.luvina.la.payload.LoginResponse;
 import com.luvina.la.service.AuthService;
+import com.luvina.la.config.Constants;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -77,12 +78,12 @@ public class AuthServiceImpl implements AuthService {
         } catch (UsernameNotFoundException | BadCredentialsException ex) {
             // Ghi nhật ký sai thông tin xác thực
             log.warn("Login failed for user: {} - {}", loginRequest.getUsername(), ex.getMessage());
-            errors.put("code", "ER016");
+            errors.put("code", Constants.CODE_ER016);
         } catch (Exception ex) {
             // Ghi nhật ký lỗi không xác định
             log.warn("Login failed for user: {} - {}", loginRequest.getUsername(), ex.getMessage());
             ex.printStackTrace();
-            errors.put("code", "ER023");
+            errors.put("code", Constants.CODE_ER023);
         }
         return new LoginResponse(errors);
     }

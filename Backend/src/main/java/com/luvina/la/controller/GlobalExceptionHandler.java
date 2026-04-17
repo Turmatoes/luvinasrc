@@ -6,8 +6,8 @@
 package com.luvina.la.controller;
 
 import com.luvina.la.payload.EmployeeListResponse;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
+import com.luvina.la.service.EmployeeService;
+import com.luvina.la.config.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,15 +22,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private final MessageSource messageSource;
+    private final EmployeeService employeeService;
 
     /**
      * Constructor khởi tạo GlobalExceptionHandler.
      * 
-     * @param messageSource Nguồn thông báo đa ngôn ngữ
+     * @param employeeService Dịch vụ nhân viên dùng để tạo response lỗi
      */
-    public GlobalExceptionHandler(MessageSource messageSource) {
-        this.messageSource = messageSource;
+    public GlobalExceptionHandler(EmployeeService employeeService) {
+        this.employeeService = employeeService;
     }
 
     /**
@@ -41,14 +41,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<EmployeeListResponse> handleSystemError(Exception ex) {
-        // Lấy thông báo lỗi từ messages.properties (mặc định là Tiếng Nhật theo cấu
-        // hình)
-        String message = messageSource.getMessage("ER023", null, LocaleContextHolder.getLocale());
-
-        EmployeeListResponse response = new EmployeeListResponse();
-        response.setCode("ER023");
-        response.setMessage(message);
-
+        EmployeeListResponse response = employeeService.buildErrorResponse(Constants.CODE_SYSTEM_ERROR, Constants.CODE_ER023, null);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

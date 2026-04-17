@@ -9,10 +9,14 @@ package com.luvina.la.service.impl;
 import com.luvina.la.dto.EmployeeDTO;
 import com.luvina.la.repository.EmployeeRepository;
 import com.luvina.la.service.EmployeeService;
+import com.luvina.la.payload.EmployeeListResponse;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,14 +29,17 @@ import org.springframework.stereotype.Service;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final MessageSource messageSource;
 
     /**
      * Constructor khởi tạo EmployeeServiceImpl.
      *
      * @param employeeRepository Repository xử lý dự liệu nhân viên
+     * @param messageSource    Tài nguyên message
      */
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, MessageSource messageSource) {
         this.employeeRepository = employeeRepository;
+        this.messageSource = messageSource;
     }
 
     /**
@@ -94,6 +101,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Long countEmployeesWithFilter(String employeeName, Long departmentId) {
         return employeeRepository.countEmployeesWithFilter(employeeName, departmentId);
+    }
+
+    @Override
+    public EmployeeListResponse buildErrorResponse(String code, String messageCode, List<String> params) {
+        EmployeeListResponse response = new EmployeeListResponse();
+        response.setCode(code);
+        response.setMessage(messageSource.getMessage(messageCode, null, Locale.JAPANESE));
+        response.setParams(params != null ? params : new ArrayList<>());
+        return response;
+    }
+
+    @Override
+    public EmployeeListResponse buildErrorResponse(String errorCode) {
+        return buildErrorResponse(errorCode, errorCode, new ArrayList<>());
     }
 
     /**

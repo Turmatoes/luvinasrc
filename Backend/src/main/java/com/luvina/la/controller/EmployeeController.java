@@ -9,16 +9,15 @@ package com.luvina.la.controller;
 import com.luvina.la.dto.EmployeeDTO;
 import com.luvina.la.payload.EmployeeListResponse;
 import com.luvina.la.service.EmployeeService;
-import org.springframework.context.MessageSource;
-import org.springframework.http.HttpStatus;
+import com.luvina.la.validate.EmployeeValidation;
+import com.luvina.la.config.Constants;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
 @RestController
 @RequestMapping("/api")
 /**
@@ -29,24 +28,17 @@ import java.util.Locale;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
-    private final MessageSource messageSource;
-
-    // Các mã định danh phản hồi chuẩn
-    private static final String CODE_SUCCESS = String.valueOf(HttpStatus.OK.value());
-    private static final String CODE_SYSTEM_ERROR = String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value());
-    private static final String CODE_ER021 = "ER021";
-    private static final String CODE_ER022 = "ER022";
-    private static final String CODE_ER023 = "ER023";
+    private final EmployeeValidation employeeValidation;
 
     /**
      * Constructor khởi tạo EmployeeController.
      *
      * @param employeeService Dịch vụ xử lý nhân viên
-     * @param messageSource   Nguồn thông báo đa ngôn ngữ
+     * @param employeeValidation Xử lý kiểm tra dữ liệu đầu vào
      */
-    public EmployeeController(EmployeeService employeeService, MessageSource messageSource) {
+    public EmployeeController(EmployeeService employeeService, EmployeeValidation employeeValidation) {
         this.employeeService = employeeService;
-        this.messageSource = messageSource;
+        this.employeeValidation = employeeValidation;
     }
 
     /**
@@ -71,8 +63,8 @@ public class EmployeeController {
 
         try {
             // 1. Validate tham số sắp xếp (Sort)
-            if (!isValidSort(sortEmployeeName) || !isValidSort(sortCertificationName) || !isValidSort(sortEndDate)) {
-                return buildErrorResponse(CODE_ER021);
+            if (!employeeValidation.isValidSort(sortEmployeeName) || !employeeValidation.isValidSort(sortCertificationName) || !employeeValidation.isValidSort(sortEndDate)) {
+                return employeeService.buildErrorResponse(Constants.CODE_ER021);
             }
 
             // 2.1 Lấy tổng số nhân viên
@@ -85,7 +77,7 @@ public class EmployeeController {
             if (totalRecords > 0) {
                 // Kiểm tra tính hợp lệ của Offset (ER022)
                 if (offset >= totalRecords) {
-                    return buildErrorResponse(CODE_ER022);
+                    return employeeService.buildErrorResponse(Constants.CODE_ER022);
                 }
 
                 // 2.2 Lấy danh sách từ DB
@@ -101,7 +93,7 @@ public class EmployeeController {
 
             // 3. Tạo dữ liệu response cho API
             EmployeeListResponse response = new EmployeeListResponse();
-            response.setCode(CODE_SUCCESS);
+            response.setCode(Constants.CODE_SUCCESS);
             response.setTotalRecords(totalRecords);
             response.setEmployees(employees);
             response.setParams(new ArrayList<>()); // Đảm bảo params luôn là []
@@ -109,46 +101,10 @@ public class EmployeeController {
             return response;
         } catch (Exception e) {
             // 3. Xử lý lỗi 500 (System Error) - Lấy giá trị từ No 1
-            return buildErrorResponse(CODE_SYSTEM_ERROR, CODE_ER023);
+            return employeeService.buildErrorResponse(Constants.CODE_SYSTEM_ERROR, Constants.CODE_ER023, null);
         }
     }
 
-    /**
-     * Kiểm tra tính hợp lệ của tham số sắp xếp.
-     * 
-     * @param sort Giá trị sắp xếp
-     * @return true nếu hợp lệ (asc hoặc desc), ngược lại false
-     */
-    private boolean isValidSort(String sort) {
-        if (sort == null || sort.isEmpty())
-            return true;
-        String val = sort.trim().toLowerCase();
-        return "asc".equals(val) || "desc".equals(val);
-    }
 
-    /**
-     * Xây dựng đối tượng phản hồi lỗi.
-     * 
-     * @param errorCode Mã lỗi
-     * @return EmployeeListResponse chứa mã lỗi và thông báo tương ứng
-     */
-    private EmployeeListResponse buildErrorResponse(String errorCode) {
-        return buildErrorResponse(errorCode, errorCode);
-    }
-
-    /**
-     * Xây dựng đối tượng phản hồi lỗi với mã và thông báo tùy chỉnh.
-     * 
-     * @param code        Mã phản hồi (vd: 500)
-     * @param messageCode Mã lỗi để lấy thông báo từ MessageSource
-     * @return EmployeeListResponse
-     */
-    private EmployeeListResponse buildErrorResponse(String code, String messageCode) {
-        EmployeeListResponse response = new EmployeeListResponse();
-        response.setCode(code);
-        response.setMessage(messageSource.getMessage(messageCode, null, Locale.JAPANESE));
-        response.setParams(new ArrayList<>()); // Format {code: "", params: []}
-        return response;
-    }
 
 }

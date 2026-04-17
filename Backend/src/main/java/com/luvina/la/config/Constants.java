@@ -1,6 +1,15 @@
-
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * Constants.java, April 17, 2026 nxplong
+ */
 package com.luvina.la.config;
 
+/**
+ * Lớp Constants lưu trữ cấu hình tĩnh của hệ thống.
+ * 
+ * @author nxplong
+ */
 public class Constants {
 
         private Constants() {
@@ -30,4 +39,20 @@ public class Constants {
                         "employeeLoginId",
                         "employeeEmail"
         };
+
+        // Các mã định danh HTTP Code
+        public static final String CODE_SUCCESS = "200";
+        public static final String CODE_SYSTEM_ERROR = "500";
+        public static final String CODE_NOT_FOUND = "404";
+        public static final String CODE_UNAUTHORIZED = "401";
+
+        // Các mã định danh lỗi hệ thống
+        public static final String CODE_ER001 = "ER001";
+        public static final String CODE_ER013 = "ER013";
+        public static final String CODE_ER014 = "ER014";
+        public static final String CODE_ER015 = "ER015";
+        public static final String CODE_ER016 = "ER016";
+        public static final String CODE_ER021 = "ER021";
+        public static final String CODE_ER022 = "ER022";
+        public static final String CODE_ER023 = "ER023";
 }

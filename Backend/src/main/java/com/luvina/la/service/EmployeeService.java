@@ -7,6 +7,7 @@
 package com.luvina.la.service;
 
 import com.luvina.la.dto.EmployeeDTO;
+import com.luvina.la.payload.EmployeeListResponse;
 import java.util.List;
 
 /**
@@ -49,4 +50,22 @@ public interface EmployeeService {
      * @return Tổng số nhân viên có role = 0 hoặc role IS NULL theo bộ lọc
      */
     Long countEmployeesWithFilter(String employeeName, Long departmentId);
+
+    /**
+     * Xây dựng phản hồi lỗi có hỗ trợ params.
+     * 
+     * @param code Mã lỗi (ví dụ: ER021)
+     * @param messageCode Mã lỗi thông điệp
+     * @param params Danh sách tham số (có thể null)
+     * @return EmployeeListResponse chứa lỗi
+     */
+    EmployeeListResponse buildErrorResponse(String code, String messageCode, List<String> params);
+
+    /**
+     * Xây dựng phản hồi lỗi với params rỗng.
+     * 
+     * @param errorCode Mã lỗi
+     * @return EmployeeListResponse chứa lỗi
+     */
+    EmployeeListResponse buildErrorResponse(String errorCode);
 }
