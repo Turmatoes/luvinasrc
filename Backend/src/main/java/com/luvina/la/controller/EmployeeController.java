@@ -7,7 +7,7 @@
 package com.luvina.la.controller;
 
 import com.luvina.la.dto.EmployeeDTO;
-import com.luvina.la.dto.EmployeeListResponse;
+import com.luvina.la.payload.EmployeeListResponse;
 import com.luvina.la.service.EmployeeService;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;

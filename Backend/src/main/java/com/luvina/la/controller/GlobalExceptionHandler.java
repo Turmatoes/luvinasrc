@@ -5,7 +5,7 @@
  */
 package com.luvina.la.controller;
 
-import com.luvina.la.dto.EmployeeListResponse;
+import com.luvina.la.payload.EmployeeListResponse;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;

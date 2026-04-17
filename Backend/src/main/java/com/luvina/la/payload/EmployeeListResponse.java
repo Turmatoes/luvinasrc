@@ -3,11 +3,12 @@
  * 
  * EmployeeListResponse.java, April 9, 2026 nxplong
  */
-package com.luvina.la.dto;
+package com.luvina.la.payload;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import com.luvina.la.dto.EmployeeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
