@@ -74,10 +74,10 @@ export function useAdm002() {
         sortEndDate: searchParams.sort.endDate,
       });
       setData(response);
-    } catch (err: unknown) {
+    } catch (err: any) {
       console.error('Failed to fetch employees:', err);
       // Ưu tiên lấy mã lỗi từ Backend trả về
-      const errorCode = (err as { response?: { data?: { code?: string } } }).response?.data?.code || 'ER023';
+      const errorCode = err.response?.data?.code || 'ER023';
       setEmployeeError(getMessage(errorCode));
       setData(null);
     } finally {

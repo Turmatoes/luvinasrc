@@ -6,6 +6,12 @@ export interface DepartmentDTO {
   departmentName: string;
 }
 
+// Certification DTO - matches backend CertificationDTO
+export interface CertificationDTO {
+  certificationId: number;
+  certificationName: string;
+}
+
 // API Response DTO - matches backend EmployeeListDTO
 export interface EmployeeListDTO {
   employeeId: number;
@@ -27,20 +33,6 @@ export interface EmployeeListResponse {
   employees: EmployeeListDTO[];
 }
 
-// Certification DTO
-export interface CertificationDTO {
-  certificationId: number;
-  certificationName: string;
-}
-
-// Certification Request Item
-export interface EmployeeCertificationRequest {
-  certificationId: number;
-  certificationStartDate: string;
-  certificationEndDate: string;
-  score: number;
-}
-
 // Backend/Database representation
 export interface EmployeeDB {
   employee_id: number;
@@ -55,17 +47,42 @@ export interface EmployeeDB {
   role?: number; // 1: Admin, 0: Employee
 }
 
-// API request types (ADM004)
-export interface EmployeeRequest {
-  employeeId?: number; // Null for Add, Not null for Edit
+// API request/response types
+export interface EmployeeCreateRequest {
+  employee_name: string;
+  department_id: number;
+  employee_email: string;
+  employee_name_kana?: string;
+  employee_birth_date?: string;
+  employee_telephone?: string;
+  employee_login_id: string;
+}
+
+export interface EmployeeUpdateRequest {
+  employee_id: number; // Required for PUT /employee (ID in request body, not path)
+  employee_name: string; // Required
+  department_id: number; // Required
+  employee_email: string; // Required
+  employee_name_kana?: string;
+  employee_birth_date?: string;
+  employee_telephone?: string;
+  employee_login_id: string; // Required
+}
+
+// Unified Form Schema matches ADM004 form fields
+export interface EmployeeFormValues {
+  employeeLoginId: string;
+  departmentId: string; // String from select
   employeeName: string;
   employeeNameKana: string;
-  employeeBirthDate: string;
+  employeeBirthDate: string; // YYYY/MM/DD
   employeeEmail: string;
   employeeTelephone: string;
-  employeeLoginId: string;
   employeeLoginPassword?: string;
-  departmentId: number;
-  certifications: EmployeeCertificationRequest[];
+  employeeLoginPasswordConfirm?: string;
+  certificationId?: string; // Optional single certification for ADM004
+  certificationStartDate?: string;
+  certificationEndDate?: string;
+  score?: string;
 }
 

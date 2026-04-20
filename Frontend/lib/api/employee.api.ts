@@ -4,7 +4,7 @@
  * employee.api.ts, April 13, 2026 nxplong
  */
 import { apiClient } from './client';
-import { DepartmentDTO, EmployeeListResponse, CertificationDTO, EmployeeRequest } from '@/types/employee';
+import { DepartmentDTO, EmployeeListResponse, CertificationDTO, EmployeeFormValues } from '@/types/employee';
 import { SortDirection } from '@/components/employees/EmployeeTable';
 
 /**
@@ -47,45 +47,45 @@ export const employeeApi = {
   },
 
   /**
-   * Lấy danh sách chứng chỉ.
+   * Lấy danh sách chứng chỉ (Mock API cho mục 資格 - 日本語能力).
    * 
    * @returns Promise chứa mảng CertificationDTO
    */
   getCertifications: async (): Promise<CertificationDTO[]> => {
-    const response = await apiClient.get<CertificationDTO[]>('/certifications');
-    return response.data;
+    // Tạm thời mock dữ liệu Frontend trước khi có Backend API
+    return [
+      { certificationId: 1, certificationName: 'N1' },
+      { certificationId: 2, certificationName: 'N2' },
+      { certificationId: 3, certificationName: 'N3' },
+      { certificationId: 4, certificationName: 'N4' },
+      { certificationId: 5, certificationName: 'N5' },
+    ];
+    // Khi có Backend, sử dụng:
+    // const response = await apiClient.get<CertificationDTO[]>('/certifications');
+    // return response.data;
   },
 
   /**
-   * Lấy thông tin chi tiết nhân viên theo ID.
-   * 
-   * @param id ID nhân viên
-   * @returns Promise chứa EmployeeRequest (đầy đủ thông tin để edit)
+   * Lấy chi tiết một nhân viên.
    */
-  getEmployee: async (id: number): Promise<EmployeeRequest> => {
-    const response = await apiClient.get<EmployeeRequest>(`/employees/${id}`);
+  getEmployeeDetail: async (id: number): Promise<any> => {
+    const response = await apiClient.get(`/employees/${id}`);
     return response.data;
   },
 
   /**
    * Thêm mới nhân viên.
-   * 
-   * @param data Dữ liệu nhân viên mới
-   * @returns Promise chứa phản hồi từ server
    */
-  createEmployee: async (data: EmployeeRequest): Promise<unknown> => {
+  addEmployee: async (data: EmployeeFormValues): Promise<any> => {
     const response = await apiClient.post('/employees', data);
     return response.data;
   },
 
   /**
-   * Cập nhật thông tin nhân viên.
-   * 
-   * @param data Dữ liệu nhân viên (bao gồm cả employeeId)
-   * @returns Promise chứa phản hồi từ server
+   * Cập nhật nhân viên.
    */
-  updateEmployee: async (data: EmployeeRequest): Promise<unknown> => {
-    const response = await apiClient.put(`/employees/${data.employeeId}`, data);
+  updateEmployee: async (id: number, data: EmployeeFormValues): Promise<any> => {
+    const response = await apiClient.put(`/employees/${id}`, data);
     return response.data;
   },
 };

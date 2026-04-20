@@ -1,254 +1,154 @@
 /*
  * Copyright(C) 2010 Luvina Software Company
  *
- * useAdm004.ts, April 13, 2026 nxplong
+ * useAdm004.ts, April 20, 2026 Ame
  */
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { employeeApi } from '@/lib/api/employee.api';
-import { DepartmentDTO, CertificationDTO, EmployeeRequest } from '@/types/employee';
-import { getMessage } from '@/lib/utils/messageHelper';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { employeeApi } from '@/lib/api/employee.api';
+import { DepartmentDTO, CertificationDTO, EmployeeFormValues } from '@/types/employee';
+import { getMessage } from '@/lib/utils/messageHelper';
 
-// Định nghĩa Schema Validation với Zod dựa trên đặc tả thiết kế (Images 1 & 2)
+// Key for storage
+const STORAGE_KEY = 'ADM004_FORM_DATA';
+
+// Zod Schema for validation
 const employeeSchema = z.object({
-  employeeId: z.number().optional(),
-  employeeLoginId: z.string()
-    .min(1, getMessage('ER001', ['アカウント名']))
-    .max(50, getMessage('ER006', ['アカウント名']))
-    .regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, getMessage('ER019', ['アカウント名'])),
-  employeeName: z.string()
-    .min(1, getMessage('ER001', ['氏名']))
-    .max(125, getMessage('ER006', ['氏名'])),
-  employeeNameKana: z.string()
-    .min(1, getMessage('ER001', ['カタカナ氏名']))
-    .max(125, getMessage('ER006', ['カタカナ氏名']))
-    .regex(/^[\u30A0-\u30FF]+$/, getMessage('ER009', ['カタカナ氏名'])),
-  employeeBirthDate: z.string()
-    .min(1, getMessage('ER001', ['生年月日']))
-    .regex(/^\d{4}\/\d{2}\/\d{2}$/, getMessage('ER005', ['生年月日', 'yyyy/MM/dd'])),
-  employeeEmail: z.string()
-    .min(1, getMessage('ER001', ['メールアドレス']))
-    .max(125, getMessage('ER006', ['メールアドレス']))
-    .email(getMessage('ER005', ['メールアドレス', ''])),
-  employeeTelephone: z.string()
-    .min(1, getMessage('ER001', ['電話番号']))
-    .max(50, getMessage('ER006', ['電話番号']))
-    .regex(/^[0-9-]+$/, getMessage('ER008', ['電話番号'])),
+  employeeLoginId: z.string().min(1, { message: 'ER001' }).max(50, { message: 'ER006' })
+    .regex(/^[a-zA-Z0-9_]+$/, { message: 'ER019' }),
+  departmentId: z.string().min(1, { message: 'ER001' }),
+  employeeName: z.string().min(1, { message: 'ER001' }).max(125, { message: 'ER006' }),
+  employeeNameKana: z.string().min(1, { message: 'ER001' }).max(125, { message: 'ER006' })
+    .regex(/^[\u30A0-\u30FF]+$/, { message: 'ER009' }),
+  employeeBirthDate: z.string().min(1, { message: 'ER001' }),
+  employeeEmail: z.string().min(1, { message: 'ER001' }).email({ message: 'ER001' }).max(125, { message: 'ER006' }),
+  employeeTelephone: z.string().min(1, { message: 'ER001' }).max(50, { message: 'ER006' })
+    .regex(/^[0-9]+$/, { message: 'ER001' }), // Simple numeric check
   employeeLoginPassword: z.string().optional(),
   employeeLoginPasswordConfirm: z.string().optional(),
-  departmentId: z.number({ message: getMessage('ER002', ['グループ']) })
-    .min(1, getMessage('ER002', ['グループ'])),
-  certifications: z.array(z.object({
-    certificationId: z.number(),
-    certificationStartDate: z.string(),
-    certificationEndDate: z.string(),
-    score: z.number()
-  }))
-}).superRefine((data, ctx) => {
-  const isEdit = !!data.employeeId;
-  const password = data.employeeLoginPassword;
-  const confirm = data.employeeLoginPasswordConfirm;
-  
-  // 1. Kiểm tra Password
-  if (!isEdit && (!password || password.length === 0)) {
-     ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: getMessage('ER001', ['パスワード']),
-        path: ['employeeLoginPassword']
-     });
-  } else if (password && (password.length < 8 || password.length > 50)) {
-     ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: getMessage('ER007', ['パスワード', '8', '50']),
-        path: ['employeeLoginPassword']
-     });
+  certificationId: z.string().optional(),
+  certificationStartDate: z.string().optional(),
+  certificationEndDate: z.string().optional(),
+  score: z.string().optional(),
+}).refine((data) => {
+  // Password matching logic if provided (for Add mode or if changing in Edit)
+  if (data.employeeLoginPassword && data.employeeLoginPassword !== data.employeeLoginPasswordConfirm) {
+    return false;
   }
-
-  // 2. Kiểm tra Password Confirm (Theo MockHTML)
-  if (password !== confirm) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: getMessage('ER017'),
-      path: ['employeeLoginPasswordConfirm']
-    });
-  }
-
-  // 3. Kiểm tra logic Chứng chỉ (Nếu đã chọn certId > 0)
-  const cert = data.certifications[0];
-  if (cert && cert.certificationId && cert.certificationId > 0) {
-    if (!cert.certificationStartDate) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: getMessage('ER001', ['資格交付日']), path: ['certifications', 0, 'certificationStartDate'] });
-    } else if (!/^\d{4}\/\d{2}\/\d{2}$/.test(cert.certificationStartDate)) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: getMessage('ER005', ['資格交付日', 'yyyy/MM/dd']), path: ['certifications', 0, 'certificationStartDate'] });
-    }
-
-    if (!cert.certificationEndDate) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: getMessage('ER001', ['失効日']), path: ['certifications', 0, 'certificationEndDate'] });
-    } else if (!/^\d{4}\/\d{2}\/\d{2}$/.test(cert.certificationEndDate)) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: getMessage('ER005', ['失効日', 'yyyy/MM/dd']), path: ['certifications', 0, 'certificationEndDate'] });
-    }
-
-    if (!cert.score || cert.score <= 0) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: getMessage('ER001', ['点数']), path: ['certifications', 0, 'score'] });
-    }
-
-    if (cert.certificationStartDate && cert.certificationEndDate) {
-      if (new Date(cert.certificationEndDate) <= new Date(cert.certificationStartDate)) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: getMessage('ER012'), path: ['certifications', 0, 'certificationEndDate'] });
-      }
-    }
-  }
+  return true;
+}, {
+  message: 'ER017',
+  path: ['employeeLoginPasswordConfirm'],
 });
 
-export type FormValues = z.infer<typeof employeeSchema>;
-
-const STORAGE_KEY = 'adm004_form_data';
-
 /**
- * Custom Hook useAdm004 quản lý logic cho màn hình Add/Edit Nhân viên.
+ * Custom Hook useAdm004 quản lý logic cho màn hình Nhập liệu nhân viên (Add/Edit).
+ * Tích hợp React Hook Form, Zod và sessionStorage.
+ * 
+ * @returns Object chứa các trạng thái và hàm xử lý form
  */
 export function useAdm004() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const employeeId = searchParams.get('id');
-  const [loading, setLoading] = useState(false);
+  const isEditMode = !!employeeId;
+
   const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
   const [certifications, setCertifications] = useState<CertificationDTO[]>([]);
-  const [errorVisible, setErrorVisible] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Initialize React Hook Form
   const {
     register,
     handleSubmit,
-    control,
     setValue,
     watch,
     reset,
-    formState: { errors }
-  } = useForm<FormValues>({
+    formState: { errors },
+  } = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeSchema),
     defaultValues: {
-      employeeLoginId: '',
-      employeeName: '',
-      employeeNameKana: '',
-      employeeBirthDate: '',
-      employeeEmail: '',
-      employeeTelephone: '',
-      departmentId: 0,
-      certifications: [{ certificationId: 0, certificationStartDate: '', certificationEndDate: '', score: 0 }]
-    }
+      departmentId: '',
+      certificationId: '',
+    },
   });
 
-  const { fields } = useFieldArray({
-    control,
-    name: "certifications"
-  });
-
-  // Theo dõi giá trị certificationId để handle logic enable/disable/clear
-  const watchCertId = watch('certifications.0.certificationId');
-
+  // Watch form changes to persist to sessionStorage
+  const formData = watch();
   useEffect(() => {
-    // Nếu chọn lại "選択してください" (0) thì xoá trắng các trường liên quan
-    if (!watchCertId || watchCertId === 0) {
-      setValue('certifications.0.certificationStartDate', '');
-      setValue('certifications.0.certificationEndDate', '');
-      setValue('certifications.0.score', 0);
+    if (Object.keys(formData).length > 0) {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
     }
-  }, [watchCertId, setValue]);
+  }, [formData]);
 
-  // --- Logic Persistence ---
-  useEffect(() => {
-    const savedData = sessionStorage.getItem(STORAGE_KEY);
-    if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData);
-        reset(parsed);
-      } catch (e) {
-        console.error('Failed to parse saved form data', e);
-      }
-    }
-  }, [reset]);
-
-  useEffect(() => {
-    const subscription = watch((value) => {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(value));
-    });
-    return () => subscription.unsubscribe();
-  }, [watch]);
-
-  // --- Data Fetching ---
-  const loadInitialData = useCallback(async () => {
+  /**
+   * Tải dữ liệu ban đầu (Departments, Certifications, và Employee if Edit).
+   */
+  const initData = useCallback(async () => {
     setLoading(true);
     try {
-      const [deptRes, certRes] = await Promise.all([
+      const [depts, certs] = await Promise.all([
         employeeApi.getDepartments(),
-        employeeApi.getCertifications()
+        employeeApi.getCertifications(),
       ]);
-      setDepartments(deptRes);
-      setCertifications(certRes);
+      setDepartments(depts);
+      setCertifications(certs);
 
-      if (employeeId) {
-        const empData = await employeeApi.getEmployee(Number(employeeId));
-        if (!sessionStorage.getItem(STORAGE_KEY)) {
-           reset(empData);
-        }
+      // Check sessionStorage first for persistence (Refresh scenario)
+      const savedData = sessionStorage.getItem(STORAGE_KEY);
+      if (savedData) {
+        reset(JSON.parse(savedData));
+      } else if (isEditMode) {
+        // If no saved data and in Edit mode, fetch from API
+        const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId));
+        reset(detail);
       }
     } catch (err) {
-      console.error('Failed to load initial data', err);
-      setErrorVisible(getMessage('ER023'));
+      console.error('Failed to init ADM004 data:', err);
+      setError(getMessage('ER023'));
     } finally {
       setLoading(false);
     }
-  }, [employeeId, reset]);
+  }, [isEditMode, employeeId, reset]);
 
   useEffect(() => {
-    loadInitialData();
-  }, [loadInitialData]);
+    initData();
+  }, [initData]);
 
-  const onSubmit = async (data: FormValues) => {
-    setLoading(true);
-    setErrorVisible(null);
-    try {
-      // Xử lý logic chứng chỉ: Nếu không chọn thì gửi mảng rỗng hoặc xử lý filter
-      const finalData = { ...data };
-      if (!data.certifications[0]?.certificationId) {
-        finalData.certifications = [];
-      }
+  /**
+   * Xử lý gửi form tới trang xác nhận (ADM005).
+   */
+  const onSubmit = (values: EmployeeFormValues) => {
+    // Lưu vào sessionStorage để ADM005 lấy ra xử lý tiếp
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(values));
+    router.push('/employees/adm005');
+  };
 
-      if (employeeId) {
-        await employeeApi.updateEmployee(finalData as EmployeeRequest);
-      } else {
-        await employeeApi.createEmployee(finalData as EmployeeRequest);
-      }
-      sessionStorage.removeItem(STORAGE_KEY);
-      router.push('/employees/adm002');
-    } catch (err: unknown) {
-      console.error('Submit failed:', err);
-      const errorCode = (err as { response?: { data?: { code?: string } } }).response?.data?.code || 'ER023';
-      setErrorVisible(getMessage(errorCode));
-    } finally {
-      setLoading(false);
-    }
+  /**
+   * Xử lý quay lại trang danh sách.
+   */
+  const handleBack = () => {
+    sessionStorage.removeItem(STORAGE_KEY);
+    router.push('/employees/adm002');
   };
 
   return {
     register,
-    handleSubmit,
-    control,
-    onSubmit,
+    handleSubmit: handleSubmit(onSubmit),
     errors,
+    setValue,
+    watch,
     departments,
     certifications,
     loading,
-    errorVisible,
-    fields,
-    handleBack: () => router.back(),
-    isEdit: !!employeeId,
-    setValue,
-    isCertSelected: !!watchCertId && watchCertId > 0
+    error,
+    isEditMode,
+    handleBack,
   };
 }
