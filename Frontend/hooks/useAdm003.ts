@@ -1,7 +1,7 @@
 /*
  * Copyright(C) 2010 Luvina Software Company
  *
- * useAdm003.ts, April 20, 2026 Ame
+ * useAdm003.ts, April 20, 2026 nxplong
  */
 'use client';
 

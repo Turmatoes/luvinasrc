@@ -1,7 +1,7 @@
 /*
  * Copyright(C) 2010 Luvina Software Company
  *
- * page.tsx, April 20, 2026 Ame
+ * page.tsx, April 20, 2026 nxplong
  */
 'use client';
 
