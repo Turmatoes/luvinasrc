@@ -6,9 +6,9 @@
 package com.luvina.la.payload;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import com.luvina.la.dto.EmployeeDTO;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,12 +21,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmployeeListResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String code;
     private String message;
-    private List<String> params = new ArrayList<>();
+    private List<String> params;
     private Long totalRecords;
     private List<EmployeeDTO> employees;
 }

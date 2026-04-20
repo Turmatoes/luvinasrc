@@ -28,4 +28,16 @@ public class EmployeeValidation {
         String val = sort.trim().toLowerCase();
         return "asc".equals(val) || "desc".equals(val);
     }
+
+    /**
+     * Kiểm tra xem giá trị có phải là số nguyên dương hay không (>= 0).
+     * 
+     * @param val Giá trị nguyên
+     * @return true nếu lớn hơn hoặc bằng 0, ngược lại false
+     */
+    public boolean isPositiveInteger(Integer val) {
+        if (val == null)
+            return true;
+        return val >= 0;
+    }
 }

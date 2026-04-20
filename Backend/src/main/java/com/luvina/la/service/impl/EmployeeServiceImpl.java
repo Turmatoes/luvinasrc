@@ -10,11 +10,11 @@ import com.luvina.la.dto.EmployeeDTO;
 import com.luvina.la.repository.EmployeeRepository;
 import com.luvina.la.service.EmployeeService;
 import com.luvina.la.payload.EmployeeListResponse;
+import com.luvina.la.config.Constants;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * Constructor khởi tạo EmployeeServiceImpl.
      *
      * @param employeeRepository Repository xử lý dự liệu nhân viên
-     * @param messageSource    Tài nguyên message
+     * @param messageSource      Tài nguyên message
      */
     public EmployeeServiceImpl(EmployeeRepository employeeRepository, MessageSource messageSource) {
         this.employeeRepository = employeeRepository;
@@ -106,9 +106,51 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeListResponse buildErrorResponse(String code, String messageCode, List<String> params) {
         EmployeeListResponse response = new EmployeeListResponse();
-        response.setCode(code);
-        response.setMessage(messageSource.getMessage(messageCode, null, Locale.JAPANESE));
-        response.setParams(params != null ? params : new ArrayList<>());
+        // Cấp độ gốc luôn trả về code 500 theo yêu cầu
+        response.setCode(Constants.CODE_SYSTEM_ERROR);
+
+        // Trường message chứa JSON String format {code: "", params: []}
+        response.setMessage(buildJsonMessage(messageCode, params));
+
+        // Đảm bảo các trường khác là null để không xuất hiện trong JSON
+        response.setParams(null);
+        response.setTotalRecords(null);
+        response.setEmployees(null);
+
+        return response;
+    }
+
+    /**
+     * Xây dựng chuỗi JSON cho trường message.
+     * Format: {"code": "...", "params": [...]}
+     * 
+     * @param code   Mã lỗi thực tế
+     * @param params Danh sách tham số
+     * @return Chuỗi JSON
+     */
+    private String buildJsonMessage(String code, List<String> params) {
+        StringBuilder json = new StringBuilder();
+        json.append("{\"code\": \"").append(code).append("\", \"params\": [");
+        if (params != null && !params.isEmpty()) {
+            for (int i = 0; i < params.size(); i++) {
+                json.append("\"").append(params.get(i)).append("\"");
+                if (i < params.size() - 1) {
+                    json.append(", ");
+                }
+            }
+        }
+        json.append("]}");
+        return json.toString();
+    }
+
+    @Override
+    public EmployeeListResponse buildSuccessResponse(Long totalRecords, List<EmployeeDTO> employees) {
+        EmployeeListResponse response = new EmployeeListResponse();
+        response.setCode(Constants.CODE_SUCCESS);
+        response.setTotalRecords(totalRecords);
+        response.setEmployees(employees);
+        response.setParams(new ArrayList<>()); // Đảm bảo params luôn là [] theo thiết kế
+        response.setMessage(null); // Không có lỗi thì message ẩn đi
         return response;
     }
 

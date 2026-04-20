@@ -62,6 +62,15 @@ public interface EmployeeService {
     EmployeeListResponse buildErrorResponse(String code, String messageCode, List<String> params);
 
     /**
+     * Xây dựng phản hồi thành công.
+     * 
+     * @param totalRecords Tổng số bản ghi
+     * @param employees Danh sách nhân viên
+     * @return EmployeeListResponse chứa dữ liệu thành công
+     */
+    EmployeeListResponse buildSuccessResponse(Long totalRecords, List<EmployeeDTO> employees);
+
+    /**
      * Xây dựng phản hồi lỗi với params rỗng.
      * 
      * @param errorCode Mã lỗi
