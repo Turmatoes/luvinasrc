@@ -51,6 +51,9 @@ export default function EmployeeInputForm({
   const certEndVal = watch('certificationEndDate');
   const certificationEndDate = certEndVal ? new Date(certEndVal) : null;
 
+  const certificationId = watch('certificationId');
+  const isCertDisabled = !certificationId;
+
   const birthDateRef = useRef<DatePicker>(null);
   const certificationStartDateRef = useRef<DatePicker>(null);
   const certificationEndDateRef = useRef<DatePicker>(null);
@@ -265,6 +268,7 @@ export default function EmployeeInputForm({
                   onChange={(date: Date | null) => setValue('certificationStartDate', formatDate(date))} 
                   dateFormat="yyyy/MM/dd" 
                   className={`form-control ${errors.certificationStartDate ? 'is-invalid' : ''}`}
+                  disabled={isCertDisabled}
                 />
                 <span className="glyphicon glyphicon-calendar" onClick={() => certificationStartDateRef.current?.setFocus()}></span>
               </div>
@@ -286,6 +290,7 @@ export default function EmployeeInputForm({
                   onChange={(date: Date | null) => setValue('certificationEndDate', formatDate(date))} 
                   dateFormat="yyyy/MM/dd" 
                   className={`form-control ${errors.certificationEndDate ? 'is-invalid' : ''}`}
+                  disabled={isCertDisabled}
                 />
                 <span className="glyphicon glyphicon-calendar" onClick={() => certificationEndDateRef.current?.setFocus()}></span>
               </div>
@@ -303,6 +308,7 @@ export default function EmployeeInputForm({
                 type="text" 
                 className={`form-control ${errors.score ? 'is-invalid' : ''}`}
                 {...register('score')}
+                disabled={isCertDisabled}
               />
               {errors.score && <div className="invalid-feedback">{errors.score.message}</div>}
             </div>

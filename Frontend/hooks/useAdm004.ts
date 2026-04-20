@@ -87,6 +87,16 @@ export function useAdm004() {
     }
   }, [formData]);
 
+  // Handle auto-clear certification fields when no certification is selected
+  const certificationId = watch('certificationId');
+  useEffect(() => {
+    if (!certificationId) {
+      setValue('certificationStartDate', '');
+      setValue('certificationEndDate', '');
+      setValue('score', '');
+    }
+  }, [certificationId, setValue]);
+
   /**
    * Tải dữ liệu ban đầu (Departments, Certifications, và Employee if Edit).
    */
