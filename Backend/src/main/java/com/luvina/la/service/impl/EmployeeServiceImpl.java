@@ -144,17 +144,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeListResponse buildSuccessResponse(Long totalRecords, List<EmployeeDTO> employees) {
-        EmployeeListResponse response = new EmployeeListResponse();
-        response.setCode(Constants.CODE_SUCCESS);
-        response.setTotalRecords(totalRecords);
-        response.setEmployees(employees);
-        response.setParams(new ArrayList<>()); // Đảm bảo params luôn là [] theo thiết kế
-        response.setMessage(null); // Không có lỗi thì message ẩn đi
-        return response;
-    }
-
-    @Override
     public EmployeeListResponse buildErrorResponse(String errorCode) {
         return buildErrorResponse(errorCode, errorCode, new ArrayList<>());
     }

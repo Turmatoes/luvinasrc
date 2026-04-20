@@ -106,7 +106,14 @@ public class EmployeeController {
             }
 
             // 3. Tạo dữ liệu response thành công cho API
-            return employeeService.buildSuccessResponse(totalRecords, employees);
+            EmployeeListResponse response = new EmployeeListResponse();
+            response.setCode(Constants.CODE_SUCCESS);
+            response.setTotalRecords(totalRecords);
+            response.setEmployees(employees);
+            response.setParams(new ArrayList<>()); // Đảm bảo params luôn là [] theo thiết kế
+            response.setMessage(null); // Không có lỗi thì message ẩn đi
+            
+            return response;
         } catch (Exception e) {
             // 3. Xử lý lỗi 500 (System Error) - Lấy giá trị từ No 1
             return employeeService.buildErrorResponse(Constants.CODE_SYSTEM_ERROR, Constants.CODE_ER023, null);
