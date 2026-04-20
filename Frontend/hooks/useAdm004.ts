@@ -14,10 +14,10 @@ import { employeeApi } from '@/lib/api/employee.api';
 import { DepartmentDTO, CertificationDTO, EmployeeFormValues } from '@/types/employee';
 import { getMessage } from '@/lib/utils/messageHelper';
 
-// Key for storage
+// Key cho storage
 const STORAGE_KEY = 'ADM004_FORM_DATA';
 
-// Zod Schema for validation
+// Zod Schema cho xử lí validate
 const employeeSchema = z.object({
   employeeLoginId: z.string().min(1, { message: 'ER001' }).max(50, { message: 'ER006' })
     .regex(/^[a-zA-Z0-9_]+$/, { message: 'ER019' }),
@@ -36,7 +36,7 @@ const employeeSchema = z.object({
   certificationEndDate: z.string().optional(),
   score: z.string().optional(),
 }).refine((data) => {
-  // Password matching logic if provided (for Add mode or if changing in Edit)
+  // Logic so khớp mật khẩu nếu được cung cấp (cho chế độ Thêm hoặc nếu thay đổi trong Chỉnh sửa)
   if (data.employeeLoginPassword && data.employeeLoginPassword !== data.employeeLoginPasswordConfirm) {
     return false;
   }
@@ -63,7 +63,7 @@ export function useAdm004() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Initialize React Hook Form
+  // Khởi tạo React Hook Form
   const {
     register,
     handleSubmit,
@@ -79,7 +79,7 @@ export function useAdm004() {
     },
   });
 
-  // Watch form changes to persist to sessionStorage
+  // sessionStorage để lưu dữ liệu form
   const formData = watch();
   useEffect(() => {
     if (Object.keys(formData).length > 0) {
@@ -87,7 +87,7 @@ export function useAdm004() {
     }
   }, [formData]);
 
-  // Handle auto-clear certification fields when no certification is selected
+  // Tự động xóa các trường chứng chỉ khi không chọn chứng chỉ
   const certificationId = watch('certificationId');
   useEffect(() => {
     if (!certificationId) {
@@ -98,7 +98,7 @@ export function useAdm004() {
   }, [certificationId, setValue]);
 
   /**
-   * Tải dữ liệu ban đầu (Departments, Certifications, và Employee if Edit).
+   * Tải dữ liệu ban đầu (Departments, Certifications, và Employee nếu là Edit).
    */
   const initData = useCallback(async () => {
     setLoading(true);
@@ -110,12 +110,12 @@ export function useAdm004() {
       setDepartments(depts);
       setCertifications(certs);
 
-      // Check sessionStorage first for persistence (Refresh scenario)
+      // Kiểm tra sessionStorage trước để lưu dữ liệu (Trường hợp làm mới)
       const savedData = sessionStorage.getItem(STORAGE_KEY);
       if (savedData) {
         reset(JSON.parse(savedData));
       } else if (isEditMode) {
-        // If no saved data and in Edit mode, fetch from API
+        // Nếu không có dữ liệu đã lưu và đang ở chế độ chỉnh sửa, tải từ API
         const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId));
         reset(detail);
       }

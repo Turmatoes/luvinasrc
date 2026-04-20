@@ -1,18 +1,22 @@
-// types/employee.ts
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * employee.ts, April 20, 2026 longnxp
+ */
 
-// Department DTO - matches backend DepartmentDTO
+// Department DTO 
 export interface DepartmentDTO {
   departmentId: number;
   departmentName: string;
 }
 
-// Certification DTO - matches backend CertificationDTO
+// Certification DTO 
 export interface CertificationDTO {
   certificationId: number;
   certificationName: string;
 }
 
-// API Response DTO - matches backend EmployeeListDTO
+// API Response DTO 
 export interface EmployeeListDTO {
   employeeId: number;
   employeeName: string;
@@ -25,7 +29,7 @@ export interface EmployeeListDTO {
   score?: number;
 }
 
-// API Response - matches backend EmployeeListResponse
+// API Phản hồi
 export interface EmployeeListResponse {
   code: string;
   message?: string;
@@ -33,7 +37,7 @@ export interface EmployeeListResponse {
   employees: EmployeeListDTO[];
 }
 
-// Backend/Database representation
+// Backend/Database 
 export interface EmployeeDB {
   employee_id: number;
   department_id: number;
@@ -47,7 +51,7 @@ export interface EmployeeDB {
   role?: number; // 1: Admin, 0: Employee
 }
 
-// API request/response types
+// Loại API request/response
 export interface EmployeeCreateRequest {
   employee_name: string;
   department_id: number;
@@ -59,20 +63,20 @@ export interface EmployeeCreateRequest {
 }
 
 export interface EmployeeUpdateRequest {
-  employee_id: number; // Required for PUT /employee (ID in request body, not path)
-  employee_name: string; // Required
-  department_id: number; // Required
-  employee_email: string; // Required
+  employee_id: number;
+  employee_name: string;
+  department_id: number;
+  employee_email: string;
   employee_name_kana?: string;
   employee_birth_date?: string;
   employee_telephone?: string;
-  employee_login_id: string; // Required
+  employee_login_id: string;
 }
 
-// Unified Form Schema matches ADM004 form fields
+// Unified Form Schema
 export interface EmployeeFormValues {
   employeeLoginId: string;
-  departmentId: string; // String from select
+  departmentId: string;
   employeeName: string;
   employeeNameKana: string;
   employeeBirthDate: string; // YYYY/MM/DD
@@ -80,7 +84,7 @@ export interface EmployeeFormValues {
   employeeTelephone: string;
   employeeLoginPassword?: string;
   employeeLoginPasswordConfirm?: string;
-  certificationId?: string; // Optional single certification for ADM004
+  certificationId?: string;
   certificationStartDate?: string;
   certificationEndDate?: string;
   score?: string;

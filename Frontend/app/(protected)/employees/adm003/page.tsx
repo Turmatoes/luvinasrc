@@ -1,19 +1,38 @@
+/*
+ * Copyright(C) 2010 Luvina Software Company
+ *
+ * page.tsx, April 20, 2026 Ame
+ */
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
-import { MESSAGES } from '@/lib/constants/messages';
+import { useAdm003 } from '@/hooks/useAdm003';
+import { Suspense } from 'react';
 
-export default function EmployeeDetailPage() {
+/**
+ * Nội dung trang Chi tiết nhân viên (ADM003).
+ * Kết nối dữ liệu từ Hook useAdm003 vào giao diện.
+ */
+function EmployeeDetailContent() {
+  // Xác thực người dùng
   useAuth();
-  const router = useRouter();
 
-  const handleDelete = () => {
-    if (window.confirm(MESSAGES.MSG004)) {
-      // Mock delete success
-      router.push('/employees/adm006');
-    }
-  };
+  // Sử dụng Hook để lấy dữ liệu chi tiết
+  const { employee, loading, error, handleEdit, handleDelete, handleBack } = useAdm003();
+
+  if (loading) {
+    return <div className="text-center py-4">Loading detail...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        {error}
+      </div>
+    );
+  }
+
+  if (!employee) return null;
 
   return (
     <div className="row">
@@ -22,54 +41,62 @@ export default function EmployeeDetailPage() {
           <li className="title">情報確認</li>
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">アカウント名</label>
-            <div className="col-sm col-sm-10">ntmhuong</div>
+            <div className="col-sm col-sm-10">{employee.employeeLoginId}</div>
           </li>
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">グループ</label>
-            <div className="col-sm col-sm-10">Nhóm 1</div>
+            <div className="col-sm col-sm-10">{employee.departmentName}</div>
           </li>
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">氏名</label>
-            <div className="col-sm col-sm-10">Nguyễn Thị Mai Hương</div>
+            <div className="col-sm col-sm-10">{employee.employeeName}</div>
           </li>
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">カタカナ氏名</label>
-            <div className="col-sm col-sm-10">名カナ</div>
+            <div className="col-sm col-sm-10">{employee.employeeNameKana}</div>
           </li>
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">生年月日</label>
-            <div className="col-sm col-sm-10">1983/07/08</div>
+            <div className="col-sm col-sm-10">{employee.employeeBirthDate}</div>
           </li>
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">メールアドレス</label>
-            <div className="col-sm col-sm-10">	ntmhuong@luvina.net</div>
+            <div className="col-sm col-sm-10">{employee.employeeEmail}</div>
           </li>
-          <li className="form-group row d-flex  bor-none">
+          <li className="form-group row d-flex bor-none">
             <label className="col-form-label col-sm-2">電話番号</label>
-            <div className="col-sm col-sm-10">0914326386</div>
+            <div className="col-sm col-sm-10">{employee.employeeTelephone}</div>
           </li>
           <li className="title mt-12"><a href="#!">日本語能力</a></li>
-          <li className="form-group row d-flex">
-            <label className="col-form-label col-sm-2">資格</label>
-            <div className="col-sm col-sm-10">Trình độ tiếng nhật cấp 1</div>
-          </li>
-          <li className="form-group row d-flex">
-            <label className="col-form-label col-sm-2">資格交付日</label>
-            <div className="col-sm col-sm-10">2010/07/08</div>
-          </li>
-          <li className="form-group row d-flex">
-            <label className="col-form-label col-sm-2">失効日</label>
-            <div className="col-sm col-sm-10">2010/07/08</div>
-          </li>
-          <li className="form-group row d-flex">
-            <label className="col-form-label col-sm-2">点数</label>
-            <div className="col-sm col-sm-10">290</div>
-          </li>
+          {employee.certificationName ? (
+            <>
+              <li className="form-group row d-flex">
+                <label className="col-form-label col-sm-2">資格</label>
+                <div className="col-sm col-sm-10">{employee.certificationName}</div>
+              </li>
+              <li className="form-group row d-flex">
+                <label className="col-form-label col-sm-2">資格交付日</label>
+                <div className="col-sm col-sm-10">{employee.certificationStartDate}</div>
+              </li>
+              <li className="form-group row d-flex">
+                <label className="col-form-label col-sm-2">失効日</label>
+                <div className="col-sm col-sm-10">{employee.certificationEndDate}</div>
+              </li>
+              <li className="form-group row d-flex">
+                <label className="col-form-label col-sm-2">点数</label>
+                <div className="col-sm col-sm-10">{employee.score}</div>
+              </li>
+            </>
+          ) : (
+            <li className="form-group row d-flex">
+              <div className="col-sm col-sm-10 text-muted">資格情報なし</div>
+            </li>
+          )}
           <li className="form-group row d-flex">
             <div className="btn-group col-sm col-sm-10 ml">
-              <button type="button" onClick={() => router.push('/employees/adm004')} className="btn btn-primary btn-sm">編集</button>
+              <button type="button" onClick={handleEdit} className="btn btn-primary btn-sm">編集</button>
               <button type="button" onClick={handleDelete} className="btn btn-secondary btn-sm">削除</button>
-              <button type="button" onClick={() => router.push('/employees/adm002')} className="btn btn-secondary btn-sm">戻る</button>
+              <button type="button" onClick={handleBack} className="btn btn-secondary btn-sm">戻る</button>
             </div>
           </li>
         </ul>
@@ -78,3 +105,13 @@ export default function EmployeeDetailPage() {
   );
 }
 
+/**
+ * Bọc trong Suspense để hỗ trợ useSearchParams trong Next.js Client Component.
+ */
+export default function EmployeeDetailPage() {
+  return (
+    <Suspense fallback={<div>Loading page...</div>}>
+      <EmployeeDetailContent />
+    </Suspense>
+  );
+}

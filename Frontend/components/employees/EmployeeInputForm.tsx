@@ -41,13 +41,13 @@ export default function EmployeeInputForm({
   isEditMode,
   handleBack,
 }: EmployeeInputFormProps) {
-  // Watch values for DatePickers
+  // Giá trị DatePickers
   const birthDateVal = watch('employeeBirthDate');
   const birthDate = birthDateVal ? new Date(birthDateVal) : null;
-  
+
   const certStartVal = watch('certificationStartDate');
   const certificationStartDate = certStartVal ? new Date(certStartVal) : null;
-  
+
   const certEndVal = watch('certificationEndDate');
   const certificationEndDate = certEndVal ? new Date(certEndVal) : null;
 
@@ -74,7 +74,7 @@ export default function EmployeeInputForm({
       <form className="c-form box-shadow" onSubmit={handleSubmit}>
         <ul>
           <li className="title">{isEditMode ? '会員情報編集' : '会員情報登録'}</li>
-          
+
           {/* Hiển thị lỗi tổng hợp nếu có */}
           {Object.keys(errors).length > 0 && (
             <li className="box-err">
@@ -84,14 +84,14 @@ export default function EmployeeInputForm({
             </li>
           )}
 
-          {/* アカウント名 (Login ID) */}
+          {/* アカウント名*/}
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">アカウント名:<span className="note-red">*</span></i>
             </label>
             <div className="col-sm col-sm-10">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className={`form-control ${errors.employeeLoginId ? 'is-invalid' : ''}`}
                 {...register('employeeLoginId')}
                 disabled={isEditMode}
@@ -100,13 +100,13 @@ export default function EmployeeInputForm({
             </div>
           </li>
 
-          {/* グループ (Department) */}
+          {/* グループ */}
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">グループ:<span className="note-red">*</span></i>
             </label>
             <div className="col-sm col-sm-10">
-              <select 
+              <select
                 className={`form-control ${errors.departmentId ? 'is-invalid' : ''}`}
                 {...register('departmentId')}
               >
@@ -121,14 +121,14 @@ export default function EmployeeInputForm({
             </div>
           </li>
 
-          {/* 氏名 (Full Name) */}
+          {/* 氏名 */}
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">氏名:<span className="note-red">*</span></i>
             </label>
             <div className="col-sm col-sm-10">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className={`form-control ${errors.employeeName ? 'is-invalid' : ''}`}
                 {...register('employeeName')}
               />
@@ -136,14 +136,14 @@ export default function EmployeeInputForm({
             </div>
           </li>
 
-          {/* カタカナ氏名 (Kana Name) */}
+          {/* カタカナ氏名 */}
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">カタカナ氏名:<span className="note-red">*</span></i>
             </label>
             <div className="col-sm col-sm-10">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className={`form-control ${errors.employeeNameKana ? 'is-invalid' : ''}`}
                 {...register('employeeNameKana')}
               />
@@ -151,19 +151,19 @@ export default function EmployeeInputForm({
             </div>
           </li>
 
-          {/* 生年月日 (Birth Date) */}
+          {/* 生年月日 */}
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">生年月日:<span className="note-red">*</span></i>
             </label>
             <div className="col-sm col-sm-10 d-flex flex-column">
               <div className="datepicker-wrapper">
-                <DatePicker 
+                <DatePicker
                   ref={birthDateRef}
-                  placeholderText='yyyy/MM/dd' 
-                  selected={birthDate} 
-                  onChange={(date: Date | null) => setValue('employeeBirthDate', formatDate(date))} 
-                  dateFormat="yyyy/MM/dd" 
+                  placeholderText='yyyy/MM/dd'
+                  selected={birthDate}
+                  onChange={(date: Date | null) => setValue('employeeBirthDate', formatDate(date))}
+                  dateFormat="yyyy/MM/dd"
                   className={`form-control ${errors.employeeBirthDate ? 'is-invalid' : ''}`}
                 />
                 <span className="glyphicon glyphicon-calendar" onClick={() => birthDateRef.current?.setFocus()}></span>
@@ -172,14 +172,14 @@ export default function EmployeeInputForm({
             </div>
           </li>
 
-          {/* メールアドレス (Email) */}
+          {/* メールアドレス */}
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">メールアドレス:<span className="note-red">*</span></i>
             </label>
             <div className="col-sm col-sm-10">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className={`form-control ${errors.employeeEmail ? 'is-invalid' : ''}`}
                 {...register('employeeEmail')}
               />
@@ -187,14 +187,14 @@ export default function EmployeeInputForm({
             </div>
           </li>
 
-          {/* 電話番号 (Telephone) */}
+          {/* 電話番号 */}
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">電話番号:<span className="note-red">*</span></i>
             </label>
             <div className="col-sm col-sm-10">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className={`form-control ${errors.employeeTelephone ? 'is-invalid' : ''}`}
                 {...register('employeeTelephone')}
               />
@@ -202,14 +202,14 @@ export default function EmployeeInputForm({
             </div>
           </li>
 
-          {/* パスワード (Password) */}
+          {/* パスワード */}
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">パスワード:{!isEditMode && <span className="note-red">*</span>}</i>
             </label>
             <div className="col-sm col-sm-10">
-              <input 
-                type="password" 
+              <input
+                type="password"
                 className={`form-control ${errors.employeeLoginPassword ? 'is-invalid' : ''}`}
                 {...register('employeeLoginPassword')}
               />
@@ -217,14 +217,14 @@ export default function EmployeeInputForm({
             </div>
           </li>
 
-          {/* パスワード確認 (Confirm Password) */}
+          {/* パスワード確認 */}
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">パスワード（確認）:</i>
             </label>
             <div className="col-sm col-sm-10">
-              <input 
-                type="password" 
+              <input
+                type="password"
                 className={`form-control ${errors.employeeLoginPasswordConfirm ? 'is-invalid' : ''}`}
                 {...register('employeeLoginPasswordConfirm')}
               />
@@ -234,13 +234,13 @@ export default function EmployeeInputForm({
 
           <li className="title mt-12"><a href="#!">日本語能力</a></li>
 
-          {/* 資格 (Certification) */}
+          {/* 資格 */}
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">資格:</i>
             </label>
             <div className="col-sm col-sm-10">
-              <select 
+              <select
                 className={`form-control ${errors.certificationId ? 'is-invalid' : ''}`}
                 {...register('certificationId')}
               >
@@ -254,19 +254,19 @@ export default function EmployeeInputForm({
             </div>
           </li>
 
-          {/* 資格交付日 (Certification Start Date) */}
+          {/* 資格交付日 */}
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">資格交付日:<span className="note-red">*</span></i>
             </label>
             <div className="col-sm col-sm-10 d-flex flex-column">
               <div className="datepicker-wrapper">
-                <DatePicker 
+                <DatePicker
                   ref={certificationStartDateRef}
-                  placeholderText='yyyy/MM/dd' 
-                  selected={certificationStartDate} 
-                  onChange={(date: Date | null) => setValue('certificationStartDate', formatDate(date))} 
-                  dateFormat="yyyy/MM/dd" 
+                  placeholderText='yyyy/MM/dd'
+                  selected={certificationStartDate}
+                  onChange={(date: Date | null) => setValue('certificationStartDate', formatDate(date))}
+                  dateFormat="yyyy/MM/dd"
                   className={`form-control ${errors.certificationStartDate ? 'is-invalid' : ''}`}
                   disabled={isCertDisabled}
                 />
@@ -276,19 +276,19 @@ export default function EmployeeInputForm({
             </div>
           </li>
 
-          {/* 失効日 (Certification End Date) */}
+          {/* 失効日 */}
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">失効日:<span className="note-red">*</span></i>
             </label>
             <div className="col-sm col-sm-10 d-flex flex-column">
               <div className="datepicker-wrapper">
-                <DatePicker 
+                <DatePicker
                   ref={certificationEndDateRef}
-                  placeholderText='yyyy/MM/dd' 
-                  selected={certificationEndDate} 
-                  onChange={(date: Date | null) => setValue('certificationEndDate', formatDate(date))} 
-                  dateFormat="yyyy/MM/dd" 
+                  placeholderText='yyyy/MM/dd'
+                  selected={certificationEndDate}
+                  onChange={(date: Date | null) => setValue('certificationEndDate', formatDate(date))}
+                  dateFormat="yyyy/MM/dd"
                   className={`form-control ${errors.certificationEndDate ? 'is-invalid' : ''}`}
                   disabled={isCertDisabled}
                 />
@@ -298,14 +298,14 @@ export default function EmployeeInputForm({
             </div>
           </li>
 
-          {/* 点数 (Score) */}
+          {/* 点数 */}
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">点数:</i>
             </label>
             <div className="col-sm col-sm-10">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className={`form-control ${errors.score ? 'is-invalid' : ''}`}
                 {...register('score')}
                 disabled={isCertDisabled}
