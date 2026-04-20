@@ -30,6 +30,7 @@ export default function EmployeeListPage() {
     employeeError,
     filters,
     totalPages,
+    pageNumbers,
     handleSearch,
     handlePageChange,
     handleSort,
@@ -75,6 +76,7 @@ export default function EmployeeListPage() {
             <Pagination
               currentPage={filters.currentPage}
               totalPages={totalPages}
+              pageNumbers={pageNumbers}
               onPageChange={handlePageChange}
             />
           )}

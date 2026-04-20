@@ -141,6 +141,52 @@ export function useAdm002() {
     setSearchParams(prev => ({ ...prev, employeeName: name }));
   };
 
+  /**
+   * Tính toán danh sách số trang hiển thị (bao gồm cả dấu ba chấm).
+   * Logic được chuyển từ Component Pagination.tsx chuyên biệt về đây.
+   */
+  const pageNumbers = (() => {
+    const total = data ? Math.ceil(data.totalRecords / LIMIT_PER_PAGE) : 0;
+    const current = searchParams.currentPage;
+    const pages: (number | string)[] = [];
+    const maxVisible = 5;
+
+    if (total <= 1) return [];
+
+    if (total <= maxVisible) {
+      // Hiển thị tất cả nếu tổng số trang <= 5
+      for (let i = 1; i <= total; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Luôn hiển thị trang đầu tiên
+      pages.push(1);
+
+      // Tính toán phạm vi xung quanh trang hiện tại
+      const start = Math.max(2, current - 1);
+      const end = Math.min(total - 1, current + 1);
+
+      // Thêm dấu ba chấm phía trước nếu cần
+      if (start > 2) {
+        pages.push('...');
+      }
+
+      // Thêm các trang trong phạm vi
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      // Thêm dấu ba chấm phía sau nếu cần
+      if (end < total - 1) {
+        pages.push('...');
+      }
+
+      // Luôn hiển thị trang cuối cùng
+      pages.push(total);
+    }
+    return pages;
+  })();
+
   return {
     // Dữ liệu và trạng thái
     data,
@@ -151,6 +197,7 @@ export function useAdm002() {
     // Trạng thái hiện tại của bộ lọc
     filters: searchParams,
     totalPages: data ? Math.ceil(data.totalRecords / LIMIT_PER_PAGE) : 0,
+    pageNumbers,
     // Các handlers cho UI
     handleSearch,
     handlePageChange,

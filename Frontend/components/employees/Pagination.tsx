@@ -8,67 +8,30 @@
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
+  pageNumbers: (number | string)[];
   onPageChange: (page: number) => void;
 }
 
 /**
- * Component hiển thị phân trang.
+ * Component hiển thị phân trang (Pure UI Component).
+ * Toàn bộ logic tính toán đã được chuyển sang custom hook useAdm002 theo yêu cầu.
  * 
  * @param currentPage Trang hiện tại
  * @param totalPages Tổng số trang
+ * @param pageNumbers Danh sách các trang/dấu ba chấm cần hiển thị
  * @param onPageChange Hàm xử lý khi chuyển trang
  * @returns Component hiển thị phân trang
  */
 export default function Pagination({
   currentPage,
   totalPages,
+  pageNumbers,
   onPageChange,
 }: PaginationProps) {
-  if (totalPages <= 1) {
-    return null; // Không hiển thị phân trang nếu chỉ có 1 trang
+  // Không hiển thị phân trang nếu chỉ có 1 trang hoặc không có dữ liệu trang
+  if (totalPages <= 1 || pageNumbers.length === 0) {
+    return null;
   }
-
-  // Tạo danh sách các trang cần hiển thị
-  const getPageNumbers = () => {
-    const pages: (number | string)[] = [];
-    const maxVisible = 5; // Số trang tối đa hiển thị (không bao gồm prev/next)
-
-    if (totalPages <= maxVisible) {
-      // Hiển thị tất cả các trang nếu tổng số trang <= 5
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      // Luôn hiển thị trang đầu tiên
-      pages.push(1);
-
-      // Tính toán phạm vi các trang xung quanh trang hiện tại
-      const startPage = Math.max(2, currentPage - 1);
-      const endPage = Math.min(totalPages - 1, currentPage + 1);
-
-      // Thêm dấu ba chấm nếu cần
-      if (startPage > 2) {
-        pages.push('...');
-      }
-
-      // Thêm các trang xung quanh trang hiện tại
-      for (let i = startPage; i <= endPage; i++) {
-        pages.push(i);
-      }
-
-      // Thêm dấu ba chấm nếu cần
-      if (endPage < totalPages - 1) {
-        pages.push('...');
-      }
-
-      // Luôn hiển thị trang cuối cùng
-      pages.push(totalPages);
-    }
-
-    return pages;
-  };
-
-  const pageNumbers = getPageNumbers();
 
   return (
     <div className="pagin">
