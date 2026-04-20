@@ -50,6 +50,7 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                         "e.employee_email, " +
                         "e.employee_telephone, " +
                         "c.certification_name, " +
+                        "ec.start_date, " +
                         "ec.end_date, " +
                         "ec.score " +
                         "FROM employees e " +
@@ -83,4 +84,27 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                         @Param("sortEndDate") String sortEndDate,
                         @Param("limit") Integer limit,
                         @Param("offset") Integer offset);
+
+        // Lấy chi tiết nhân viên theo ID
+        @Query(value = "SELECT " +
+                        "e.employee_id, " +
+                        "e.department_id, " +
+                        "d.department_name, " +
+                        "e.employee_name, " +
+                        "e.employee_name_kana, " +
+                        "e.employee_birth_date, " +
+                        "e.employee_email, " +
+                        "e.employee_telephone, " +
+                        "e.employee_login_id, " +
+                        "ec.certification_id, " +
+                        "c.certification_name, " +
+                        "ec.start_date, " +
+                        "ec.end_date, " +
+                        "ec.score " +
+                        "FROM employees e " +
+                        "LEFT JOIN departments d ON e.department_id = d.department_id " +
+                        "LEFT JOIN employees_certifications ec ON e.employee_id = ec.employee_id " +
+                        "LEFT JOIN certifications c ON ec.certification_id = c.certification_id " +
+                        "WHERE e.employee_id = ?1", nativeQuery = true)
+        List<Object[]> getEmployeeById(Long employeeId);
 }

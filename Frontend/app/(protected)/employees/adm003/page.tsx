@@ -67,9 +67,9 @@ function EmployeeDetailContent() {
             <label className="col-form-label col-sm-2">電話番号</label>
             <div className="col-sm col-sm-10">{employee.employeeTelephone}</div>
           </li>
-          <li className="title mt-12"><a href="#!">日本語能力</a></li>
-          {employee.certificationName ? (
+          {employee.certificationName && (
             <>
+              <li className="title mt-12"><a href="#!">日本語能力</a></li>
               <li className="form-group row d-flex">
                 <label className="col-form-label col-sm-2">資格</label>
                 <div className="col-sm col-sm-10">{employee.certificationName}</div>
@@ -87,10 +87,6 @@ function EmployeeDetailContent() {
                 <div className="col-sm col-sm-10">{employee.score}</div>
               </li>
             </>
-          ) : (
-            <li className="form-group row d-flex">
-              <div className="col-sm col-sm-10 text-muted">資格情報なし</div>
-            </li>
           )}
           <li className="form-group row d-flex">
             <div className="btn-group col-sm col-sm-10 ml">

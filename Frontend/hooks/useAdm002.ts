@@ -16,7 +16,7 @@ import { LIMIT_PER_PAGE } from '@/lib/constants/config';
 const DEFAULT_SORT: Record<SortKey, SortDirection> = {
   employeeName: 'asc',
   certificationName: 'desc',
-  endDate: 'asc',
+  certificationEndDate: 'asc',
 };
 
 /**
@@ -71,7 +71,7 @@ export function useAdm002() {
         limit: LIMIT_PER_PAGE,
         sortEmployeeName: searchParams.sort.employeeName,
         sortCertificationName: searchParams.sort.certificationName,
-        sortEndDate: searchParams.sort.endDate,
+        sortEndDate: searchParams.sort.certificationEndDate,
       });
       setData(response);
     } catch (err: any) {

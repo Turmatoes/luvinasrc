@@ -12,6 +12,7 @@ import com.luvina.la.service.EmployeeService;
 import com.luvina.la.validate.EmployeeValidation;
 import com.luvina.la.config.Constants;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -116,6 +117,26 @@ public class EmployeeController {
             return response;
         } catch (Exception e) {
             // 3. Xử lý lỗi 500 (System Error) - Lấy giá trị từ No 1
+            return employeeService.buildErrorResponse(Constants.CODE_SYSTEM_ERROR, Constants.CODE_ER023, null);
+        }
+    }
+
+    /**
+     * Lấy chi tiết một nhân viên.
+     * 
+     * @param id ID của nhân viên từ URL
+     * @return EmployeeDTO nếu tìm thấy, hoặc lỗi System Error nếu ID không hợp lệ
+     */
+    @GetMapping("/employees/{id}")
+    public Object getEmployeeDetail(@PathVariable("id") Long id) {
+        try {
+            EmployeeDTO employee = employeeService.getEmployeeById(id);
+            if (employee == null) {
+                // Không tìm thấy nhân viên (Mã lỗi ER013)
+                return employeeService.buildErrorResponse(Constants.CODE_ER013);
+            }
+            return employee;
+        } catch (Exception e) {
             return employeeService.buildErrorResponse(Constants.CODE_SYSTEM_ERROR, Constants.CODE_ER023, null);
         }
     }

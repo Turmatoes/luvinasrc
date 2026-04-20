@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * DTO Employee chứa thông tin nhân viên.
@@ -29,14 +30,19 @@ public class EmployeeDTO implements Serializable {
     private String departmentName;
     private String employeeName;
     private String employeeNameKana;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate employeeBirthDate;
     private String employeeEmail;
     private String employeeTelephone;
     private String employeeLoginId;
     private String employeeLoginPassword;
 
+    private Long certificationId;
     private String certificationName;
-    private LocalDate endDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate certificationStartDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate certificationEndDate;
     private Double score;
 
     /**
@@ -46,15 +52,18 @@ public class EmployeeDTO implements Serializable {
      */
     public EmployeeDTO(Long employeeId, String employeeName, LocalDate employeeBirthDate,
             String departmentName, String employeeEmail, String employeeTelephone,
-            String certificationName, LocalDate endDate, Double score) {
+            Long certificationId, String certificationName, LocalDate certificationStartDate,
+            LocalDate certificationEndDate, Double score) {
         this.employeeId = employeeId;
         this.employeeName = employeeName;
         this.employeeBirthDate = employeeBirthDate;
         this.departmentName = departmentName;
         this.employeeEmail = employeeEmail;
         this.employeeTelephone = employeeTelephone;
+        this.certificationId = certificationId;
         this.certificationName = certificationName;
-        this.endDate = endDate;
+        this.certificationStartDate = certificationStartDate;
+        this.certificationEndDate = certificationEndDate;
         this.score = score;
     }
 }

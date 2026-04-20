@@ -74,9 +74,11 @@ public class EmployeeServiceImpl implements EmployeeService {
                         (String) row[3], // departmentName
                         (String) row[4], // employeeEmail
                         (String) row[5], // employeeTelephone
+                        null, // certificationId
                         (String) row[6], // certificationName
-                        convertSqlDateToLocalDate(row[7]), // endDate
-                        row[8] != null ? ((Number) row[8]).doubleValue() : null // score
+                        convertSqlDateToLocalDate(row[7]), // certificationStartDate
+                        convertSqlDateToLocalDate(row[8]), // certificationEndDate
+                        row[9] != null ? ((Number) row[9]).doubleValue() : null // score
                 ))
                 .collect(Collectors.toList());
     }
@@ -101,6 +103,37 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Long countEmployeesWithFilter(String employeeName, Long departmentId) {
         return employeeRepository.countEmployeesWithFilter(employeeName, departmentId);
+    }
+
+    /**
+     * Lấy chi tiết nhân viên theo ID.
+     */
+    @Override
+    public EmployeeDTO getEmployeeById(Long id) {
+        List<Object[]> rows = employeeRepository.getEmployeeById(id);
+        if (rows == null || rows.isEmpty()) {
+            return null;
+        }
+
+        Object[] row = rows.get(0);
+        // Mapping dữ liệu từ truy vấn native
+        EmployeeDTO dto = new EmployeeDTO();
+        dto.setEmployeeId(((Number) row[0]).longValue());
+        dto.setDepartmentId(((Number) row[1]).longValue());
+        dto.setDepartmentName((String) row[2]);
+        dto.setEmployeeName((String) row[3]);
+        dto.setEmployeeNameKana((String) row[4]);
+        dto.setEmployeeBirthDate(convertSqlDateToLocalDate(row[5]));
+        dto.setEmployeeEmail((String) row[6]);
+        dto.setEmployeeTelephone((String) row[7]);
+        dto.setEmployeeLoginId((String) row[8]);
+        dto.setCertificationId(row[9] != null ? ((Number) row[9]).longValue() : null);
+        dto.setCertificationName((String) row[10]);
+        dto.setCertificationStartDate(convertSqlDateToLocalDate(row[11]));
+        dto.setCertificationEndDate(convertSqlDateToLocalDate(row[12]));
+        dto.setScore(row[13] != null ? ((Number) row[13]).doubleValue() : null);
+
+        return dto;
     }
 
     @Override

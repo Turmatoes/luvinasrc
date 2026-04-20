@@ -25,7 +25,8 @@ export interface EmployeeListDTO {
   employeeEmail: string;
   employeeTelephone?: string;
   certificationName?: string;
-  endDate?: string; // DATE format (YYYY-MM-DD)
+  certificationStartDate?: string; // DATE format (YYYY-MM-DD)
+  certificationEndDate?: string; // DATE format (YYYY-MM-DD)
   score?: number;
 }
 

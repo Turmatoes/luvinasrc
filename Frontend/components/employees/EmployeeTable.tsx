@@ -10,7 +10,7 @@ import React from 'react';
 import { EmployeeListResponse } from '@/types/employee';
 
 export type SortDirection = 'asc' | 'desc';
-export type SortKey = 'employeeName' | 'certificationName' | 'endDate';
+export type SortKey = 'employeeName' | 'certificationName' | 'certificationEndDate';
 
 interface Props {
   data: EmployeeListResponse;
@@ -71,13 +71,13 @@ export default function EmployeeTable({ data, sort, onSort }: Props) {
           <div
             role="button"
             tabIndex={0}
-            onClick={() => onSort('endDate')}
+            onClick={() => onSort('certificationEndDate')}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') onSort('endDate');
+              if (e.key === 'Enter' || e.key === ' ') onSort('certificationEndDate');
             }}
             style={{ cursor: 'pointer', userSelect: 'none' }}
           >
-            失効日 {sortIcon(sort.endDate)}
+            失効日 {sortIcon(sort.certificationEndDate)}
           </div>
           <div>点数</div>
         </div>
@@ -93,7 +93,7 @@ export default function EmployeeTable({ data, sort, onSort }: Props) {
               <div>{emp.employeeEmail || ''}</div>
               <div>{emp.employeeTelephone || ''}</div>
               <div>{emp.certificationName || ''}</div>
-              <div>{emp.endDate || ''}</div>
+              <div>{emp.certificationEndDate || ''}</div>
               <div>{emp.score ?? ''}</div>
             </React.Fragment>
           ))}

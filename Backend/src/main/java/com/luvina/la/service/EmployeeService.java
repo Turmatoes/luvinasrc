@@ -68,4 +68,12 @@ public interface EmployeeService {
      * @return EmployeeListResponse chứa lỗi
      */
     EmployeeListResponse buildErrorResponse(String errorCode);
+
+    /**
+     * Lấy chi tiết nhân viên theo ID.
+     * 
+     * @param id ID của nhân viên
+     * @return EmployeeDTO chứa thông tin chi tiết
+     */
+    EmployeeDTO getEmployeeById(Long id);
 }
