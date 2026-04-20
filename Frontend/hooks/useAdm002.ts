@@ -94,6 +94,9 @@ export function useAdm002() {
 
   // --- Các hàm xử lý sự kiện (Actions) ---
 
+  /**
+   * Xử lý tìm kiếm nhân viên.
+   */
   const handleSearch = (name: string, deptId: number | null) => {
     setSearchParams(prev => ({
       ...prev,
@@ -103,10 +106,16 @@ export function useAdm002() {
     }));
   };
 
+  /**
+   * Xử lý thay đổi trang.
+   */
   const handlePageChange = (page: number) => {
     setSearchParams(prev => ({ ...prev, currentPage: page }));
   };
 
+  /**
+   * Xử lý sắp xếp.
+   */
   const handleSort = (key: SortKey) => {
     setSearchParams(prev => ({
       ...prev,
@@ -118,10 +127,16 @@ export function useAdm002() {
     }));
   };
 
+  /**
+   * Xử lý thay đổi phòng ban.
+   */
   const handleDepartmentChange = (deptId: number | null) => {
     setSearchParams(prev => ({ ...prev, departmentId: deptId }));
   };
 
+  /**
+   * Xử lý thay đổi tên nhân viên.
+   */
   const handleEmployeeNameChange = (name: string) => {
     setSearchParams(prev => ({ ...prev, employeeName: name }));
   };

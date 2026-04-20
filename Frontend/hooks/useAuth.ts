@@ -22,6 +22,10 @@ const useAuth = () => {
   }, [router]);
 };
 
+/**
+ * Hook xác thực người dùng.
+ * Kiểm tra token và chuyển hướng đến trang danh sách nhân viên nếu có token hoặc token đã hết hạn.
+ */
 const useGuest = () => {
   const router = useRouter();
 
