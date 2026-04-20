@@ -6,7 +6,7 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useAdm002 } from '@/hooks/useAdm002';
+import { useAdm002 } from '@/hooks/useadm002';
 import SearchForm from '@/components/employees/SearchForm';
 import EmployeeTable from '@/components/employees/EmployeeTable';
 import Pagination from '@/components/employees/Pagination';
