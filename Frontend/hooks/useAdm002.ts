@@ -11,7 +11,7 @@ import { EmployeeListResponse, DepartmentDTO } from '@/types/employee';
 import { SortDirection, SortKey } from '@/components/employees/EmployeeTable';
 import { getMessage } from '@/lib/utils/messageHelper';
 import { LIMIT_PER_PAGE, MAX_FULLNAME_LENGTH } from '@/lib/constants/config';
-
+import { getStorageKey, getSessionData, putSessionData } from '@/lib/utils/sessionStorage';
 
 const DEFAULT_SORT: Record<SortKey, SortDirection> = {
   employeeName: 'asc',
@@ -19,12 +19,19 @@ const DEFAULT_SORT: Record<SortKey, SortDirection> = {
   certificationEndDate: 'asc',
 };
 
-/**
- * Custom Hook useAdm002 quản lý toàn bộ trạng thái và logic nghiệp vụ cho Nhân viên.
- * Thực hiện theo mô hình: UI -> Hook -> API.
- * 
- * @returns Object chứa dữ liệu và các hàm thao tác
- */
+const LIST_STATE_KEY = getStorageKey('ADM002');
+
+interface SearchFormState {
+  employeeName: string;
+  departmentId: number | null;
+}
+
+interface SearchParamsState {
+  employeeName: string;
+  departmentId: number | null;
+  currentPage: number;
+  sort: Record<SortKey, SortDirection>;
+}
 export function useAdm002() {
   // Trạng thái dữ liệu
   const [data, setData] = useState<EmployeeListResponse | null>(null);
@@ -33,18 +40,29 @@ export function useAdm002() {
   const [departmentError, setDepartmentError] = useState<string | null>(null);
   const [employeeError, setEmployeeError] = useState<string | null>(null);
   const [employeeNameError, setEmployeeNameError] = useState<string | null>(null);
-  const [searchForm, setSearchForm] = useState({
-    employeeName: '',
-    departmentId: null as number | null,
+  const [searchForm, setSearchForm] = useState<SearchFormState>(() => {
+    const saved = getSessionData(LIST_STATE_KEY);
+    return saved?.searchForm || {
+      employeeName: '',
+      departmentId: null,
+    };
   });
 
   // Trạng thái bộ lọc và phân trang (State Orchestration)
-  const [searchParams, setSearchParams] = useState({
-    employeeName: '',
-    departmentId: null as number | null,
-    currentPage: 1,
-    sort: DEFAULT_SORT,
+  const [searchParams, setSearchParams] = useState<SearchParamsState>(() => {
+    const saved = getSessionData(LIST_STATE_KEY);
+    return saved?.searchParams || {
+      employeeName: '',
+      departmentId: null,
+      currentPage: 1,
+      sort: DEFAULT_SORT,
+    };
   });
+
+  // Đồng bộ trạng thái vào sessionStorage khi có thay đổi (Auto-sync)
+  useEffect(() => {
+    putSessionData(LIST_STATE_KEY, { searchForm, searchParams });
+  }, [searchForm, searchParams]);
 
   /**
    * Tải danh sách phòng ban khi hook khởi tạo.
@@ -55,7 +73,7 @@ export function useAdm002() {
         const response = await employeeApi.getDepartments();
         setDepartments(response);
       } catch (err) {
-        console.error('Failed to fetch departments:', err);
+        console.error('Lỗi khi tải danh sách phòng ban:', err);
         setDepartmentError(getMessage('ER023'));
       }
     };
@@ -101,13 +119,13 @@ export function useAdm002() {
         employees,
       });
     } catch (err: unknown) {
-      console.error('Failed to fetch employees:', err);
+      console.error('Lỗi khi tải danh sách nhân viên:', err);
       // Ưu tiên lấy mã lỗi từ Backend trả về
       const errorCode =
         typeof err === 'object' &&
-        err !== null &&
-        'response' in err &&
-        typeof (err as { response?: { data?: { code?: string } } }).response?.data?.code === 'string'
+          err !== null &&
+          'response' in err &&
+          typeof (err as { response?: { data?: { code?: string } } }).response?.data?.code === 'string'
           ? (err as { response?: { data?: { code?: string } } }).response?.data?.code ?? 'ER023'
           : 'ER023';
       setEmployeeError(getMessage(errorCode));

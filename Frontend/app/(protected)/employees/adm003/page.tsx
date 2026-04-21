@@ -21,7 +21,7 @@ function EmployeeDetailContent() {
   const { employee, loading, error, handleEdit, handleDelete, handleBack } = useAdm003();
 
   if (loading) {
-    return <div className="text-center py-4">Loading detail...</div>;
+    return <div className="text-center py-4">ローディング中...</div>;
   }
 
   if (error) {

@@ -11,16 +11,12 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { employeeApi } from '@/lib/api/employee.api';
 import { DepartmentDTO, CertificationDTO, EmployeeFormValues } from '@/types/employee';
 import { getMessage } from '@/lib/utils/messageHelper';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { createEmployeeSchema } from '@/lib/validation/employee';
+import { getStorageKey, getSessionData, putSessionData, clearSessionData } from '@/lib/utils/sessionStorage';
 
 // Key cho storage
-const STORAGE_KEY = 'ADM004_FORM_DATA';
-
-// ====== COMMENTED OUT FOR MANUAL TESTING ======
-// TODO: Enable validation after testing sessionStorage flow
-// Full Zod Schema (commented for testing)
-// const employeeSchema = z.object({...})
-
-// No validation schema for testing - form will submit without validation
+const STORAGE_KEY = getStorageKey('ADM004');
 
 /**
  * Custom Hook useAdm004 quản lý logic cho màn hình Nhập liệu nhân viên (Add/Edit).
@@ -32,7 +28,9 @@ export function useAdm004() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const employeeId = searchParams.get('id');
+  const modeBack = searchParams.get('mode');
   const isEditMode = !!employeeId;
+  const isBackFromADM005 = modeBack === 'back';
 
   const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
   const [certifications, setCertifications] = useState<CertificationDTO[]>([]);
@@ -49,70 +47,82 @@ export function useAdm004() {
     reset,
     formState: { errors },
   } = useForm<EmployeeFormValues>({
+    resolver: zodResolver(createEmployeeSchema(isEditMode)),
     defaultValues: {
+      employeeLoginId: '',
       departmentId: '',
+      employeeName: '',
+      employeeNameKana: '',
+      employeeBirthDate: '',
+      employeeEmail: '',
+      employeeTelephone: '',
+      employeeLoginPassword: '',
+      employeeLoginPasswordConfirm: '',
       certificationId: '',
+      certificationStartDate: '',
+      certificationEndDate: '',
+      score: '',
     },
   });
 
-  // sessionStorage để lưu dữ liệu form
-  const formData = watch();
-  useEffect(() => {
-    if (Object.keys(formData).length > 0 && initialized) {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
-      // DEBUG: Hiển thị sessionStorage data lên console
-      console.log('📝 [ADM004] Form Data Changed - Saving to sessionStorage:', formData);
-      console.log('🔍 [ADM004] sessionStorage Content:', sessionStorage.getItem(STORAGE_KEY));
-    }
-  }, [formData, initialized]);
-
-  // Tự động xóa các trường chứng chỉ khi không chọn chứng chỉ
-  const certificationId = watch('certificationId');
-  useEffect(() => {
-    if (!certificationId) {
+  /**
+  * Xử lý khi thay đổi chứng chỉ.
+  * Nếu người dùng bỏ chọn chứng chỉ, xóa giá trị các trường liên quan.
+  */
+  const handleCertificationChange = (value: string) => {
+    if (!value) {
       setValue('certificationStartDate', '');
       setValue('certificationEndDate', '');
       setValue('score', '');
     }
-  }, [certificationId, setValue]);
+  };
 
   /**
-   * Tải dữ liệu ban đầu (Departments, Certifications, và Employee nếu là Edit).
-   * Chỉ chạy một lần khi component mount
+   * Tải dữ liệu danh mục (Master Data).
+   */
+  const loadMasterData = async () => {
+    const [depts, certs] = await Promise.all([
+      employeeApi.getDepartments(),
+      employeeApi.getCertifications(),
+    ]);
+    setDepartments(depts);
+    setCertifications(certs);
+  };
+
+  /**
+   * Logic khởi tạo màn hình (ADM004).
+   * Phân tách rõ ràng các trường hợp: Quay lại từ ADM005, Edit Mode, và Add Mode.
    */
   useEffect(() => {
-    const initData = async () => {
-      console.log('🔄 [ADM004] initData EXECUTING...');
+    const initialize = async () => {
       setLoading(true);
       try {
-        const [depts, certs] = await Promise.all([
-          employeeApi.getDepartments(),
-          employeeApi.getCertifications(),
-        ]);
-        setDepartments(depts);
-        setCertifications(certs);
-        console.log('✅ [ADM004] Loaded departments and certifications');
+        // Luôn tải dữ liệu Master
+        await loadMasterData();
 
-        // Kiểm tra sessionStorage trước để lưu dữ liệu (Trường hợp làm mới hoặc quay lại từ ADM005)
-        const savedData = sessionStorage.getItem(STORAGE_KEY);
-        console.log('🔄 [ADM004] Init Data - isEditMode:', isEditMode, '| employeeId:', employeeId);
-        console.log('🔄 [ADM004] Saved sessionStorage data:', savedData);
-        
-        if (savedData) {
-          const parsedData = JSON.parse(savedData);
-          reset(parsedData);
-          console.log('✅ [ADM004] Loaded from sessionStorage:', parsedData);
-        } else if (isEditMode) {
-          // Nếu không có dữ liệu đã lưu và đang ở chế độ chỉnh sửa, tải từ API
-          const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId));
-          reset(detail);
-          console.log('✅ [ADM004] Loaded from API (Edit mode):', detail);
+        if (isBackFromADM005) {
+          // TH 1: Quay lại từ màn hình confirm (adm005 -> adm004)
+          const savedData = getSessionData(STORAGE_KEY);
+          if (savedData) {
+            reset(savedData);
+            // Xóa session ngay sau khi đọc để hỗ trợ kịch bản "Clear on Refresh" 
+            clearSessionData(STORAGE_KEY);
+          }
         } else {
-          console.log('✅ [ADM004] Fresh form (Add mode)');
+          // TH 2: Không phải từ confirm quay về
+          if (isEditMode) {
+            // Trường hợp chỉnh sửa (Edit) (adm003 -> adm004)
+            const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId));
+            reset(detail);
+          } else {
+            // Trường hợp thêm mới (Add) (adm002 -> adm004)
+            // Đảm bảo xóa dữ liệu cũ nếu không phải quay lại từ confirm
+            clearSessionData(STORAGE_KEY);
+          }
         }
         setInitialized(true);
       } catch (err) {
-        console.error('❌ [ADM004] Failed to init data:', err);
+        console.error('Lỗi khởi tạo:', err);
         setError(getMessage('ER023'));
         setInitialized(true);
       } finally {
@@ -120,34 +130,32 @@ export function useAdm004() {
       }
     };
 
-    initData();
-  }, []); // Empty dependency - run only once on mount
+    initialize();
+  }, [employeeId, isEditMode, isBackFromADM005, reset]);
 
   /**
-   * Xử lý gửi form tới trang xác nhận (ADM005).
+   * Xử lý gửi form tới trang xác nhận (adm004 -> adm005)
    */
   const onSubmit: SubmitHandler<EmployeeFormValues> = (values) => {
-    console.log('🎯 [ADM004] onSubmit handler TRIGGERED');
-    // Lưu vào sessionStorage để ADM005 lấy ra xử lý tiếp
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(values));
-    console.log('📤 [ADM004] Form Submitted - Navigating to ADM005');
-    console.log('📤 [ADM004] Form data sent to sessionStorage:', values);
-    router.push('/employees/adm005');
+    // Chỉ lưu dữ liệu từ form vào sessionStorage (employeeId đã được quản lý riêng qua Router)
+    putSessionData(STORAGE_KEY, values);
+
+    // Employee ID KHÔNG được truyền qua session mà phải truyền qua router (URL params)
+    const nextPath = employeeId ? `/employees/adm005?id=${employeeId}` : '/employees/adm005';
+    router.push(nextPath);
   };
 
   /**
-   * Xử lý quay lại trang danh sách.
+   * Xử lý quay lại trang danh sách (adm002 -> adm004)
    */
   const handleBack = () => {
-    console.log('⬅️ [ADM004] Back button clicked - Clearing sessionStorage');
-    sessionStorage.removeItem(STORAGE_KEY);
+    clearSessionData(STORAGE_KEY);
     router.push('/employees/adm002');
   };
 
   return {
     register,
     handleSubmit: handleSubmit(onSubmit, (error) => {
-      console.log('❌ [ADM004] handleSubmit validation FAILED:', error);
     }),
     errors,
     setValue,
@@ -158,5 +166,6 @@ export function useAdm004() {
     error,
     isEditMode,
     handleBack,
+    handleCertificationChange,
   };
 }

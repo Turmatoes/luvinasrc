@@ -39,7 +39,7 @@ export function useAdm003() {
       const data = await employeeApi.getEmployeeDetail(parseInt(id));
       setEmployee(data);
     } catch (err) {
-      console.error('Failed to fetch employee detail:', err);
+      console.error('Lỗi khi tải dữ liệu nhân viên:', err);
       setError(getMessage('ER023'));
     } finally {
       setLoading(false);
@@ -62,9 +62,9 @@ export function useAdm003() {
    */
   const handleDelete = async () => {
     if (window.confirm(MESSAGES.MSG004)) {
-       // Logic xóa sẽ được triển khai sau khi có API
-       console.log('Deleting employee:', id);
-       router.push('/employees/adm006');
+      // Logic xóa sẽ được triển khai sau khi có API
+      console.log('Xóa nhân viên:', id);
+      router.push('/employees/adm006');
     }
   };
 

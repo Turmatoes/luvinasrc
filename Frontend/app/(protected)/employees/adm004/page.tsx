@@ -23,7 +23,6 @@ function EmployeeInputPageContent() {
 
   const { loading, error } = hookData;
 
-  console.log('📋 [ADM004 Page] hookData.handleSubmit type:', typeof hookData.handleSubmit);
 
   if (loading) {
     return <div className="text-center py-4">Loading data...</div>;

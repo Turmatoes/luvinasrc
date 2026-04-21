@@ -69,7 +69,7 @@ export default function EmployeeListPage() {
       />
 
       {/* Trạng thái Loading */}
-      {loading && <div className="text-center py-4">Đang tải...</div>}
+      {loading && <div className="text-center py-4">ローディング中...</div>}
 
       {/* Thông báo không tìm thấy dữ liệu */}
       {!loading && data && employees.length === 0 && (
