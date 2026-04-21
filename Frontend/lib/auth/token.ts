@@ -5,28 +5,28 @@
  */
 
 /**
- * Lưu token vào session storage.
+ * Lưu token vào local storage.
  * 
  * @param token Token cần lưu
  * @param tokenType Loại token
  */
 export function storeToken(token: string, tokenType: string) {
   if (typeof window !== 'undefined') {
-    sessionStorage.setItem('access_token', token);
-    sessionStorage.setItem('token_type', tokenType);
+    localStorage.setItem('access_token', token);
+    localStorage.setItem('token_type', tokenType);
   }
 }
 
 /**
- * Lấy token từ session storage.
+ * Lấy token từ local storage.
  * 
  * @returns Object chứa access token và token type, hoặc null nếu không có token
  */
 export function getToken(): { accessToken: string; tokenType: string } | null {
   if (typeof window === 'undefined') return null;
 
-  const accessToken = sessionStorage.getItem('access_token');
-  const tokenType = sessionStorage.getItem('token_type');
+  const accessToken = localStorage.getItem('access_token');
+  const tokenType = localStorage.getItem('token_type');
 
   if (accessToken && tokenType) {
     return { accessToken, tokenType };
@@ -35,12 +35,12 @@ export function getToken(): { accessToken: string; tokenType: string } | null {
 }
 
 /**
- * Xóa token khỏi session storage.
+ * Xóa token khỏi local storage.
  */
 export function removeToken() {
   if (typeof window !== 'undefined') {
-    sessionStorage.removeItem('access_token');
-    sessionStorage.removeItem('token_type');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('token_type');
   }
 }
 

@@ -416,6 +416,10 @@ select {
   border-color: #5b6975;
 }
 
+.btn-group .btn + .btn {
+  margin-left: 8px;
+}
+
 .search-memb .c-form .d-flex {
   justify-content: space-between;
 }

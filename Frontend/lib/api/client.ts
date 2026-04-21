@@ -25,7 +25,7 @@ export function setupInterceptors(client: ReturnType<typeof axios.create>) {
   client.interceptors.request.use(
     (config) => {
       if (typeof window !== 'undefined') {
-        const token = sessionStorage.getItem('access_token');
+        const token = localStorage.getItem('access_token');
         if (token) {
           if (config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -44,8 +44,8 @@ export function setupInterceptors(client: ReturnType<typeof axios.create>) {
     (error) => {
       if (error.response?.status === 401) {
         if (typeof window !== 'undefined') {
-          sessionStorage.removeItem('access_token');
-          sessionStorage.removeItem('token_type');
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('token_type');
           window.location.href = '/adm001';
         }
       }
