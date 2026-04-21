@@ -34,7 +34,7 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                         "FROM employees e " +
                         "INNER JOIN departments d ON e.department_id = d.department_id " +
                         "WHERE (e.role IS NULL OR e.role = 0) " +
-                        "AND (:employeeName IS NULL OR :employeeName = '' OR e.employee_name LIKE CONCAT('%', :employeeName, '%')) "
+                        "AND (:employeeName IS NULL OR :employeeName = '' OR e.employee_name LIKE CONCAT('%', :employeeName, '%') ESCAPE '\\\\') "
                         +
                         "AND (:departmentId IS NULL OR e.department_id = :departmentId)", nativeQuery = true)
         Long countEmployeesWithFilter(
@@ -58,7 +58,7 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                         "LEFT JOIN employees_certifications ec ON e.employee_id = ec.employee_id " +
                         "LEFT JOIN certifications c ON ec.certification_id = c.certification_id " +
                         "WHERE (e.role IS NULL OR e.role = 0) " +
-                        "AND (:employeeName IS NULL OR :employeeName = '' OR e.employee_name LIKE CONCAT('%', :employeeName, '%')) "
+                        "AND (:employeeName IS NULL OR :employeeName = '' OR e.employee_name LIKE CONCAT('%', :employeeName, '%') ESCAPE '\\\\') "
                         +
                         "AND (:departmentId IS NULL OR e.department_id = :departmentId) " +
                         "ORDER BY " +

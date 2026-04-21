@@ -6,19 +6,19 @@
 
 package com.luvina.la.controller;
 
+import com.luvina.la.config.Constants;
 import com.luvina.la.dto.EmployeeDTO;
 import com.luvina.la.payload.EmployeeListResponse;
 import com.luvina.la.service.EmployeeService;
 import com.luvina.la.validate.EmployeeValidation;
-import com.luvina.la.config.Constants;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -61,12 +61,13 @@ public class EmployeeController {
             @RequestParam(value = "employeeName", required = false, defaultValue = "") String employeeName,
             @RequestParam(value = "departmentId", required = false) Long departmentId,
             @RequestParam(value = "sortEmployeeName", required = false, defaultValue = "asc") String sortEmployeeName,
-            @RequestParam(value = "sortCertificationName", required = false, defaultValue = "desc") String sortCertificationName,
+            @RequestParam(value = "sortCertificationName", required = false, defaultValue = "asc") String sortCertificationName,
             @RequestParam(value = "sortEndDate", required = false, defaultValue = "asc") String sortEndDate,
             @RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit,
             @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset) {
 
         try {
+            String normalizedEmployeeName = employeeName == null ? "" : employeeName.trim();
             // 1.1 Validate param [ord_employee_name],
             // [ord_certification_name],[ord_end_date]
             if (!employeeValidation.isValidSort(sortEmployeeName)
@@ -77,19 +78,38 @@ public class EmployeeController {
 
             // 1.2 Validate param [offset]
             if (!employeeValidation.isPositiveInteger(offset)) {
-                return employeeService.buildErrorResponse(Constants.CODE_ER018, Constants.CODE_ER018,
+                return employeeService.buildErrorResponse(
+                        Constants.CODE_ER018,
+                        Constants.CODE_ER018,
                         Arrays.asList("オフセット"));
             }
 
             // 1.3 Validate param [limit]
             if (!employeeValidation.isPositiveInteger(limit)) {
-                return employeeService.buildErrorResponse(Constants.CODE_ER018, Constants.CODE_ER018,
+                return employeeService.buildErrorResponse(
+                        Constants.CODE_ER018,
+                        Constants.CODE_ER018,
                         Arrays.asList("リミット"));
             }
 
+            // 1.4 Validate param [employee_name]
+            if (!employeeValidation.isValidMaxLength(
+                    normalizedEmployeeName,
+                    Constants.MAX_EMPLOYEE_NAME_LENGTH)) {
+                return employeeService.buildErrorResponse(
+                        Constants.CODE_ER006,
+                        Constants.CODE_ER006,
+                        Arrays.asList(
+                                Constants.PARAM_EMPLOYEE_NAME,
+                                String.valueOf(Constants.MAX_EMPLOYEE_NAME_LENGTH)));
+            }
+
+            String escapedEmployeeName = normalizedEmployeeName.isEmpty()
+                    ? null
+                    : employeeValidation.escapeLikePattern(normalizedEmployeeName);
             // 2.1 Lấy tổng số nhân viên
             Long totalRecords = employeeService.countEmployeesWithFilter(
-                    employeeName.isEmpty() ? null : employeeName,
+                    escapedEmployeeName,
                     departmentId);
 
             List<EmployeeDTO> employees = new ArrayList<>();
@@ -97,7 +117,7 @@ public class EmployeeController {
             if (totalRecords > 0) {
                 // 2.2 Lấy danh sách từ DB
                 employees = employeeService.getListEmployee(
-                        employeeName.isEmpty() ? null : employeeName,
+                        escapedEmployeeName,
                         departmentId,
                         sortEmployeeName.toLowerCase(),
                         sortCertificationName.toLowerCase(),
@@ -113,10 +133,10 @@ public class EmployeeController {
             response.setEmployees(employees);
             response.setParams(new ArrayList<>()); // Đảm bảo params luôn là [] theo thiết kế
             response.setMessage(null); // Không có lỗi thì message ẩn đi
-            
+
             return response;
         } catch (Exception e) {
-            // 3. Xử lý lỗi 500 (System Error) - Lấy giá trị từ No 1
+            // 3. Xử lý lỗi 500 (System Error)
             return employeeService.buildErrorResponse(Constants.CODE_SYSTEM_ERROR, Constants.CODE_ER023, null);
         }
     }
@@ -140,5 +160,4 @@ public class EmployeeController {
             return employeeService.buildErrorResponse(Constants.CODE_SYSTEM_ERROR, Constants.CODE_ER023, null);
         }
     }
-
 }

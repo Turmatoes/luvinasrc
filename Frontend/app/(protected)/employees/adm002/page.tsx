@@ -28,6 +28,8 @@ export default function EmployeeListPage() {
     loading,
     departmentError,
     employeeError,
+    employeeNameError,
+    searchForm,
     filters,
     totalPages,
     pageNumbers,
@@ -58,8 +60,9 @@ export default function EmployeeListPage() {
       {/* Form tìm kiếm */}
       <SearchForm
         departments={departments}
-        selectedDepartmentId={filters.departmentId}
-        employeeName={filters.employeeName}
+        selectedDepartmentId={searchForm.departmentId}
+        employeeName={searchForm.employeeName}
+        employeeNameError={employeeNameError}
         onDepartmentChange={handleDepartmentChange}
         onEmployeeNameChange={handleEmployeeNameChange}
         onSearch={handleSearch}

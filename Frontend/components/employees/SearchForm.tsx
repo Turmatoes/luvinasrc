@@ -7,7 +7,6 @@
 
 import { useRouter } from 'next/navigation';
 import { DepartmentDTO } from '@/types/employee';
-import { MAX_FULLNAME_LENGTH } from '@/lib/constants/config';
 
 /**
  * Interface cho props của SearchForm.
@@ -16,12 +15,11 @@ interface SearchFormProps {
   departments: DepartmentDTO[];
   selectedDepartmentId: number | null;
   employeeName: string;
+  employeeNameError: string | null;
   onDepartmentChange: (departmentId: number | null) => void;
   onEmployeeNameChange: (name: string) => void;
   onSearch: (name: string, departmentId: number | null) => void;
 }
-
-
 
 /**
  * Component hiển thị form tìm kiếm nhân viên.
@@ -38,6 +36,7 @@ export default function SearchForm({
   departments,
   selectedDepartmentId,
   employeeName,
+  employeeNameError,
   onDepartmentChange,
   onEmployeeNameChange,
   onSearch,
@@ -45,11 +44,7 @@ export default function SearchForm({
   const router = useRouter();
 
   const handleFullnameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Giới hạn ký tự nhập vào
-    if (value.length <= MAX_FULLNAME_LENGTH) {
-      onEmployeeNameChange(value);
-    }
+    onEmployeeNameChange(e.target.value);
   };
 
   const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -74,8 +69,13 @@ export default function SearchForm({
                 type="text"
                 value={employeeName}
                 onChange={handleFullnameChange}
-                maxLength={MAX_FULLNAME_LENGTH}
+                className={`form-control ${employeeNameError ? 'is-invalid' : ''}`}
               />
+              {employeeNameError && (
+                <div className="invalid-feedback" style={{ display: 'block' }}>
+                  {employeeNameError}
+                </div>
+              )}
             </div>
           </li>
           <li className="form-group row">

@@ -48,6 +48,7 @@ public class Constants {
 
         // Các mã định danh lỗi hệ thống
         public static final String CODE_ER001 = "ER001";
+        public static final String CODE_ER006 = "ER006";
         public static final String CODE_ER013 = "ER013";
         public static final String CODE_ER014 = "ER014";
         public static final String CODE_ER015 = "ER015";
@@ -56,4 +57,7 @@ public class Constants {
         public static final String CODE_ER021 = "ER021";
         public static final String CODE_ER022 = "ER022";
         public static final String CODE_ER023 = "ER023";
+
+        public static final int MAX_EMPLOYEE_NAME_LENGTH = 125;
+        public static final String PARAM_EMPLOYEE_NAME = "氏名";
 }

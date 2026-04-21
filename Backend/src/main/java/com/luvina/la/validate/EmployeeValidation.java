@@ -40,4 +40,35 @@ public class EmployeeValidation {
             return true;
         return val >= 0;
     }
+
+    /**
+     * Kiểm tra độ dài tối đa của chuỗi.
+     *
+     * @param value     Giá trị cần kiểm tra
+     * @param maxLength Độ dài tối đa
+     * @return true nếu hợp lệ, ngược lại false
+     */
+    public boolean isValidMaxLength(String value, int maxLength) {
+        if (value == null) {
+            return true;
+        }
+        return value.length() <= maxLength;
+    }
+
+    /**
+     * Escape các ký tự đặc biệt cho toán tử LIKE.
+     *
+     * @param value Giá trị tìm kiếm
+     * @return Giá trị đã được escape
+     */
+    public String escapeLikePattern(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        return value
+                .replace("\\", "\\\\")
+                .replace("%", "\\%")
+                .replace("_", "\\_");
+    }
 }

@@ -10,12 +10,12 @@ import { employeeApi } from '@/lib/api/employee.api';
 import { EmployeeListResponse, DepartmentDTO } from '@/types/employee';
 import { SortDirection, SortKey } from '@/components/employees/EmployeeTable';
 import { getMessage } from '@/lib/utils/messageHelper';
-import { LIMIT_PER_PAGE } from '@/lib/constants/config';
+import { LIMIT_PER_PAGE, MAX_FULLNAME_LENGTH } from '@/lib/constants/config';
 
 
 const DEFAULT_SORT: Record<SortKey, SortDirection> = {
   employeeName: 'asc',
-  certificationName: 'desc',
+  certificationName: 'asc',
   certificationEndDate: 'asc',
 };
 
@@ -32,6 +32,11 @@ export function useAdm002() {
   const [loading, setLoading] = useState(true);
   const [departmentError, setDepartmentError] = useState<string | null>(null);
   const [employeeError, setEmployeeError] = useState<string | null>(null);
+  const [employeeNameError, setEmployeeNameError] = useState<string | null>(null);
+  const [searchForm, setSearchForm] = useState({
+    employeeName: '',
+    departmentId: null as number | null,
+  });
 
   // Trạng thái bộ lọc và phân trang (State Orchestration)
   const [searchParams, setSearchParams] = useState({
@@ -125,9 +130,19 @@ export function useAdm002() {
    * Xử lý tìm kiếm nhân viên.
    */
   const handleSearch = (name: string, deptId: number | null) => {
+    const normalizedName = name.trim();
+
+    if (normalizedName.length > MAX_FULLNAME_LENGTH) {
+      setEmployeeNameError(
+        getMessage('ER006', ['氏名', MAX_FULLNAME_LENGTH])
+      );
+      return;
+    }
+
+    setEmployeeNameError(null);
     setSearchParams(prev => ({
       ...prev,
-      employeeName: name,
+      employeeName: normalizedName,
       departmentId: deptId,
       currentPage: 1, // Reset về trang 1 khi tìm kiếm mới
     }));
@@ -158,14 +173,18 @@ export function useAdm002() {
    * Xử lý thay đổi phòng ban.
    */
   const handleDepartmentChange = (deptId: number | null) => {
-    setSearchParams(prev => ({ ...prev, departmentId: deptId }));
+    setSearchForm(prev => ({ ...prev, departmentId: deptId }));
   };
 
   /**
    * Xử lý thay đổi tên nhân viên.
    */
   const handleEmployeeNameChange = (name: string) => {
-    setSearchParams(prev => ({ ...prev, employeeName: name }));
+    setSearchForm(prev => ({ ...prev, employeeName: name }));
+
+    if (name.trim().length <= MAX_FULLNAME_LENGTH) {
+      setEmployeeNameError(null);
+    }
   };
 
   /**
@@ -221,6 +240,8 @@ export function useAdm002() {
     loading,
     departmentError,
     employeeError,
+    employeeNameError,
+    searchForm,
     // Trạng thái hiện tại của bộ lọc
     filters: searchParams,
     totalPages: data ? Math.ceil(data.totalRecords / LIMIT_PER_PAGE) : 0,
