@@ -176,6 +176,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         return json.toString();
     }
 
+    /**
+     * Xây dựng response lỗi với mã lỗi và danh sách tham số.
+     * 
+     * @param errorCode Mã lỗi
+     * @return EmployeeListResponse chứa thông tin lỗi
+     */
     @Override
     public EmployeeListResponse buildErrorResponse(String errorCode) {
         return buildErrorResponse(errorCode, errorCode, new ArrayList<>());

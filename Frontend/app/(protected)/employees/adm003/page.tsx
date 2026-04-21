@@ -106,7 +106,7 @@ function EmployeeDetailContent() {
  */
 export default function EmployeeDetailPage() {
   return (
-    <Suspense fallback={<div>Loading page...</div>}>
+    <Suspense fallback={<div>ローディング中...</div>}>
       <EmployeeDetailContent />
     </Suspense>
   );

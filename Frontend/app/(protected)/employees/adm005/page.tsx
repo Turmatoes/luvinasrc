@@ -28,7 +28,7 @@ function EmployeeConfirmPageContent() {
   } = useAdm005();
 
   if (loading || !formData) {
-    return <div className="text-center py-4">Loading...</div>;
+    return <div className="text-center py-4">ローディング中...</div>;
   }
 
   return (
@@ -105,7 +105,7 @@ function EmployeeConfirmPageContent() {
  */
 export default function EmployeeConfirmPage() {
   return (
-    <Suspense fallback={<div>Loading page...</div>}>
+    <Suspense fallback={<div>ローディング中...</div>}>
       <EmployeeConfirmPageContent />
     </Suspense>
   );

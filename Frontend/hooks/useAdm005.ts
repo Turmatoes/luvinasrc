@@ -33,20 +33,22 @@ export function useAdm005() {
     const [loading, setLoading] = useState(true);
 
     /**
-     * Tải dữ liệu từ sessionStorage
+     * Thực hiện lấy dữ liệu từ sessionStorage hiển thị lên màn hình adm005
      */
     useEffect(() => {
         setLoading(true);
         try {
             // Đọc dữ liệu từ sessionStorage
-            const savedData = getSessionData(STORAGE_KEY);
-            if (savedData) {
-                setFormData(savedData);
+            const employeeData = getSessionData(STORAGE_KEY);
+            if (employeeData) {
+                setFormData(employeeData);
             } else {
+                // redirect lại màn hình adm004 nếu như không có dữ liệu trên sessionStorage
                 router.push('/employees/adm004');
                 return;
             }
         } catch (err) {
+            // redirect lại màn hình adm004 nếu có lỗi xảy ra
             router.push('/employees/adm004');
         } finally {
             setLoading(false);
@@ -58,7 +60,7 @@ export function useAdm005() {
      */
     const handleConfirm = async () => {
         try {
-            // Xóa sessionStorage khi nhấn OK
+            // Xóa sessionStorage khi nhấn OK và đẩy dữ liệu vào DB
             clearSessionData(STORAGE_KEY);
             router.push('/employees/adm006');
         } catch (err) {

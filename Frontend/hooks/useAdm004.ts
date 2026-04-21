@@ -97,7 +97,7 @@ export function useAdm004() {
     const initialize = async () => {
       setLoading(true);
       try {
-        // Luôn tải dữ liệu Master
+        // Fetch data phòng ban và chứng chỉ 
         await loadMasterData();
 
         if (isBackFromADM005) {
@@ -109,7 +109,6 @@ export function useAdm004() {
             clearSessionData(STORAGE_KEY);
           }
         } else {
-          // TH 2: Không phải từ confirm quay về
           if (isEditMode) {
             // Trường hợp chỉnh sửa (Edit) (adm003 -> adm004)
             const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId));

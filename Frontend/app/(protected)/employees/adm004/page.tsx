@@ -25,7 +25,7 @@ function EmployeeInputPageContent() {
 
 
   if (loading) {
-    return <div className="text-center py-4">Loading data...</div>;
+    return <div className="text-center py-4">ローディング中...</div>;
   }
 
   return (
@@ -35,7 +35,7 @@ function EmployeeInputPageContent() {
           {error}
         </div>
       )}
-      
+
       {/* Giao diện Form nhập liệu */}
       <EmployeeInputForm {...hookData} />
     </>
@@ -47,7 +47,7 @@ function EmployeeInputPageContent() {
  */
 export default function EmployeeEditPage() {
   return (
-    <Suspense fallback={<div>Loading page...</div>}>
+    <Suspense fallback={<div>ローディング中...</div>}>
       <EmployeeInputPageContent />
     </Suspense>
   );
