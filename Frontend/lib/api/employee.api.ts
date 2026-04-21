@@ -54,11 +54,11 @@ export const employeeApi = {
   getCertifications: async (): Promise<CertificationDTO[]> => {
     // Tạm thời mock dữ liệu Frontend trước khi có Backend API
     return [
-      { certificationId: 1, certificationName: 'N1' },
-      { certificationId: 2, certificationName: 'N2' },
-      { certificationId: 3, certificationName: 'N3' },
-      { certificationId: 4, certificationName: 'N4' },
-      { certificationId: 5, certificationName: 'N5' },
+      { certificationId: 1, certificationName: 'Trình độ tiếng Nhật cấp 1' },
+      { certificationId: 2, certificationName: 'Trình độ tiếng Nhật cấp 2' },
+      { certificationId: 3, certificationName: 'Trình độ tiếng Nhật cấp 3' },
+      { certificationId: 4, certificationName: 'Trình độ tiếng Nhật cấp 4' },
+      { certificationId: 5, certificationName: 'Trình độ tiếng Nhật cấp 5' },
     ];
     // Khi có Backend, sử dụng:
     // const response = await apiClient.get<CertificationDTO[]>('/certifications');

@@ -41,6 +41,7 @@ export default function EmployeeInputForm({
   isEditMode,
   handleBack,
 }: EmployeeInputFormProps) {
+  console.log('🔴 [EmployeeInputForm] Component Rendered - handleSubmit type:', typeof handleSubmit);
   // Giá trị DatePickers
   const birthDateVal = watch('employeeBirthDate');
   const birthDate = birthDateVal ? new Date(birthDateVal) : null;
@@ -75,14 +76,15 @@ export default function EmployeeInputForm({
         <ul>
           <li className="title">{isEditMode ? '会員情報編集' : '会員情報登録'}</li>
 
+          {/* ====== COMMENTED FOR TESTING ====== */}
           {/* Hiển thị lỗi tổng hợp nếu có */}
-          {Object.keys(errors).length > 0 && (
+          {/* {Object.keys(errors).length > 0 && (
             <li className="box-err">
               <div className="box-err-content">
                 入力内容に不備があります。各項目のメッセージを確認してください。
               </div>
             </li>
-          )}
+          )} */}
 
           {/* アカウント名*/}
           <li className="form-group row d-flex">
@@ -92,11 +94,11 @@ export default function EmployeeInputForm({
             <div className="col-sm col-sm-10">
               <input
                 type="text"
-                className={`form-control ${errors.employeeLoginId ? 'is-invalid' : ''}`}
+                className={`form-control`}
                 {...register('employeeLoginId')}
                 disabled={isEditMode}
               />
-              {errors.employeeLoginId && <div className="invalid-feedback">{errors.employeeLoginId.message}</div>}
+              {/* {errors.employeeLoginId && <div className="invalid-feedback">{errors.employeeLoginId.message}</div>} */}
             </div>
           </li>
 
@@ -107,7 +109,7 @@ export default function EmployeeInputForm({
             </label>
             <div className="col-sm col-sm-10">
               <select
-                className={`form-control ${errors.departmentId ? 'is-invalid' : ''}`}
+                className={`form-control`}
                 {...register('departmentId')}
               >
                 <option value="">選択してください</option>
@@ -117,7 +119,7 @@ export default function EmployeeInputForm({
                   </option>
                 ))}
               </select>
-              {errors.departmentId && <div className="invalid-feedback">{errors.departmentId.message}</div>}
+              {/* {errors.departmentId && <div className="invalid-feedback">{errors.departmentId.message}</div>} */}
             </div>
           </li>
 
@@ -129,10 +131,10 @@ export default function EmployeeInputForm({
             <div className="col-sm col-sm-10">
               <input
                 type="text"
-                className={`form-control ${errors.employeeName ? 'is-invalid' : ''}`}
+                className={`form-control`}
                 {...register('employeeName')}
               />
-              {errors.employeeName && <div className="invalid-feedback">{errors.employeeName.message}</div>}
+              {/* {errors.employeeName && <div className="invalid-feedback">{errors.employeeName.message}</div>} */}
             </div>
           </li>
 
@@ -144,10 +146,10 @@ export default function EmployeeInputForm({
             <div className="col-sm col-sm-10">
               <input
                 type="text"
-                className={`form-control ${errors.employeeNameKana ? 'is-invalid' : ''}`}
+                className={`form-control`}
                 {...register('employeeNameKana')}
               />
-              {errors.employeeNameKana && <div className="invalid-feedback">{errors.employeeNameKana.message}</div>}
+              {/* {errors.employeeNameKana && <div className="invalid-feedback">{errors.employeeNameKana.message}</div>} */}
             </div>
           </li>
 
@@ -164,11 +166,11 @@ export default function EmployeeInputForm({
                   selected={birthDate}
                   onChange={(date: Date | null) => setValue('employeeBirthDate', formatDate(date))}
                   dateFormat="yyyy/MM/dd"
-                  className={`form-control ${errors.employeeBirthDate ? 'is-invalid' : ''}`}
+                  className={`form-control`}
                 />
                 <span className="glyphicon glyphicon-calendar" onClick={() => birthDateRef.current?.setFocus()}></span>
               </div>
-              {errors.employeeBirthDate && <div className="text-danger small mt-1">{errors.employeeBirthDate.message}</div>}
+              {/* {errors.employeeBirthDate && <div className="text-danger small mt-1">{errors.employeeBirthDate.message}</div>} */}
             </div>
           </li>
 
@@ -180,10 +182,10 @@ export default function EmployeeInputForm({
             <div className="col-sm col-sm-10">
               <input
                 type="text"
-                className={`form-control ${errors.employeeEmail ? 'is-invalid' : ''}`}
+                className={`form-control`}
                 {...register('employeeEmail')}
               />
-              {errors.employeeEmail && <div className="invalid-feedback">{errors.employeeEmail.message}</div>}
+              {/* {errors.employeeEmail && <div className="invalid-feedback">{errors.employeeEmail.message}</div>} */}
             </div>
           </li>
 
@@ -195,10 +197,10 @@ export default function EmployeeInputForm({
             <div className="col-sm col-sm-10">
               <input
                 type="text"
-                className={`form-control ${errors.employeeTelephone ? 'is-invalid' : ''}`}
+                className={`form-control`}
                 {...register('employeeTelephone')}
               />
-              {errors.employeeTelephone && <div className="invalid-feedback">{errors.employeeTelephone.message}</div>}
+              {/* {errors.employeeTelephone && <div className="invalid-feedback">{errors.employeeTelephone.message}</div>} */}
             </div>
           </li>
 
@@ -210,10 +212,10 @@ export default function EmployeeInputForm({
             <div className="col-sm col-sm-10">
               <input
                 type="password"
-                className={`form-control ${errors.employeeLoginPassword ? 'is-invalid' : ''}`}
+                className={`form-control`}
                 {...register('employeeLoginPassword')}
               />
-              {errors.employeeLoginPassword && <div className="invalid-feedback">{errors.employeeLoginPassword.message}</div>}
+              {/* {errors.employeeLoginPassword && <div className="invalid-feedback">{errors.employeeLoginPassword.message}</div>} */}
             </div>
           </li>
 
@@ -225,10 +227,10 @@ export default function EmployeeInputForm({
             <div className="col-sm col-sm-10">
               <input
                 type="password"
-                className={`form-control ${errors.employeeLoginPasswordConfirm ? 'is-invalid' : ''}`}
+                className={`form-control`}
                 {...register('employeeLoginPasswordConfirm')}
               />
-              {errors.employeeLoginPasswordConfirm && <div className="invalid-feedback">{errors.employeeLoginPasswordConfirm.message}</div>}
+              {/* {errors.employeeLoginPasswordConfirm && <div className="invalid-feedback">{errors.employeeLoginPasswordConfirm.message}</div>} */}
             </div>
           </li>
 
@@ -241,7 +243,7 @@ export default function EmployeeInputForm({
             </label>
             <div className="col-sm col-sm-10">
               <select
-                className={`form-control ${errors.certificationId ? 'is-invalid' : ''}`}
+                className={`form-control`}
                 {...register('certificationId')}
               >
                 <option value="">選択してください</option>
@@ -267,12 +269,12 @@ export default function EmployeeInputForm({
                   selected={certificationStartDate}
                   onChange={(date: Date | null) => setValue('certificationStartDate', formatDate(date))}
                   dateFormat="yyyy/MM/dd"
-                  className={`form-control ${errors.certificationStartDate ? 'is-invalid' : ''}`}
+                  className={`form-control`}
                   disabled={isCertDisabled}
                 />
                 <span className="glyphicon glyphicon-calendar" onClick={() => certificationStartDateRef.current?.setFocus()}></span>
               </div>
-              {errors.certificationStartDate && <div className="text-danger small mt-1">{errors.certificationStartDate.message}</div>}
+              {/* {errors.certificationStartDate && <div className="text-danger small mt-1">{errors.certificationStartDate.message}</div>} */}
             </div>
           </li>
 
@@ -289,12 +291,12 @@ export default function EmployeeInputForm({
                   selected={certificationEndDate}
                   onChange={(date: Date | null) => setValue('certificationEndDate', formatDate(date))}
                   dateFormat="yyyy/MM/dd"
-                  className={`form-control ${errors.certificationEndDate ? 'is-invalid' : ''}`}
+                  className={`form-control`}
                   disabled={isCertDisabled}
                 />
                 <span className="glyphicon glyphicon-calendar" onClick={() => certificationEndDateRef.current?.setFocus()}></span>
               </div>
-              {errors.certificationEndDate && <div className="text-danger small mt-1">{errors.certificationEndDate.message}</div>}
+              {/* {errors.certificationEndDate && <div className="text-danger small mt-1">{errors.certificationEndDate.message}</div>} */}
             </div>
           </li>
 
@@ -306,17 +308,23 @@ export default function EmployeeInputForm({
             <div className="col-sm col-sm-10">
               <input
                 type="text"
-                className={`form-control ${errors.score ? 'is-invalid' : ''}`}
+                className={`form-control`}
                 {...register('score')}
                 disabled={isCertDisabled}
               />
-              {errors.score && <div className="invalid-feedback">{errors.score.message}</div>}
+              {/* {errors.score && <div className="invalid-feedback">{errors.score.message}</div>} */}
             </div>
           </li>
 
           <li className="form-group row d-flex">
             <div className="btn-group col-sm col-sm-10 ml">
-              <button type="submit" className="btn btn-primary btn-sm">確認</button>
+              <button 
+                type="submit" 
+                className="btn btn-primary btn-sm"
+                onClick={() => console.log('📌 [EmployeeInputForm] 確認 Button Clicked!')}
+              >
+                確認
+              </button>
               <button type="button" onClick={handleBack} className="btn btn-secondary btn-sm">戻る</button>
             </div>
           </li>
