@@ -38,6 +38,14 @@ export default function EmployeeListPage() {
     handleEmployeeNameChange,
   } = useAdm002();
 
+  const employees = data?.employees ?? [];
+  const tableData = data
+    ? {
+        ...data,
+        employees,
+      }
+    : null;
+
   return (
     <>
       {/* Hiển thị lỗi chung (phòng ban hoặc nhân viên) */}
@@ -61,16 +69,16 @@ export default function EmployeeListPage() {
       {loading && <div className="text-center py-4">Đang tải...</div>}
 
       {/* Thông báo không tìm thấy dữ liệu */}
-      {!loading && data && data.employees.length === 0 && (
+      {!loading && data && employees.length === 0 && (
         <div className="alert alert-info" role="alert">
           {getMessage('MSG005')}
         </div>
       )}
 
       {/* Hiển thị bảng dữ liệu và phân trang */}
-      {!loading && data && data.employees.length > 0 && (
+      {!loading && tableData && employees.length > 0 && (
         <>
-          <EmployeeTable data={data} sort={filters.sort} onSort={handleSort} />
+          <EmployeeTable data={tableData} sort={filters.sort} onSort={handleSort} />
 
           {totalPages > 1 && (
             <Pagination

@@ -73,11 +73,38 @@ export function useAdm002() {
         sortCertificationName: searchParams.sort.certificationName,
         sortEndDate: searchParams.sort.certificationEndDate,
       });
-      setData(response);
-    } catch (err: any) {
+      const employees = response.employees ?? [];
+      const totalPages =
+        response.totalRecords > 0
+          ? Math.ceil(response.totalRecords / LIMIT_PER_PAGE)
+          : 0;
+
+      if (
+        response.totalRecords > 0 &&
+        employees.length === 0 &&
+        searchParams.currentPage > totalPages
+      ) {
+        setSearchParams(prev => ({
+          ...prev,
+          currentPage: totalPages,
+        }));
+        return;
+      }
+
+      setData({
+        ...response,
+        employees,
+      });
+    } catch (err: unknown) {
       console.error('Failed to fetch employees:', err);
       // Ưu tiên lấy mã lỗi từ Backend trả về
-      const errorCode = err.response?.data?.code || 'ER023';
+      const errorCode =
+        typeof err === 'object' &&
+        err !== null &&
+        'response' in err &&
+        typeof (err as { response?: { data?: { code?: string } } }).response?.data?.code === 'string'
+          ? (err as { response?: { data?: { code?: string } } }).response?.data?.code ?? 'ER023'
+          : 'ER023';
       setEmployeeError(getMessage(errorCode));
       setData(null);
     } finally {
