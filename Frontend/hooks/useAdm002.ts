@@ -11,7 +11,7 @@ import { EmployeeListResponse, DepartmentDTO } from '@/types/employee';
 import { SortDirection, SortKey } from '@/components/employees/EmployeeTable';
 import { getMessage } from '@/lib/utils/messageHelper';
 import { LIMIT_PER_PAGE, MAX_FULLNAME_LENGTH } from '@/lib/constants/config';
-import { getStorageKey, getSessionData, putSessionData } from '@/lib/utils/sessionStorage';
+import { getStorageKey, getSessionData, setEmployeeToSession } from '@/lib/utils/sessionStorage';
 
 const DEFAULT_SORT: Record<SortKey, SortDirection> = {
   employeeName: 'asc',
@@ -59,9 +59,8 @@ export function useAdm002() {
     };
   });
 
-  // Đồng bộ trạng thái vào sessionStorage khi có thay đổi (Auto-sync)
   useEffect(() => {
-    putSessionData(LIST_STATE_KEY, { searchForm, searchParams });
+    setEmployeeToSession(LIST_STATE_KEY, { searchForm, searchParams });
   }, [searchForm, searchParams]);
 
   /**

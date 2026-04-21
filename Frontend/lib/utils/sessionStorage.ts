@@ -21,7 +21,7 @@ export const getStorageKey = (screen: ScreenKey): string => {
 /**
  * Đẩy dữ liệu vào sessionStorage
  */
-export const putSessionData = (key: string, data: any): void => {
+export const setEmployeeToSession = (key: string, data: any): void => {
   if (typeof window !== 'undefined') {
     sessionStorage.setItem(key, JSON.stringify(data));
   }

@@ -13,7 +13,7 @@ import { DepartmentDTO, CertificationDTO, EmployeeFormValues } from '@/types/emp
 import { getMessage } from '@/lib/utils/messageHelper';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createEmployeeSchema } from '@/lib/validation/employee';
-import { getStorageKey, getSessionData, putSessionData, clearSessionData } from '@/lib/utils/sessionStorage';
+import { getStorageKey, getSessionData, setEmployeeToSession, clearSessionData } from '@/lib/utils/sessionStorage';
 
 // Key cho storage
 const STORAGE_KEY = getStorageKey('ADM004');
@@ -137,7 +137,7 @@ export function useAdm004() {
    */
   const onSubmit: SubmitHandler<EmployeeFormValues> = (values) => {
     // Chỉ lưu dữ liệu từ form vào sessionStorage (employeeId đã được quản lý riêng qua Router)
-    putSessionData(STORAGE_KEY, values);
+    setEmployeeToSession(STORAGE_KEY, values);
 
     // Employee ID KHÔNG được truyền qua session mà phải truyền qua router (URL params)
     const nextPath = employeeId ? `/employees/adm005?id=${employeeId}` : '/employees/adm005';

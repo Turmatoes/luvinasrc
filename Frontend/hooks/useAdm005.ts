@@ -56,9 +56,9 @@ export function useAdm005() {
     }, [router]);
 
     /**
-     * Xử lý nút OK - Xác nhận và lưu dữ liệu
+     * Xử lý nút OK - Đẩy dữ liệu vào DB và chuyển hướng sang ADM006
      */
-    const handleConfirm = async () => {
+    const handleOK = async () => {
         try {
             // Xóa sessionStorage khi nhấn OK và đẩy dữ liệu vào DB
             clearSessionData(STORAGE_KEY);
@@ -81,7 +81,7 @@ export function useAdm005() {
         departments,
         certifications,
         loading,
-        handleConfirm,
+        handleOK,
         handleBack,
     };
 }
