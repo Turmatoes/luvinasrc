@@ -68,12 +68,12 @@ export function useAdm005() {
     };
 
     /**
-     * Xử lý nút 戻る - Quay lại ADM004 và XÓA session
+     * Xử lý nút 戻る - Quay lại ADM004 (GIỮ session để khôi phục)
      */
     const handleBack = () => {
-        clearSessionData(STORAGE_KEY);
-        // Quay lại ADM004 (form sẽ trống hoặc load lại từ DB tùy Add hay Edit)
-        router.push(`/employees/adm004${id ? '?id=' + id : ''}`);
+        // Không xóa session ở đây - để ADM004 đọc và xóa sau
+        // Thêm mode=back để ADM004 biết là quay về từ ADM005
+        router.push(`/employees/adm004?mode=back${id ? '&id=' + id : ''}`);
     };
 
     return {

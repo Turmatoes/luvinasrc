@@ -13,7 +13,7 @@ import { DepartmentDTO, CertificationDTO, EmployeeFormValues } from '@/types/emp
 import { getMessage } from '@/lib/utils/messageHelper';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createEmployeeSchema } from '@/lib/validation/employee';
-import { getStorageKey, setEmployeeToSession, clearSessionData } from '@/lib/utils/sessionStorage';
+import { getStorageKey, getSessionData, setEmployeeToSession, clearSessionData } from '@/lib/utils/sessionStorage';
 
 // Key cho storage
 const STORAGE_KEY = getStorageKey('ADM004');
@@ -44,7 +44,9 @@ export function useAdm004() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const employeeId = searchParams.get('id');
+  const modeBack = searchParams.get('mode');
   const isEditMode = !!employeeId;
+  const isBackFromADM005 = modeBack === 'back';
 
   const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
   const [certifications, setCertifications] = useState<CertificationDTO[]>([]);
@@ -66,9 +68,9 @@ export function useAdm004() {
   });
 
   /**
-  * Xử lý khi thay đổi chứng chỉ.
-  * Nếu người dùng bỏ chọn chứng chỉ, xóa giá trị các trường liên quan.
-  */
+   * Xử lý khi thay đổi chứng chỉ.
+   * Nếu người dùng bỏ chọn chứng chỉ, xóa giá trị các trường liên quan.
+   */
   const handleCertificationChange = (value: string) => {
     if (!value) {
       setValue('certificationStartDate', '');
@@ -91,7 +93,7 @@ export function useAdm004() {
 
   /**
    * Logic khởi tạo màn hình (ADM004).
-   * Chế độ mới: Không khôi phục từ session khi Back.
+   * Hỗ trợ khôi phục từ session khi quay lại từ ADM005.
    */
   useEffect(() => {
     const initialize = async () => {
@@ -99,17 +101,31 @@ export function useAdm004() {
       try {
         await loadMasterData();
 
-        if (isEditMode) {
-          // Trường hợp chỉnh sửa (Edit): Luôn fetch mới từ API
-          const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId));
-          reset(detail);
+        if (isBackFromADM005) {
+          // TH 1: Quay lại từ màn hình confirm (adm005 -> adm004)
+          const savedData = getSessionData(STORAGE_KEY);
+          if (savedData) {
+            reset(savedData);
+          }
+          // Xóa session ngay sau khi đọc để đảm bảo tính tạm thời
+          clearSessionData(STORAGE_KEY);
+          
+          // Xóa mode=back khỏi URL để tránh F5 bị lặp lại logic back
+          const newUrl = employeeId ? `/employees/adm004?id=${employeeId}` : '/employees/adm004';
+          router.replace(newUrl);
         } else {
-          // Trường hợp thêm mới (Add): Đảm bảo các trường được khởi tạo chuỗi rỗng thay vì undefined
-          reset(DEFAULT_FORM_VALUES);
+          if (isEditMode) {
+            // Trường hợp chỉnh sửa (Edit): Luôn fetch mới từ API
+            const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId));
+            reset(detail);
+          } else {
+            // Trường hợp thêm mới (Add): Form trống
+            reset(DEFAULT_FORM_VALUES);
+          }
+          // Luôn đảm bảo session sạch khi vào mới
+          clearSessionData(STORAGE_KEY);
         }
         
-        // Luôn đảm bảo session sạch khi vào màn hình này trực tiếp hoặc từ Back
-        clearSessionData(STORAGE_KEY);
         setInitialized(true);
       } catch (err) {
         console.error('Lỗi khởi tạo:', err);
@@ -121,7 +137,7 @@ export function useAdm004() {
     };
 
     initialize();
-  }, [employeeId, isEditMode, reset]);
+  }, [employeeId, isEditMode, isBackFromADM005, reset]);
 
   /**
    * Xử lý gửi form tới trang xác nhận (adm004 -> adm005)
