@@ -12,12 +12,12 @@ import EmployeeTable from '@/components/employees/EmployeeTable';
 import Pagination from '@/components/employees/Pagination';
 import { getMessage } from '@/lib/utils/messageHelper';
 
+import { Suspense } from 'react';
+
 /**
- * Trang danh sách nhân viên.
- * Thực hiện theo mô hình: UI -> Hook.
- * Tầng UI hoàn toàn sạch bóng logic và lệnh gọi API trực tiếp.
+ * Nội dung trang danh sách nhân viên.
  */
-export default function EmployeeListPage() {
+function EmployeeListContent() {
   // Xác thực người dùng
   useAuth();
 
@@ -94,5 +94,16 @@ export default function EmployeeListPage() {
         </>
       )}
     </>
+  );
+}
+
+/**
+ * Trang danh sách nhân viên bọc trong Suspense.
+ */
+export default function EmployeeListPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-4">ローディング中...</div>}>
+      <EmployeeListContent />
+    </Suspense>
   );
 }

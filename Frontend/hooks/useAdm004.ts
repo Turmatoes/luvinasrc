@@ -13,10 +13,26 @@ import { DepartmentDTO, CertificationDTO, EmployeeFormValues } from '@/types/emp
 import { getMessage } from '@/lib/utils/messageHelper';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createEmployeeSchema } from '@/lib/validation/employee';
-import { getStorageKey, getSessionData, setEmployeeToSession, clearSessionData } from '@/lib/utils/sessionStorage';
+import { getStorageKey, setEmployeeToSession, clearSessionData } from '@/lib/utils/sessionStorage';
 
 // Key cho storage
 const STORAGE_KEY = getStorageKey('ADM004');
+
+const DEFAULT_FORM_VALUES: EmployeeFormValues = {
+  employeeLoginId: '',
+  departmentId: '',
+  employeeName: '',
+  employeeNameKana: '',
+  employeeBirthDate: '',
+  employeeEmail: '',
+  employeeTelephone: '',
+  employeeLoginPassword: '',
+  employeeLoginPasswordConfirm: '',
+  certificationId: '',
+  certificationStartDate: '',
+  certificationEndDate: '',
+  score: '',
+};
 
 /**
  * Custom Hook useAdm004 quản lý logic cho màn hình Nhập liệu nhân viên (Add/Edit).
@@ -28,9 +44,7 @@ export function useAdm004() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const employeeId = searchParams.get('id');
-  const modeBack = searchParams.get('mode');
   const isEditMode = !!employeeId;
-  const isBackFromADM005 = modeBack === 'back';
 
   const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
   const [certifications, setCertifications] = useState<CertificationDTO[]>([]);
@@ -48,21 +62,7 @@ export function useAdm004() {
     formState: { errors },
   } = useForm<EmployeeFormValues>({
     resolver: zodResolver(createEmployeeSchema(isEditMode)),
-    defaultValues: {
-      employeeLoginId: '',
-      departmentId: '',
-      employeeName: '',
-      employeeNameKana: '',
-      employeeBirthDate: '',
-      employeeEmail: '',
-      employeeTelephone: '',
-      employeeLoginPassword: '',
-      employeeLoginPasswordConfirm: '',
-      certificationId: '',
-      certificationStartDate: '',
-      certificationEndDate: '',
-      score: '',
-    },
+    defaultValues: DEFAULT_FORM_VALUES,
   });
 
   /**
@@ -91,34 +91,25 @@ export function useAdm004() {
 
   /**
    * Logic khởi tạo màn hình (ADM004).
-   * Phân tách rõ ràng các trường hợp: Quay lại từ ADM005, Edit Mode, và Add Mode.
+   * Chế độ mới: Không khôi phục từ session khi Back.
    */
   useEffect(() => {
     const initialize = async () => {
       setLoading(true);
       try {
-        // Fetch data phòng ban và chứng chỉ 
         await loadMasterData();
 
-        if (isBackFromADM005) {
-          // TH 1: Quay lại từ màn hình confirm (adm005 -> adm004)
-          const savedData = getSessionData(STORAGE_KEY);
-          if (savedData) {
-            reset(savedData);
-            // Xóa session ngay sau khi đọc để hỗ trợ kịch bản "Clear on Refresh" 
-            clearSessionData(STORAGE_KEY);
-          }
+        if (isEditMode) {
+          // Trường hợp chỉnh sửa (Edit): Luôn fetch mới từ API
+          const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId));
+          reset(detail);
         } else {
-          if (isEditMode) {
-            // Trường hợp chỉnh sửa (Edit) (adm003 -> adm004)
-            const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId));
-            reset(detail);
-          } else {
-            // Trường hợp thêm mới (Add) (adm002 -> adm004)
-            // Đảm bảo xóa dữ liệu cũ nếu không phải quay lại từ confirm
-            clearSessionData(STORAGE_KEY);
-          }
+          // Trường hợp thêm mới (Add): Đảm bảo các trường được khởi tạo chuỗi rỗng thay vì undefined
+          reset(DEFAULT_FORM_VALUES);
         }
+        
+        // Luôn đảm bảo session sạch khi vào màn hình này trực tiếp hoặc từ Back
+        clearSessionData(STORAGE_KEY);
         setInitialized(true);
       } catch (err) {
         console.error('Lỗi khởi tạo:', err);
@@ -130,7 +121,7 @@ export function useAdm004() {
     };
 
     initialize();
-  }, [employeeId, isEditMode, isBackFromADM005, reset]);
+  }, [employeeId, isEditMode, reset]);
 
   /**
    * Xử lý gửi form tới trang xác nhận (adm004 -> adm005)
