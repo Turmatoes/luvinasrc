@@ -77,7 +77,7 @@ export default function EmployeeInputForm({
   /**
    * Hiển thị lỗi cho từng trường.
    */
-  const renderError = (fieldName: keyof EmployeeFormValues) => {
+  const renderError = (fieldName: keyof EmployeeFormValues, extraClass = '') => {
     const error = errors[fieldName];
     if (!error) return null;
 
@@ -87,7 +87,7 @@ export default function EmployeeInputForm({
       message += '！';
     }
 
-    return <div className="invalid-feedback">{message}</div>;
+    return <div className={`invalid-feedback ${extraClass}`}>{message}</div>;
   };
 
 
@@ -182,7 +182,7 @@ export default function EmployeeInputForm({
                 />
                 <span className="glyphicon glyphicon-calendar" onClick={() => birthDateRef.current?.setFocus()}></span>
               </div>
-              {renderError('employeeBirthDate')}
+              {renderError('employeeBirthDate', 'datepicker-error')}
             </div>
           </li>
 
@@ -289,7 +289,7 @@ export default function EmployeeInputForm({
                 />
                 <span className="glyphicon glyphicon-calendar" onClick={() => certificationStartDateRef.current?.setFocus()}></span>
               </div>
-              {renderError('certificationStartDate')}
+                {renderError('certificationStartDate', 'datepicker-error')}
             </div>
           </li>
 
@@ -312,7 +312,7 @@ export default function EmployeeInputForm({
                 />
                 <span className="glyphicon glyphicon-calendar" onClick={() => certificationEndDateRef.current?.setFocus()}></span>
               </div>
-              {renderError('certificationEndDate')}
+                {renderError('certificationEndDate', 'datepicker-error')}
             </div>
           </li>
 

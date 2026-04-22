@@ -49,7 +49,7 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
     employeeTelephone: z.string()
       .min(1, getMessage('ER001', ['電話番号']))
       .max(50, getMessage('ER006', ['電話番号', '50']))
-      .regex(TELEPHONE_REGEX, getMessage('ER005', ['電話番号', '0xx-xxxx-xxxx'])),
+      .regex(TELEPHONE_REGEX, getMessage('ER008', ['電話番号'])),
 
     employeeLoginPassword: z.string().optional().superRefine((val, ctx) => {
       // Khi Add mode: bắt buộc
@@ -61,7 +61,7 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
         return;
       }
       
-      // Nếu có nhập (trong cả Add/Edit): check độ dài và alpha-numeric
+      // Nếu có nhập (trong cả Add/Edit): check độ dài
       if (val && val.length > 0) {
         if (val.length < 8 || val.length > 50) {
           ctx.addIssue({
@@ -69,27 +69,33 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
             message: getMessage('ER007', ['パスワード', '8', '50']),
           });
         }
-        if (!ALPHA_NUMERIC_REGEX.test(val)) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: getMessage('ER008', ['パスワード']),
-          });
-        }
       }
     }),
 
     employeeLoginPasswordConfirm: z.string().optional(),
 
-    certificationId: z.string().optional(),
+    certificationId: z.string().optional().refine(val => !val || val === '' || NUMERIC_REGEX.test(val), {
+      message: getMessage('ER018', ['資格']),
+    }),
     certificationStartDate: z.string().optional(),
     certificationEndDate: z.string().optional(),
     score: z.string().optional().refine(val => !val || NUMERIC_REGEX.test(val), {
       message: getMessage('ER018', ['点数']),
     }),
   }).superRefine((data, ctx) => {
-    // 1. So khớp mật khẩu
+    // 1. Kiểm tra xác nhận mật khẩu
+    // Trường hợp Add mode: Bắt buộc nhập confirm nếu có password
+    if (!isEditMode && data.employeeLoginPassword && !data.employeeLoginPasswordConfirm) {
+      ctx.addIssue({
+        path: ['employeeLoginPasswordConfirm'],
+        code: z.ZodIssueCode.custom,
+        message: getMessage('ER001', ['パスワード（確認）']),
+      });
+    }
+
+    // So khớp mật khẩu
     if (data.employeeLoginPassword !== data.employeeLoginPasswordConfirm) {
-      if (data.employeeLoginPassword || !isEditMode) {
+      if (data.employeeLoginPassword || data.employeeLoginPasswordConfirm) {
          ctx.addIssue({
           path: ['employeeLoginPasswordConfirm'],
           code: z.ZodIssueCode.custom,
@@ -112,6 +118,13 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
           path: ['certificationEndDate'],
           code: z.ZodIssueCode.custom,
           message: getMessage('ER001', ['失効日']),
+        });
+      }
+      if (!data.score) {
+        ctx.addIssue({
+          path: ['score'],
+          code: z.ZodIssueCode.custom,
+          message: getMessage('ER001', ['点数']),
         });
       }
       

@@ -807,6 +807,10 @@ cursor: pointer;
   margin-top: 4px;
 }
 
+.datepicker-error {
+  padding-left: 12px;
+}
+
 
 @media (max-width: 992px) {
   .alert-validate::before {
