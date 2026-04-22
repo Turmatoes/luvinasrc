@@ -20,10 +20,12 @@ function EmployeeDetailContent() {
   // Sử dụng Hook để lấy dữ liệu chi tiết
   const { employee, loading, error, handleEdit, handleDelete, handleBack } = useAdm003();
 
+  // Trạng thái Loading
   if (loading) {
     return <div className="text-center py-4">ローディング中...</div>;
   }
 
+  // Trạng thái Error
   if (error) {
     return (
       <div className="alert alert-danger" role="alert">
@@ -34,6 +36,7 @@ function EmployeeDetailContent() {
 
   if (!employee) return null;
 
+  // Giao diện hiển thị thông tin chi tiết
   return (
     <div className="row">
       <form className="c-form box-shadow">

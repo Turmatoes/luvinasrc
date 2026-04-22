@@ -21,18 +21,19 @@ function EmployeeInputPageContent() {
   // Sử dụng Hook để quản lý toàn bộ logic nghiệp vụ
   const hookData = useAdm004();
 
-  const { loading, error } = hookData;
+  const { loading, systemError } = hookData;
 
-
+  // Trạng thái Loading
   if (loading) {
     return <div className="text-center py-4">ローディング中...</div>;
   }
 
   return (
     <>
-      {error && (
+      {/* Trạng thái Error */}
+      {systemError && (
         <div className="alert alert-danger" role="alert">
-          {error}
+          {systemError}
         </div>
       )}
 

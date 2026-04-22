@@ -4,6 +4,7 @@
  * client.ts, April 13, 2026 nxplong
  */
 import axios from 'axios';
+import { redirectToSystemError } from '../utils/errorHelper';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8085/api';
 
@@ -17,9 +18,10 @@ const apiClient = axios.create({
   },
 });
 
+
+
 /**
  * Thiết lập interceptors cho axios client.
- * @param client Axios client instance
  */
 export function setupInterceptors(client: ReturnType<typeof axios.create>) {
   client.interceptors.request.use(
@@ -40,8 +42,24 @@ export function setupInterceptors(client: ReturnType<typeof axios.create>) {
   );
 
   client.interceptors.response.use(
-    (response) => response,
+    (response) => {
+      const data = response.data;
+      // Kiểm tra code trực tiếp - format chuẩn: {code: "", params: []}
+      if (data?.code === 'ER023') {
+        redirectToSystemError('ER023');
+      }
+      return response;
+    },
     (error) => {
+      const responseData = error.response?.data;
+      const errorCode = responseData?.code;
+
+      // Xử lý lỗi hệ thống ER023 hoặc Status 500
+      if (errorCode === 'ER023' || error.response?.status === 500) {
+        redirectToSystemError(errorCode || 'ER023');
+        return new Promise(() => { }); // Chặn lỗi tiếp tục lan truyền
+      }
+
       if (error.response?.status === 401) {
         if (typeof window !== 'undefined') {
           localStorage.removeItem('access_token');

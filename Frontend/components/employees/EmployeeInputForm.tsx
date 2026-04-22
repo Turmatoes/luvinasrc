@@ -6,13 +6,10 @@
 'use client';
 
 import React, { useRef } from 'react';
-import DatePicker, { registerLocale } from "react-datepicker";
+import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { ja } from 'date-fns/locale';
 import { DepartmentDTO, CertificationDTO, EmployeeFormValues } from '@/types/employee';
 import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
-
-registerLocale('ja', ja);
 
 interface EmployeeInputFormProps {
   register: UseFormRegister<EmployeeFormValues>;
@@ -289,7 +286,7 @@ export default function EmployeeInputForm({
                 />
                 <span className="glyphicon glyphicon-calendar" onClick={() => certificationStartDateRef.current?.setFocus()}></span>
               </div>
-                {renderError('certificationStartDate', 'datepicker-error')}
+              {renderError('certificationStartDate', 'datepicker-error')}
             </div>
           </li>
 
@@ -312,7 +309,7 @@ export default function EmployeeInputForm({
                 />
                 <span className="glyphicon glyphicon-calendar" onClick={() => certificationEndDateRef.current?.setFocus()}></span>
               </div>
-                {renderError('certificationEndDate', 'datepicker-error')}
+              {renderError('certificationEndDate', 'datepicker-error')}
             </div>
           </li>
 

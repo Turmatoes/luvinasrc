@@ -14,6 +14,7 @@ import { getMessage } from '@/lib/utils/messageHelper';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createEmployeeSchema } from '@/lib/validation/employee';
 import { getStorageKey, getSessionData, setEmployeeToSession, clearSessionData } from '@/lib/utils/sessionStorage';
+import { redirectToSystemError } from '@/lib/utils/errorHelper';
 
 // Key cho storage
 const STORAGE_KEY = getStorageKey('ADM004');
@@ -51,7 +52,7 @@ export function useAdm004() {
   const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
   const [certifications, setCertifications] = useState<CertificationDTO[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [systemError, setSystemError] = useState<string | null>(null);
   const [initialized, setInitialized] = useState(false);
 
   // Khởi tạo React Hook Form
@@ -61,6 +62,7 @@ export function useAdm004() {
     setValue,
     watch,
     reset,
+    setError,
     formState: { errors },
   } = useForm<EmployeeFormValues>({
     resolver: zodResolver(createEmployeeSchema(isEditMode)),
@@ -103,13 +105,13 @@ export function useAdm004() {
 
         if (isBackFromADM005) {
           // TH 1: Quay lại từ màn hình confirm (adm005 -> adm004)
-          const savedData = getSessionData(STORAGE_KEY);
-          if (savedData) {
-            reset(savedData);
+          const employeeData = getSessionData(STORAGE_KEY);
+          if (employeeData) {
+            reset(employeeData);
           }
-          // Xóa session ngay sau khi đọc để đảm bảo tính tạm thời
+          // Xóa session ngay sau khi dữ liệu được load thành công lên màn adm004
           clearSessionData(STORAGE_KEY);
-          
+
           // Xóa mode=back khỏi URL để tránh F5 bị lặp lại logic back
           const newUrl = employeeId ? `/employees/adm004?id=${employeeId}` : '/employees/adm004';
           router.replace(newUrl);
@@ -125,11 +127,11 @@ export function useAdm004() {
           // Luôn đảm bảo session sạch khi vào mới
           clearSessionData(STORAGE_KEY);
         }
-        
+
         setInitialized(true);
       } catch (err) {
         console.error('Lỗi khởi tạo:', err);
-        setError(getMessage('ER023'));
+        redirectToSystemError('ER023');
         setInitialized(true);
       } finally {
         setLoading(false);
@@ -142,13 +144,45 @@ export function useAdm004() {
   /**
    * Xử lý gửi form tới trang xác nhận (adm004 -> adm005)
    */
-  const onSubmit: SubmitHandler<EmployeeFormValues> = (values) => {
-    // Chỉ lưu dữ liệu từ form vào sessionStorage (employeeId đã được quản lý riêng qua Router)
-    setEmployeeToSession(STORAGE_KEY, values);
+  const onSubmit: SubmitHandler<EmployeeFormValues> = async (values) => {
+    setLoading(true);
+    try {
+      // Gọi API Validate từ Backend
+      const res = await employeeApi.validateEmployee(values);
 
-    // Employee ID KHÔNG được truyền qua session mà phải truyền qua router (URL params)
-    const nextPath = employeeId ? `/employees/adm005?id=${employeeId}` : '/employees/adm005';
-    router.push(nextPath);
+      if (res.code !== '200') {
+        // Thông báo lỗi từ Backend (Format chuẩn: {code: "ERxxx", params: [...]})
+        const errorCode = res.code;
+        const errorParams = res.params || [];
+        const errorMessage = getMessage(errorCode, errorParams);
+
+        // Map lỗi về đúng field
+        if (errorCode === 'ER003') {
+          setError('employeeLoginId', { message: errorMessage });
+        } else if (errorCode === 'ER004') {
+          if (errorParams.includes('部署')) setError('departmentId', { message: errorMessage });
+          else setError('certificationId', { message: errorMessage });
+        } else if (errorCode === 'ER012') {
+          setError('certificationEndDate', { message: errorMessage });
+        } else {
+          // Lỗi chung hoặc lỗi hệ thống
+          setSystemError(errorMessage);
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Nếu Validate OK (Nút 確認) -> Lưu session và chuyển trang
+      setEmployeeToSession(STORAGE_KEY, values);
+      const nextPath = employeeId ? `/employees/adm005?id=${employeeId}` : '/employees/adm005';
+      router.push(nextPath);
+    } catch (err) {
+      console.error('Lỗi validate:', err);
+      // Gọi đến System Error khi gặp lỗi
+      redirectToSystemError('ER023');
+    } finally {
+      setLoading(false);
+    }
   };
 
   /**
@@ -169,7 +203,7 @@ export function useAdm004() {
     departments,
     certifications,
     loading,
-    error,
+    systemError,
     isEditMode,
     handleBack,
     handleCertificationChange,

@@ -47,22 +47,13 @@ export const employeeApi = {
   },
 
   /**
-   * Lấy danh sách chứng chỉ (Mock API cho mục 資格 - 日本語能力).
+   * Lấy danh sách chứng chỉ.
    * 
    * @returns Promise chứa mảng CertificationDTO
    */
   getCertifications: async (): Promise<CertificationDTO[]> => {
-    // Tạm thời mock dữ liệu Frontend trước khi có Backend API
-    return [
-      { certificationId: 1, certificationName: 'Trình độ tiếng Nhật cấp 1' },
-      { certificationId: 2, certificationName: 'Trình độ tiếng Nhật cấp 2' },
-      { certificationId: 3, certificationName: 'Trình độ tiếng Nhật cấp 3' },
-      { certificationId: 4, certificationName: 'Trình độ tiếng Nhật cấp 4' },
-      { certificationId: 5, certificationName: 'Trình độ tiếng Nhật cấp 5' },
-    ];
-    // Khi có Backend, sử dụng:
-    // const response = await apiClient.get<CertificationDTO[]>('/certifications');
-    // return response.data;
+    const response = await apiClient.get<CertificationDTO[]>('/certifications');
+    return response.data;
   },
 
   /**
@@ -70,6 +61,14 @@ export const employeeApi = {
    */
   getEmployeeDetail: async (id: number): Promise<any> => {
     const response = await apiClient.get(`/employees/${id}`);
+    return response.data;
+  },
+
+  /**
+   * Validate dữ liệu nhân viên.
+   */
+  validateEmployee: async (data: EmployeeFormValues): Promise<any> => {
+    const response = await apiClient.post('/employees/validate', data);
     return response.data;
   },
 

@@ -79,5 +79,24 @@ public class Constants {
         public static final String CODE_MSG005 = "MSG005";
 
         public static final int MAX_EMPLOYEE_NAME_LENGTH = 125;
+        public static final int MAX_EMPLOYEE_NAME_KANA_LENGTH = 125;
+        public static final int MAX_LOGIN_ID_LENGTH = 50;
+        public static final int MAX_EMAIL_LENGTH = 125;
+        public static final int MAX_TELEPHONE_LENGTH = 50;
+        public static final int MIN_PASSWORD_LENGTH = 8;
+        public static final int MAX_PASSWORD_LENGTH = 50;
+
         public static final String PARAM_EMPLOYEE_NAME = "氏名";
+        public static final String PARAM_LOGIN_ID = "アカウント名";
+        public static final String PARAM_NAME_KANA = "カタカナ氏名";
+        public static final String PARAM_BIRTH_DATE = "生年月日";
+        public static final String PARAM_EMAIL = "メールアドレス";
+        public static final String PARAM_TELEPHONE = "電話番号";
+        public static final String PARAM_PASSWORD = "パスワード";
+        public static final String PARAM_PASSWORD_CONFIRM = "パスワード確認";
+        public static final String PARAM_DEPARTMENT = "部署";
+        public static final String PARAM_CERTIFICATION = "資格";
+        public static final String PARAM_START_DATE = "資格交付日";
+        public static final String PARAM_END_DATE = "失効日";
+        public static final String PARAM_SCORE = "点数";
 }

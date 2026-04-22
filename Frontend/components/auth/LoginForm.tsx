@@ -31,9 +31,21 @@ export default function LoginForm() {
    */
   const onSubmit = async (data: LoginFormType) => {
     try {
-      const response = await apiClient.post<{ accessToken: string; tokenType: string }>('/login', data);
-      storeToken(response.data.accessToken, response.data.tokenType);
-      router.push('/employees/adm002');
+      const response = await apiClient.post<{ accessToken?: string; tokenType?: string; code?: string; params?: string[] }>('/login', data);
+      
+      // Kiểm tra nếu response chứa mã lỗi (format chuẩn: {code, params})
+      if (response.data.code) {
+        setError('root', {
+          message: getMessage(response.data.code, response.data.params),
+        });
+        return;
+      }
+      
+      // Đăng nhập thành công
+      if (response.data.accessToken) {
+        storeToken(response.data.accessToken, response.data.tokenType || 'Bearer');
+        router.push('/employees/adm002');
+      }
     } catch (error) {
       console.error('Login failed:', error);
       setError('root', {

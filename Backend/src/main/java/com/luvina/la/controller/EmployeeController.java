@@ -9,13 +9,15 @@ package com.luvina.la.controller;
 import com.luvina.la.config.Constants;
 import com.luvina.la.dto.EmployeeDTO;
 import com.luvina.la.payload.EmployeeListResponse;
+import com.luvina.la.payload.EmployeeResponse;
 import com.luvina.la.service.EmployeeService;
-import com.luvina.la.validate.EmployeeValidation;
+import com.luvina.la.payload.EmployeeRequest;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,17 +32,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
-    private final EmployeeValidation employeeValidation;
 
     /**
      * Constructor khởi tạo EmployeeController.
      *
-     * @param employeeService    Dịch vụ xử lý nhân viên
-     * @param employeeValidation Xử lý kiểm tra dữ liệu đầu vào
+     * @param employeeService Dịch vụ xử lý nhân viên
      */
-    public EmployeeController(EmployeeService employeeService, EmployeeValidation employeeValidation) {
+    public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
-        this.employeeValidation = employeeValidation;
     }
 
     /**
@@ -57,7 +56,7 @@ public class EmployeeController {
      * @return EmployeeListResponse chứa tổng số bản ghi và danh sách nhân viên
      */
     @GetMapping("/employees")
-    public EmployeeListResponse getEmployeeList(
+    public EmployeeResponse getEmployeeList(
             @RequestParam(value = "employeeName", required = false, defaultValue = "") String employeeName,
             @RequestParam(value = "departmentId", required = false) Long departmentId,
             @RequestParam(value = "sortEmployeeName", required = false, defaultValue = "asc") String sortEmployeeName,
@@ -68,46 +67,17 @@ public class EmployeeController {
 
         try {
             String normalizedEmployeeName = employeeName == null ? "" : employeeName.trim();
-            // 1.1 Validate param [ord_employee_name],
-            // [ord_certification_name],[ord_end_date]
-            if (!employeeValidation.isValidSort(sortEmployeeName)
-                    || !employeeValidation.isValidSort(sortCertificationName)
-                    || !employeeValidation.isValidSort(sortEndDate)) {
-                return employeeService.buildErrorResponse(Constants.CODE_ER021);
+
+            // 1. Validate parameter
+            EmployeeResponse error = employeeService.validateListParams(
+                    sortEmployeeName, sortCertificationName, sortEndDate, offset, limit, normalizedEmployeeName);
+            if (error != null) {
+                return error;
             }
 
-            // 1.2 Validate param [offset]
-            if (!employeeValidation.isPositiveInteger(offset)) {
-                return employeeService.buildErrorResponse(
-                        Constants.CODE_ER018,
-                        Constants.CODE_ER018,
-                        Arrays.asList("オフセット"));
-            }
+            String escapedEmployeeName = employeeService.escapeEmployeeName(normalizedEmployeeName);
 
-            // 1.3 Validate param [limit]
-            if (!employeeValidation.isPositiveInteger(limit)) {
-                return employeeService.buildErrorResponse(
-                        Constants.CODE_ER018,
-                        Constants.CODE_ER018,
-                        Arrays.asList("リミット"));
-            }
-
-            // 1.4 Validate param [employee_name]
-            if (!employeeValidation.isValidMaxLength(
-                    normalizedEmployeeName,
-                    Constants.MAX_EMPLOYEE_NAME_LENGTH)) {
-                return employeeService.buildErrorResponse(
-                        Constants.CODE_ER006,
-                        Constants.CODE_ER006,
-                        Arrays.asList(
-                                Constants.PARAM_EMPLOYEE_NAME,
-                                String.valueOf(Constants.MAX_EMPLOYEE_NAME_LENGTH)));
-            }
-
-            String escapedEmployeeName = normalizedEmployeeName.isEmpty()
-                    ? null
-                    : employeeValidation.escapeLikePattern(normalizedEmployeeName);
-            // 2.1 Lấy tổng số nhân viên
+            // 2.1 Lấy tổng số nhân viên từ DB
             Long totalRecords = employeeService.countEmployeesWithFilter(
                     escapedEmployeeName,
                     departmentId);
@@ -132,20 +102,16 @@ public class EmployeeController {
             response.setTotalRecords(totalRecords);
             response.setEmployees(employees);
             response.setParams(new ArrayList<>()); // Đảm bảo params luôn là [] theo thiết kế
-            response.setMessage(null); // Không có lỗi thì message ẩn đi
 
             return response;
         } catch (Exception e) {
             // 3. Xử lý lỗi 500 (System Error)
-            return employeeService.buildErrorResponse(Constants.CODE_SYSTEM_ERROR, Constants.CODE_ER023, null);
+            return employeeService.buildErrorResponse(Constants.CODE_ER023);
         }
     }
 
     /**
      * Lấy chi tiết một nhân viên.
-     * 
-     * @param id ID của nhân viên từ URL
-     * @return EmployeeDTO nếu tìm thấy, hoặc lỗi System Error nếu ID không hợp lệ
      */
     @GetMapping("/employees/{id}")
     public Object getEmployeeDetail(@PathVariable("id") Long id) {
@@ -157,7 +123,86 @@ public class EmployeeController {
             }
             return employee;
         } catch (Exception e) {
-            return employeeService.buildErrorResponse(Constants.CODE_SYSTEM_ERROR, Constants.CODE_ER023, null);
+            return employeeService.buildErrorResponse(Constants.CODE_ER023);
         }
+    }
+
+    /**
+     * Validate dữ liệu nhân viên trước khi xác nhận.
+     * Thực hiện các bước validate từ 1.1 đến 1.9.
+     */
+    @PostMapping("/employees/validate")
+    public EmployeeResponse validateEmployee(@RequestBody EmployeeRequest request) {
+        try {
+            EmployeeResponse error;
+
+            // 1.1 Validate [employee_login_id]
+            error = employeeService.validateLoginId(request.getEmployeeLoginId());
+            if (error != null)
+                return error;
+
+            // 1.2 Validate [employee_name]
+            error = employeeService.validateEmployeeName(request.getEmployeeName());
+            if (error != null)
+                return error;
+
+            // 1.3 Validate [employee_name_kana]
+            error = employeeService.validateNameKana(request.getEmployeeNameKana());
+            if (error != null)
+                return error;
+
+            // 1.4 Validate [employee_birth_date]
+            error = employeeService.validateBirthDate(request.getEmployeeBirthDate());
+            if (error != null)
+                return error;
+
+            // 1.5 Validate [employee_email]
+            error = employeeService.validateEmail(request.getEmployeeEmail());
+            if (error != null)
+                return error;
+
+            // 1.6 Validate [employee_telephone]
+            error = employeeService.validateTelephone(request.getEmployeeTelephone());
+            if (error != null)
+                return error;
+
+            // 1.7 Validate [employee_login_password]
+            error = employeeService.validatePassword(request.getEmployeeLoginPassword());
+            if (error != null)
+                return error;
+
+            // 1.7+ Validate [employee_login_password_confirm]
+            error = employeeService.validatePasswordConfirm(request.getEmployeeLoginPassword(),
+                    request.getEmployeeLoginPasswordConfirm());
+            if (error != null)
+                return error;
+
+            // 1.8 Validate [department_id]
+            error = employeeService.validateDepartment(request.getDepartmentId());
+            if (error != null)
+                return error;
+
+            // 1.9 Validate Certification (nếu có chọn)
+            error = employeeService.validateCertification(request);
+            if (error != null)
+                return error;
+
+            return employeeService.buildErrorResponse(Constants.CODE_SUCCESS);
+        } catch (Exception e) {
+            return employeeService.buildErrorResponse(Constants.CODE_ER023);
+        }
+    }
+
+    /**
+     * Thêm mới nhân viên.
+     */
+    @PostMapping("/employees")
+    public EmployeeResponse addEmployee(@RequestBody EmployeeRequest request) {
+        // Thực hiện lại validate trước khi lưu (giống endpoint validate)
+        EmployeeResponse validateRes = validateEmployee(request);
+        if (validateRes != null && !Constants.CODE_SUCCESS.equals(validateRes.getCode())) {
+            return validateRes;
+        }
+        return employeeService.addEmployee(request);
     }
 }

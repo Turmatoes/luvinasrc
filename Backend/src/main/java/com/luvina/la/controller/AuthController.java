@@ -48,9 +48,9 @@ public class AuthController {
     public LoginResponse login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         log.info("Login request received - username: {}", loginRequest.getUsername());
         LoginResponse response = authService.authenticate(loginRequest);
-        log.info("Login response: accessToken={}, errors={}",
+        log.info("Login response: accessToken={}, code={}",
                 response.getAccessToken() != null ? response.getAccessToken().substring(0, 20) + "..." : "null",
-                response.getErrors());
+                response.getCode());
         return response;
     }
 

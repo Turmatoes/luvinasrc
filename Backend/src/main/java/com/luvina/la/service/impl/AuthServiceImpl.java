@@ -12,8 +12,7 @@ import com.luvina.la.payload.LoginRequest;
 import com.luvina.la.payload.LoginResponse;
 import com.luvina.la.service.AuthService;
 import com.luvina.la.config.Constants;
-import java.util.HashMap;
-import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -56,7 +55,6 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public LoginResponse authenticate(LoginRequest loginRequest) {
-        Map<String, String> errors = new HashMap<>();
         try {
             log.info("Login attempt for user: {}", loginRequest.getUsername());
 
@@ -78,13 +76,12 @@ public class AuthServiceImpl implements AuthService {
         } catch (UsernameNotFoundException | BadCredentialsException ex) {
             // Ghi nhật ký sai thông tin xác thực
             log.warn("Login failed for user: {} - {}", loginRequest.getUsername(), ex.getMessage());
-            errors.put("code", Constants.CODE_ER016);
+            return new LoginResponse(Constants.CODE_ER016, null);
         } catch (Exception ex) {
             // Ghi nhật ký lỗi không xác định
             log.warn("Login failed for user: {} - {}", loginRequest.getUsername(), ex.getMessage());
             ex.printStackTrace();
-            errors.put("code", Constants.CODE_ER023);
+            return new LoginResponse(Constants.CODE_ER023, null);
         }
-        return new LoginResponse(errors);
     }
 }

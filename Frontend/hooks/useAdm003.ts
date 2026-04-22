@@ -10,6 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { employeeApi } from '@/lib/api/employee.api';
 import { getMessage } from '@/lib/utils/messageHelper';
 import { MESSAGES } from '@/lib/constants/messages';
+import { redirectToSystemError } from '@/lib/utils/errorHelper';
 
 /**
  * Custom Hook useAdm003 quản lý logic cho màn hình Chi tiết nhân viên.
@@ -40,7 +41,7 @@ export function useAdm003() {
       setEmployee(data);
     } catch (err) {
       console.error('Lỗi khi tải dữ liệu nhân viên:', err);
-      setError(getMessage('ER023'));
+      redirectToSystemError('ER023');
     } finally {
       setLoading(false);
     }

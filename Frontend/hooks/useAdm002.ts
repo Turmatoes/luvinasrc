@@ -12,6 +12,7 @@ import { EmployeeListResponse, DepartmentDTO } from '@/types/employee';
 import { SortDirection, SortKey } from '@/components/employees/EmployeeTable';
 import { getMessage } from '@/lib/utils/messageHelper';
 import { LIMIT_PER_PAGE, MAX_FULLNAME_LENGTH } from '@/lib/constants/config';
+import { redirectToSystemError } from '@/lib/utils/errorHelper';
 
 const DEFAULT_SORT: Record<SortKey, SortDirection> = {
   employeeName: 'asc',
@@ -75,7 +76,7 @@ export function useAdm002() {
         setDepartments(response);
       } catch (err) {
         console.error('Lỗi khi tải danh sách phòng ban:', err);
-        setDepartmentError(getMessage('ER023'));
+        redirectToSystemError('ER023');
       }
     };
     loadDepartments();
@@ -148,7 +149,11 @@ export function useAdm002() {
     } catch (err: unknown) {
       console.error('Lỗi khi tải danh sách nhân viên:', err);
       const errorCode = (err as any)?.response?.data?.code ?? 'ER023';
-      setEmployeeError(getMessage(errorCode));
+      if (errorCode === 'ER023') {
+        redirectToSystemError('ER023');
+      } else {
+        setEmployeeError(getMessage(errorCode));
+      }
       setData(null);
     } finally {
       setLoading(false);

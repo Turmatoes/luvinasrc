@@ -50,6 +50,15 @@
 
 ## 🔖 Ghi chú nhanh khi code
 
+### 🚨 Quy định xử lý lỗi hệ thống (ER023)
+
+Khi hệ thống gặp lỗi không lường trước (Exception) hoặc lỗi Database nghiêm trọng:
+1. **Backend**: Phải trả về mã lỗi `ER023` (System Error) kèm theo thông báo "システムエラーが発生しました。" trong response body, hoặc trả về HTTP Status `500`.
+2. **Frontend**: 
+    - Logic xử lý tập trung tại `lib/api/client.ts` thông qua Axios Interceptor.
+    - Mọi phản hồi có mã `ER023` hoặc Status `500` sẽ tự động điều hướng (redirect) về trang `/system-error`.
+    - Trang `/system-error` sẽ hiển thị nội dung lỗi dựa trên tham số `message` truyền qua URL. Nếu không có tham số, mặc định hiển thị "System Error (ER023)".
+
 ### Cấu trúc Response lỗi (API)
 ```json
 {

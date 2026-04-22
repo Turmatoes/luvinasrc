@@ -11,6 +11,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { EmployeeFormValues } from '@/types/employee';
 
 import { getStorageKey, getSessionData, clearSessionData } from '@/lib/utils/sessionStorage';
+import { employeeApi } from '@/lib/api/employee.api';
+import { redirectToSystemError } from '@/lib/utils/errorHelper';
 
 // Key cho storage (phải match với ADM004)
 const STORAGE_KEY = getStorageKey('ADM004');
@@ -59,11 +61,37 @@ export function useAdm005() {
      * Xử lý nút OK - Đẩy dữ liệu vào DB và chuyển hướng sang ADM006
      */
     const handleOK = async () => {
+        if (!formData) return;
+
+        setLoading(true);
         try {
-            // Xóa sessionStorage khi nhấn OK và đẩy dữ liệu vào DB
+            // LUỒNG 1: THỰC HIỆN VALIDATE LẠI TOÀN BỘ TẠI BACKEND
+            // Đảm bảo dữ liệu vẫn hợp lệ ngay trước thời điểm lưu (phòng trường hợp trùng ID phát sinh giữa chừng)
+            const validateRes = await employeeApi.validateEmployee(formData);
+
+            if (validateRes.code !== '200') {
+                // Nếu phát sinh bất kỳ lỗi validate nào ở bước cuối cùng, coi như là lỗi hệ thống nghiệp vụ
+                redirectToSystemError(validateRes.code, validateRes.message);
+                return;
+            }
+
+            // LUỒNG 2: HOÀN THÀNH TÁC VỤ VÀ ĐẨY DỮ LIỆU VÀO DB
+            // Tùy theo mode (Add/Edit) để gọi API tương ứng
+            if (id) {
+                await employeeApi.updateEmployee(parseInt(id), formData);
+            } else {
+                await employeeApi.addEmployee(formData);
+            }
+
+            // Xóa sessionStorage khi hoàn tất thành công và chuyển sang màn hình thông báo (ADM006)
             clearSessionData(STORAGE_KEY);
             router.push('/employees/adm006');
         } catch (err) {
+            console.error('Lỗi khi lưu dữ liệu:', err);
+            //Gọi đến System Error khi gặp lỗi
+            redirectToSystemError('ER023');
+        } finally {
+            setLoading(false);
         }
     };
 
