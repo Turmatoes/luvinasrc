@@ -3,7 +3,7 @@
  * 
  * GlobalExceptionHandler.java, April 13, 2026 nxplong
  */
-package com.luvina.la.controller;
+package com.luvina.la.exception;
 
 import com.luvina.la.payload.EmployeeResponse;
 import com.luvina.la.service.EmployeeService;
