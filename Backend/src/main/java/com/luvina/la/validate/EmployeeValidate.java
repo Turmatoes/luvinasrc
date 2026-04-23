@@ -39,6 +39,10 @@ public class EmployeeValidate {
 
     /**
      * Constructor để check exist LoginID, Department, Certification
+     * 
+     * @param employeeRepository      Repo employee
+     * @param departmentRepository    Repo department
+     * @param certificationRepository Repo certification
      */
     public EmployeeValidate(
             EmployeeRepository employeeRepository,
@@ -51,6 +55,9 @@ public class EmployeeValidate {
 
     /**
      * Kiểm tra tính hợp lệ của tham số sắp xếp.
+     * 
+     * @param sort Tham số sắp xếp
+     * @return true nếu hợp lệ, false nếu không hợp lệ
      */
     public boolean isValidSort(String sort) {
         if (sort == null || sort.isEmpty())
@@ -61,6 +68,9 @@ public class EmployeeValidate {
 
     /**
      * Kiểm tra xem giá trị có phải là số nguyên dương hay không (>= 0).
+     *
+     * @param val Số nguyên cần kiểm tra
+     * @return true nếu là số nguyên dương, false nếu không
      */
     public boolean isPositiveInteger(Integer val) {
         if (val == null)
@@ -70,6 +80,10 @@ public class EmployeeValidate {
 
     /**
      * Kiểm tra độ dài tối đa của chuỗi.
+     *
+     * @param value     Chuỗi cần kiểm tra
+     * @param maxLength Độ dài tối đa
+     * @return true nếu hợp lệ, false nếu không hợp lệ
      */
     public boolean isValidMaxLength(String value, int maxLength) {
         if (value == null) {
@@ -80,6 +94,10 @@ public class EmployeeValidate {
 
     /**
      * Kiểm tra độ dài tối thiểu của chuỗi.
+     *
+     * @param value     Chuỗi cần kiểm tra
+     * @param minLength Độ dài tối thiểu
+     * @return true nếu hợp lệ, false nếu không hợp lệ
      */
     public boolean isValidMinLength(String value, int minLength) {
         if (value == null) {
@@ -90,6 +108,9 @@ public class EmployeeValidate {
 
     /**
      * Kiểm tra định dạng Login ID (ER019).
+     *
+     * @param loginId Login ID cần kiểm tra
+     * @return true nếu hợp lệ, false nếu không hợp lệ
      */
     public boolean isValidLoginId(String loginId) {
         if (loginId == null || loginId.isEmpty())
@@ -99,6 +120,9 @@ public class EmployeeValidate {
 
     /**
      * Kiểm tra định dạng Email (ER005).
+     *
+     * @param email Email cần kiểm tra
+     * @return true nếu hợp lệ, false nếu không hợp lệ
      */
     public boolean isValidEmail(String email) {
         if (email == null || email.isEmpty())
@@ -108,6 +132,9 @@ public class EmployeeValidate {
 
     /**
      * Kiểm tra định dạng Katakana (ER009).
+     *
+     * @param text Chuỗi cần kiểm tra
+     * @return true nếu hợp lệ, false nếu không hợp lệ
      */
     public boolean isValidKatakana(String text) {
         if (text == null || text.isEmpty())
@@ -117,6 +144,9 @@ public class EmployeeValidate {
 
     /**
      * Kiểm tra định dạng số Halfsize (ER008/ER018).
+     *
+     * @param text Chuỗi cần kiểm tra
+     * @return true nếu hợp lệ, false nếu không hợp lệ
      */
     public boolean isHalfsizeNumber(String text) {
         if (text == null || text.isEmpty())
@@ -126,6 +156,9 @@ public class EmployeeValidate {
 
     /**
      * Kiểm tra định dạng ngày tháng yyyy/MM/dd.
+     *
+     * @param date Ngày tháng cần kiểm tra
+     * @return true nếu hợp lệ, false nếu không hợp lệ
      */
     public boolean isValidDateFormat(String date) {
         if (date == null || date.isEmpty())
@@ -149,6 +182,9 @@ public class EmployeeValidate {
 
     /**
      * Escape các ký tự đặc biệt cho toán tử LIKE.
+     *
+     * @param value Chuỗi cần xử lý
+     * @return Chuỗi đã xử lý
      */
     public String escapeLikePattern(String value) {
         if (value == null) {
@@ -163,6 +199,10 @@ public class EmployeeValidate {
 
     /**
      * Xây dựng phản hồi lỗi.
+     *
+     * @param errorCode Mã lỗi
+     * @param params    Tham số lỗi
+     * @return EmployeeResponse chứa mã lỗi và tham số lỗi
      */
     public EmployeeResponse buildErrorResponse(String errorCode, List<String> params) {
         EmployeeResponse response = new EmployeeResponse();
@@ -457,6 +497,14 @@ public class EmployeeValidate {
 
     /**
      * Validate các tham số cho API lấy danh sách nhân viên.
+     *
+     * @param sortEmployeeName      Sắp xếp tên nhân viên
+     * @param sortCertificationName Sắp xếp tên chứng chỉ
+     * @param sortEndDate           Sắp xếp ngày kết thúc
+     * @param offset                Offset
+     * @param limit                 Limit
+     * @param employeeName          Tên nhân viên
+     * @return EmployeeResponse chứa mã lỗi và tham số lỗi
      */
     public EmployeeResponse validateListParams(
             String sortEmployeeName,

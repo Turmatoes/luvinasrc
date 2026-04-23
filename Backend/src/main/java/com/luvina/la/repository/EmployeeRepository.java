@@ -65,12 +65,11 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                         // TH 1: Lọc theo employee_name
                         "CASE WHEN :sortEmployeeName = 'asc' THEN e.employee_name END ASC, " +
                         "CASE WHEN :sortEmployeeName = 'desc' THEN e.employee_name END DESC, " +
-                        // TH 2: Lọc theo Japanese skill = certification_level (smaller is higher).
-                        // Nulls always last.
+                        // TH 2: Lọc theo Japanese skill = certification_level
                         "(c.certification_level IS NULL) ASC, " +
                         "CASE WHEN :sortCertificationName = 'desc' THEN c.certification_level END ASC, " +
                         "CASE WHEN :sortCertificationName = 'asc' THEN c.certification_level END DESC, " +
-                        // TH 3: Lọc theo end_date. Nulls always last.
+                        // TH 3: Lọc theo end_date
                         "(ec.end_date IS NULL) ASC, " +
                         "CASE WHEN :sortEndDate = 'asc' THEN ec.end_date END ASC, " +
                         "CASE WHEN :sortEndDate = 'desc' THEN ec.end_date END DESC, " +

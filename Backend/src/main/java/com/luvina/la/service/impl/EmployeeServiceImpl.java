@@ -159,7 +159,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
-     * Build response lỗi
+     * Build response lỗi trả về format {Error code, params}
+     * 
+     * @param errorCode Mã lỗi
+     * @param params    Danh sách tham số
+     * @return EmployeeResponse chứa mã lỗi và danh sách tham số
      */
     @Override
     public EmployeeResponse buildErrorResponse(String errorCode, List<String> params) {
@@ -176,6 +180,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * Check tồn tại Login ID
+     * 
+     * @param loginId Login ID cần kiểm tra
+     * @return true nếu tồn tại, false nếu không tồn tại
      */
     @Override
     public boolean checkExistsLoginId(String loginId) {
@@ -185,6 +192,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     /**
      * Escape ký tự đặc biệt trong tên nhân viên cho LIKE query.
      * Trả về null nếu tên rỗng (không lọc theo tên).
+     * 
+     * @param employeeName Tên nhân viên
+     * @return Tên nhân viên đã escape
      */
     @Override
     public String escapeEmployeeName(String employeeName) {
@@ -196,6 +206,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * Check tồn tại Department
+     *
+     * @param departmentId Mã phòng ban cần kiểm tra
+     * @return true nếu tồn tại, false nếu không tồn tại
      */
     @Override
     public boolean checkExistsDepartment(Long departmentId) {
@@ -204,6 +217,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * Check tồn tại Certification
+     *
+     * @param certificationId Chứng chỉ cần kiểm tra
+     * @return true nếu tồn tại, false nếu không tồn tại
      */
     @Override
     public boolean checkExistsCertification(Long certificationId) {
@@ -212,6 +228,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * Thêm nhân viên mới
+     *
+     * @param request EmployeeRequest chứa thông tin nhân viên
+     * @return EmployeeResponse chứa mã lỗi
      */
     @Override
     @Transactional
@@ -262,6 +281,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * Chuyển đổi java.sql.Date sang java.time.LocalDate.
+     * 
+     * @param obj Đối tượng cần chuyển đổi
+     * @return LocalDate đã chuyển đổi
      */
     private LocalDate convertSqlDateToLocalDate(Object obj) {
         if (obj == null) {
