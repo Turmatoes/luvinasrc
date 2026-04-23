@@ -18,12 +18,11 @@ function SystemErrorContent() {
   
   // Lấy message từ query params, nếu không có dùng mặc định
   const message = searchParams.get('message') || 'システムエラーが発生しました。';
-  const code = searchParams.get('code') || 'ER023';
 
   return (
     <div className="notification-box" style={{ padding: '50px 20px', textAlign: 'center', backgroundColor: '#fff', borderRadius: '8px', marginTop: '30px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
       <h1 className="title note-err" style={{ fontSize: '24px', color: '#d9534f', marginBottom: '30px' }}>
-        {message} ({code})
+        {message}
       </h1>
       <button
         type="button"
