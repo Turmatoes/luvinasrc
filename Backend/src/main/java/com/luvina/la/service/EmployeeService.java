@@ -30,7 +30,6 @@ public interface EmployeeService {
             Integer limit,
             Integer offset);
 
-
     /**
      * Escape ký tự đặc biệt trong tên nhân viên cho LIKE query.
      * Trả về null nếu tên rỗng.
@@ -47,41 +46,67 @@ public interface EmployeeService {
 
     /**
      * Đếm tổng số nhân viên không phải quản trị với bộ lọc.
+     * 
+     * @param employeeName Tên nhân viên (đã trim)
+     * @param departmentId ID phòng ban
+     * @return Số lượng nhân viên không phải quản trị
      */
     Long countEmployeesWithFilter(String employeeName, Long departmentId);
 
     /**
      * Xây dựng phản hồi lỗi có hỗ trợ params.
+     *
+     * @param errorCode Mã lỗi
+     * @param params    Danh sách tham số
+     * @return Phản hồi lỗi
      */
     EmployeeResponse buildErrorResponse(String errorCode, List<String> params);
 
     /**
      * Xây dựng phản hồi lỗi với params rỗng.
+     *
+     * @param errorCode Mã lỗi
+     * @return Phản hồi lỗi
      */
     EmployeeResponse buildErrorResponse(String errorCode);
 
     /**
      * Lấy chi tiết nhân viên theo ID.
+     * 
+     * @param id ID của nhân viên
+     * @return EmployeeDTO chứa thông tin nhân viên
      */
     EmployeeDTO getEmployeeById(Long id);
 
     /**
      * Kiểm tra sự tồn tại của Login ID.
+     * 
+     * @param loginId Login ID cần kiểm tra
+     * @return true nếu tồn tại, false nếu không tồn tại
      */
     boolean checkExistsLoginId(String loginId);
 
     /**
      * Kiểm tra sự tồn tại của Phòng ban.
+     * 
+     * @param departmentId ID phòng ban cần kiểm tra
+     * @return true nếu tồn tại, false nếu không tồn tại
      */
     boolean checkExistsDepartment(Long departmentId);
 
     /**
      * Kiểm tra sự tồn tại của Chứng chỉ.
+     * 
+     * @param certificationId ID chứng chỉ cần kiểm tra
+     * @return true nếu tồn tại, false nếu không tồn tại
      */
     boolean checkExistsCertification(Long certificationId);
 
     /**
      * Thêm mới một nhân viên vào database.
+     * 
+     * @param request EmployeeRequest chứa thông tin nhân viên
+     * @return EmployeeResponse chứa mã lỗi (SUCCESS hoặc mã lỗi cụ thể)
      */
     EmployeeResponse addEmployee(EmployeeRequest request);
 }

@@ -158,6 +158,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         return dto;
     }
 
+    /**
+     * Build response lỗi
+     */
     @Override
     public EmployeeResponse buildErrorResponse(String errorCode, List<String> params) {
         EmployeeResponse response = new EmployeeResponse();
@@ -171,11 +174,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         return buildErrorResponse(errorCode, null);
     }
 
+    /**
+     * Check tồn tại Login ID
+     */
     @Override
     public boolean checkExistsLoginId(String loginId) {
         return employeeRepository.findByEmployeeLoginId(loginId).isPresent();
     }
-
 
     /**
      * Escape ký tự đặc biệt trong tên nhân viên cho LIKE query.
@@ -189,16 +194,25 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeValidate.escapeLikePattern(employeeName);
     }
 
+    /**
+     * Check tồn tại Department
+     */
     @Override
     public boolean checkExistsDepartment(Long departmentId) {
         return departmentRepository.existsById(departmentId);
     }
 
+    /**
+     * Check tồn tại Certification
+     */
     @Override
     public boolean checkExistsCertification(Long certificationId) {
         return certificationRepository.existsById(certificationId);
     }
 
+    /**
+     * Thêm nhân viên mới
+     */
     @Override
     @Transactional
     public EmployeeResponse addEmployee(EmployeeRequest request) {

@@ -37,6 +37,9 @@ public class EmployeeValidate {
     private static final String KATAKANA_PATTERN = "^[\\u30A0-\\u30FF]+$";
     private static final String HALFSIZE_NUMBER_PATTERN = "^[0-9]*$";
 
+    /**
+     * Constructor để check exist LoginID, Department, Certification
+     */
     public EmployeeValidate(
             EmployeeRepository employeeRepository,
             DepartmentRepository departmentRepository,
@@ -89,7 +92,8 @@ public class EmployeeValidate {
      * Kiểm tra định dạng Login ID (ER019).
      */
     public boolean isValidLoginId(String loginId) {
-        if (loginId == null || loginId.isEmpty()) return true;
+        if (loginId == null || loginId.isEmpty())
+            return true;
         return Pattern.matches(LOGIN_ID_PATTERN, loginId);
     }
 
@@ -97,7 +101,8 @@ public class EmployeeValidate {
      * Kiểm tra định dạng Email (ER005).
      */
     public boolean isValidEmail(String email) {
-        if (email == null || email.isEmpty()) return true;
+        if (email == null || email.isEmpty())
+            return true;
         return Pattern.matches(EMAIL_PATTERN, email);
     }
 
@@ -105,7 +110,8 @@ public class EmployeeValidate {
      * Kiểm tra định dạng Katakana (ER009).
      */
     public boolean isValidKatakana(String text) {
-        if (text == null || text.isEmpty()) return true;
+        if (text == null || text.isEmpty())
+            return true;
         return Pattern.matches(KATAKANA_PATTERN, text);
     }
 
@@ -113,7 +119,8 @@ public class EmployeeValidate {
      * Kiểm tra định dạng số Halfsize (ER008/ER018).
      */
     public boolean isHalfsizeNumber(String text) {
-        if (text == null || text.isEmpty()) return true;
+        if (text == null || text.isEmpty())
+            return true;
         return Pattern.matches(HALFSIZE_NUMBER_PATTERN, text);
     }
 
@@ -121,15 +128,19 @@ public class EmployeeValidate {
      * Kiểm tra định dạng ngày tháng yyyy/MM/dd.
      */
     public boolean isValidDateFormat(String date) {
-        if (date == null || date.isEmpty()) return true;
+        if (date == null || date.isEmpty())
+            return true;
         try {
             String[] parts = date.split("/");
-            if (parts.length != 3) return false;
+            if (parts.length != 3)
+                return false;
             int year = Integer.parseInt(parts[0]);
             int month = Integer.parseInt(parts[1]);
             int day = Integer.parseInt(parts[2]);
-            if (month < 1 || month > 12) return false;
-            if (day < 1 || day > 31) return false;
+            if (month < 1 || month > 12)
+                return false;
+            if (day < 1 || day > 31)
+                return false;
             return true;
         } catch (Exception e) {
             return false;
@@ -173,47 +184,64 @@ public class EmployeeValidate {
 
         // 1.1 Validate [employee_login_id]
         error = validateLoginId(request.getEmployeeLoginId());
-        if (error != null) return error;
+        if (error != null)
+            return error;
 
         // 1.2 Validate [employee_name]
         error = validateEmployeeName(request.getEmployeeName());
-        if (error != null) return error;
+        if (error != null)
+            return error;
 
         // 1.3 Validate [employee_name_kana]
         error = validateNameKana(request.getEmployeeNameKana());
-        if (error != null) return error;
+        if (error != null)
+            return error;
 
         // 1.4 Validate [employee_birth_date]
         error = validateBirthDate(request.getEmployeeBirthDate());
-        if (error != null) return error;
+        if (error != null)
+            return error;
 
         // 1.5 Validate [employee_email]
         error = validateEmail(request.getEmployeeEmail());
-        if (error != null) return error;
+        if (error != null)
+            return error;
 
         // 1.6 Validate [employee_telephone]
         error = validateTelephone(request.getEmployeeTelephone());
-        if (error != null) return error;
+        if (error != null)
+            return error;
 
         // 1.7 Validate [employee_login_password]
         error = validatePassword(request.getEmployeeLoginPassword());
-        if (error != null) return error;
+        if (error != null)
+            return error;
 
         // 1.7+ Validate [employee_login_password_confirm]
         error = validatePasswordConfirm(request.getEmployeeLoginPassword(), request.getEmployeeLoginPasswordConfirm());
-        if (error != null) return error;
+        if (error != null)
+            return error;
 
         // 1.8 Validate [department_id]
         error = validateDepartment(request.getDepartmentId());
-        if (error != null) return error;
+        if (error != null)
+            return error;
 
         // 1.9 Validate Certification (nếu có chọn)
         error = validateCertification(request);
-        if (error != null) return error;
+        if (error != null)
+            return error;
 
         return buildErrorResponse(Constants.CODE_SUCCESS);
     }
 
+    /**
+     * Validate Login ID.
+     * 
+     * @param loginId Login ID cần validate
+     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     *         lỗi)
+     */
     public EmployeeResponse validateLoginId(String loginId) {
         if (loginId == null || loginId.isEmpty()) {
             return buildErrorResponse(Constants.CODE_ER001, java.util.Arrays.asList(Constants.PARAM_LOGIN_ID));
@@ -231,6 +259,13 @@ public class EmployeeValidate {
         return null;
     }
 
+    /**
+     * Validate Employee Name.
+     * 
+     * @param name Tên nhân viên cần validate
+     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     *         lỗi)
+     */
     public EmployeeResponse validateEmployeeName(String name) {
         if (name == null || name.isEmpty()) {
             return buildErrorResponse(Constants.CODE_ER001, java.util.Arrays.asList(Constants.PARAM_EMPLOYEE_NAME));
@@ -242,6 +277,13 @@ public class EmployeeValidate {
         return null;
     }
 
+    /**
+     * Validate Name Kana.
+     * 
+     * @param nameKana Tên nhân viên (Kana) cần validate
+     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     *         lỗi)
+     */
     public EmployeeResponse validateNameKana(String nameKana) {
         if (nameKana == null || nameKana.isEmpty()) {
             return buildErrorResponse(Constants.CODE_ER001, java.util.Arrays.asList(Constants.PARAM_NAME_KANA));
@@ -256,6 +298,13 @@ public class EmployeeValidate {
         return null;
     }
 
+    /**
+     * Validate Birth Date.
+     * 
+     * @param birthDate Ngày sinh cần validate
+     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     *         lỗi)
+     */
     public EmployeeResponse validateBirthDate(String birthDate) {
         if (birthDate == null || birthDate.isEmpty()) {
             return buildErrorResponse(Constants.CODE_ER001, java.util.Arrays.asList(Constants.PARAM_BIRTH_DATE));
@@ -266,6 +315,13 @@ public class EmployeeValidate {
         return null;
     }
 
+    /**
+     * Validate Email.
+     * 
+     * @param email Email cần validate
+     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     *         lỗi)
+     */
     public EmployeeResponse validateEmail(String email) {
         if (email == null || email.isEmpty()) {
             return buildErrorResponse(Constants.CODE_ER001, java.util.Arrays.asList(Constants.PARAM_EMAIL));
@@ -280,6 +336,13 @@ public class EmployeeValidate {
         return null;
     }
 
+    /**
+     * Validate Telephone.
+     * 
+     * @param telephone Số điện thoại cần validate
+     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     *         lỗi)
+     */
     public EmployeeResponse validateTelephone(String telephone) {
         if (telephone == null || telephone.isEmpty()) {
             return buildErrorResponse(Constants.CODE_ER001, java.util.Arrays.asList(Constants.PARAM_TELEPHONE));
@@ -294,6 +357,13 @@ public class EmployeeValidate {
         return null;
     }
 
+    /**
+     * Validate Password.
+     * 
+     * @param password Mật khẩu cần validate
+     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     *         lỗi)
+     */
     public EmployeeResponse validatePassword(String password) {
         if (password == null || password.isEmpty()) {
             return buildErrorResponse(Constants.CODE_ER001, java.util.Arrays.asList(Constants.PARAM_PASSWORD));
@@ -308,6 +378,14 @@ public class EmployeeValidate {
         return null;
     }
 
+    /**
+     * Validate Password Confirm.
+     * 
+     * @param password        Mật khẩu
+     * @param passwordConfirm Xác nhận mật khẩu
+     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     *         lỗi)
+     */
     public EmployeeResponse validatePasswordConfirm(String password, String passwordConfirm) {
         if (!password.equals(passwordConfirm)) {
             return buildErrorResponse(Constants.CODE_ER017);
@@ -315,6 +393,13 @@ public class EmployeeValidate {
         return null;
     }
 
+    /**
+     * Validate Department.
+     * 
+     * @param departmentId ID phòng ban cần validate
+     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     *         lỗi)
+     */
     public EmployeeResponse validateDepartment(Long departmentId) {
         if (departmentId == null) {
             return buildErrorResponse(Constants.CODE_ER002, java.util.Arrays.asList(Constants.PARAM_DEPARTMENT));
@@ -325,6 +410,13 @@ public class EmployeeValidate {
         return null;
     }
 
+    /**
+     * Validate Certification.
+     * 
+     * @param request EmployeeRequest chứa thông tin chứng chỉ
+     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     *         lỗi)
+     */
     public EmployeeResponse validateCertification(EmployeeRequest request) {
         if (request.getCertificationId() == null) {
             return null; // Không chọn chứng chỉ -> bỏ qua
@@ -387,7 +479,7 @@ public class EmployeeValidate {
         if (!isPositiveInteger(limit)) {
             return buildErrorResponse(Constants.CODE_ER018, java.util.Arrays.asList("リミット"));
         }
-        // Validate employee_name length
+        // Validate độ dài employee_name
         if (!isValidMaxLength(employeeName, Constants.MAX_EMPLOYEE_NAME_LENGTH)) {
             return buildErrorResponse(Constants.CODE_ER006,
                     java.util.Arrays.asList(Constants.PARAM_EMPLOYEE_NAME,
