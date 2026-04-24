@@ -13,6 +13,7 @@ import { EmployeeFormValues } from '@/types/employee';
 import { getStorageKey, getSessionData, clearSessionData } from '@/lib/utils/sessionStorage';
 import { employeeApi } from '@/lib/api/employee.api';
 import { redirectToSystemError } from '@/lib/utils/errorHelper';
+import { ERR_SYSTEM, ERR_SUCCESS } from '@/lib/constants/config';
 
 // Key cho storage (phải match với ADM004)
 const STORAGE_KEY = getStorageKey('ADM004');
@@ -69,7 +70,7 @@ export function useAdm005() {
             // Đảm bảo dữ liệu vẫn hợp lệ ngay trước thời điểm lưu (phòng trường hợp trùng ID phát sinh giữa chừng)
             const validateRes = await employeeApi.validateEmployee(formData);
 
-            if (validateRes.code !== '200') {
+            if (validateRes.code !== ERR_SUCCESS) {
                 // Nếu phát sinh bất kỳ lỗi validate nào ở bước cuối cùng, coi như là lỗi hệ thống nghiệp vụ
                 redirectToSystemError(validateRes.code, validateRes.message);
                 return;
@@ -89,7 +90,7 @@ export function useAdm005() {
         } catch (err) {
             console.error('Lỗi khi lưu dữ liệu:', err);
             //Gọi đến System Error khi gặp lỗi
-            redirectToSystemError('ER023');
+            redirectToSystemError(ERR_SYSTEM);
         } finally {
             setLoading(false);
         }

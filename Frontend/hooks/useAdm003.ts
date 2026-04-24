@@ -11,6 +11,7 @@ import { employeeApi } from '@/lib/api/employee.api';
 import { getMessage } from '@/lib/utils/messageHelper';
 import { MESSAGES } from '@/lib/constants/messages';
 import { redirectToSystemError } from '@/lib/utils/errorHelper';
+import { ERR_SYSTEM } from '@/lib/constants/config';
 
 /**
  * Custom Hook useAdm003 quản lý logic cho màn hình Chi tiết nhân viên.
@@ -41,7 +42,7 @@ export function useAdm003() {
       setEmployee(data);
     } catch (err) {
       console.error('Lỗi khi tải dữ liệu nhân viên:', err);
-      redirectToSystemError('ER023');
+      redirectToSystemError(ERR_SYSTEM);
     } finally {
       setLoading(false);
     }

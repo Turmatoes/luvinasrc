@@ -12,8 +12,9 @@ import { departmentApi } from '@/lib/api/department.api';
 import { EmployeeListResponse, DepartmentDTO } from '@/types/employee';
 import { SortDirection, SortKey } from '@/components/employees/EmployeeTable';
 import { getMessage } from '@/lib/utils/messageHelper';
-import { LIMIT_PER_PAGE, MAX_FULLNAME_LENGTH } from '@/lib/constants/config';
+import { LIMIT_PER_PAGE, MAX_EMPLOYEE_NAME_LENGTH, ERR_SYSTEM, CODE_ER006 } from '@/lib/constants/config';
 import { redirectToSystemError } from '@/lib/utils/errorHelper';
+import { LABELS } from '@/lib/constants/messages';
 
 const DEFAULT_SORT: Record<SortKey, SortDirection> = {
   employeeName: 'asc',
@@ -77,7 +78,7 @@ export function useAdm002() {
         setDepartments(response);
       } catch (err) {
         console.error('Lỗi khi tải danh sách phòng ban:', err);
-        redirectToSystemError('ER023');
+        redirectToSystemError(ERR_SYSTEM);
       }
     };
     loadDepartments();
@@ -149,9 +150,9 @@ export function useAdm002() {
       });
     } catch (err: unknown) {
       console.error('Lỗi khi tải danh sách nhân viên:', err);
-      const errorCode = (err as any)?.response?.data?.code ?? 'ER023';
-      if (errorCode === 'ER023') {
-        redirectToSystemError('ER023');
+      const errorCode = (err as any)?.response?.data?.code ?? ERR_SYSTEM;
+      if (errorCode === ERR_SYSTEM) {
+        redirectToSystemError(ERR_SYSTEM);
       } else {
         setEmployeeError(getMessage(errorCode));
       }
@@ -176,8 +177,8 @@ export function useAdm002() {
   const handleSearch = (name: string, deptId: number | null) => {
     const normalizedName = name.trim();
 
-    if (normalizedName.length > MAX_FULLNAME_LENGTH) {
-      setEmployeeNameError(getMessage('ER006', ['氏名', MAX_FULLNAME_LENGTH]));
+    if (normalizedName.length > MAX_EMPLOYEE_NAME_LENGTH) {
+      setEmployeeNameError(getMessage(CODE_ER006, [LABELS.FULL_NAME, MAX_EMPLOYEE_NAME_LENGTH]));
       return;
     }
 
@@ -222,7 +223,7 @@ export function useAdm002() {
    */
   const handleEmployeeNameChange = (name: string) => {
     setSearchForm(prev => ({ ...prev, employeeName: name }));
-    if (name.trim().length <= MAX_FULLNAME_LENGTH) {
+    if (name.trim().length <= MAX_EMPLOYEE_NAME_LENGTH) {
       setEmployeeNameError(null);
     }
   };

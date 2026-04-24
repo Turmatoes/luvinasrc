@@ -17,6 +17,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { createEmployeeSchema } from '@/lib/validation/employee';
 import { getStorageKey, getSessionData, setEmployeeToSession, clearSessionData } from '@/lib/utils/sessionStorage';
 import { redirectToSystemError } from '@/lib/utils/errorHelper';
+import { ERR_SYSTEM, ERR_SUCCESS, CODE_ER003, CODE_ER004, CODE_ER012 } from '@/lib/constants/config';
+import { LABELS } from '@/lib/constants/messages';
 
 // Key cho storage
 const STORAGE_KEY = getStorageKey('ADM004');
@@ -84,7 +86,7 @@ export function useAdm004() {
   };
 
   /**
-   * Tải dữ liệu danh mục (Master Data).
+   * Tải dữ liệu danh mục phòng ban và chứng chỉ
    */
   const loadMasterData = async () => {
     const [depts, certs] = await Promise.all([
@@ -103,10 +105,10 @@ export function useAdm004() {
     const initialize = async () => {
       setLoading(true);
       try {
+        // Tải dữ liệu danh mục phòng ban và chứng chỉ
         await loadMasterData();
-
+        // TH 1: Quay lại từ màn hình confirm (adm005 -> adm004)
         if (isBackFromADM005) {
-          // TH 1: Quay lại từ màn hình confirm (adm005 -> adm004)
           const employeeData = getSessionData(STORAGE_KEY);
           if (employeeData) {
             reset(employeeData);
@@ -133,7 +135,7 @@ export function useAdm004() {
         setInitialized(true);
       } catch (err) {
         console.error('Lỗi khởi tạo:', err);
-        redirectToSystemError('ER023');
+        redirectToSystemError(ERR_SYSTEM);
         setInitialized(true);
       } finally {
         setLoading(false);
@@ -152,19 +154,19 @@ export function useAdm004() {
       // Gọi API Validate từ Backend
       const res = await employeeApi.validateEmployee(values);
 
-      if (res.code !== '200') {
+      if (res.code !== ERR_SUCCESS) {
         // Thông báo lỗi từ Backend (Format chuẩn: {code: "ERxxx", params: [...]})
         const errorCode = res.code;
         const errorParams = res.params || [];
         const errorMessage = getMessage(errorCode, errorParams);
 
         // Map lỗi về đúng field
-        if (errorCode === 'ER003') {
+        if (errorCode === CODE_ER003) {
           setError('employeeLoginId', { message: errorMessage });
-        } else if (errorCode === 'ER004') {
-          if (errorParams.includes('部署')) setError('departmentId', { message: errorMessage });
+        } else if (errorCode === CODE_ER004) {
+          if (errorParams.includes(LABELS.GROUP)) setError('departmentId', { message: errorMessage });
           else setError('certificationId', { message: errorMessage });
-        } else if (errorCode === 'ER012') {
+        } else if (errorCode === CODE_ER012) {
           setError('certificationEndDate', { message: errorMessage });
         } else {
           // Lỗi hệ thống hoặc các lỗi khác không map được -> Redirect sang màn hình lỗi
@@ -181,7 +183,7 @@ export function useAdm004() {
     } catch (err) {
       console.error('Lỗi validate:', err);
       // Gọi đến System Error khi gặp lỗi
-      redirectToSystemError('ER023');
+      redirectToSystemError(ERR_SYSTEM);
     } finally {
       setLoading(false);
     }

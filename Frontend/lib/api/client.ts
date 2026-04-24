@@ -5,6 +5,7 @@
  */
 import axios from 'axios';
 import { redirectToSystemError } from '../utils/errorHelper';
+import { ERR_SYSTEM } from '../constants/config';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8085/api';
 
@@ -45,8 +46,8 @@ export function setupInterceptors(client: ReturnType<typeof axios.create>) {
     (response) => {
       const data = response.data;
       // Kiểm tra code trực tiếp - format chuẩn: {code: "", params: []}
-      if (data?.code === 'ER023') {
-        redirectToSystemError('ER023');
+      if (data?.code === ERR_SYSTEM) {
+        redirectToSystemError(ERR_SYSTEM);
       }
       return response;
     },
@@ -55,8 +56,8 @@ export function setupInterceptors(client: ReturnType<typeof axios.create>) {
       const errorCode = responseData?.code;
 
       // Xử lý lỗi hệ thống ER023 hoặc Status 500
-      if (errorCode === 'ER023' || error.response?.status === 500) {
-        redirectToSystemError(errorCode || 'ER023');
+      if (errorCode === ERR_SYSTEM || error.response?.status === 500) {
+        redirectToSystemError(errorCode || ERR_SYSTEM);
         return new Promise(() => { }); // Chặn lỗi tiếp tục lan truyền
       }
 
