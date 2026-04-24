@@ -371,7 +371,7 @@ public class EmployeeValidate {
                     java.util.Arrays.asList(Constants.PARAM_EMAIL, String.valueOf(Constants.MAX_EMAIL_LENGTH)));
             // Check [employee_email] format (ER005)
         } else if (!isValidEmail(email)) {
-            return buildResponse(Constants.CODE_ER005, java.util.Arrays.asList(Constants.PARAM_EMAIL, "email"));
+            return buildResponse(Constants.CODE_ER005, java.util.Arrays.asList(Constants.PARAM_EMAIL));
         }
         return null;
     }
