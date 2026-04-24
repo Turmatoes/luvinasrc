@@ -115,7 +115,7 @@ public class EmployeeController {
             return response;
 
         } catch (Exception e) {
-            return employeeService.buildErrorResponse(Constants.CODE_ER023);
+            return employeeService.buildResponse(Constants.CODE_ER023);
         }
     }
 
@@ -128,11 +128,11 @@ public class EmployeeController {
             EmployeeDTO employee = employeeService.getEmployeeById(id);
             if (employee == null) {
                 // Không tìm thấy nhân viên (Mã lỗi ER013)
-                return employeeService.buildErrorResponse(Constants.CODE_ER013);
+                return employeeService.buildResponse(Constants.CODE_ER013);
             }
             return employee;
         } catch (Exception e) {
-            return employeeService.buildErrorResponse(Constants.CODE_ER023);
+            return employeeService.buildResponse(Constants.CODE_ER023);
         }
     }
 
@@ -145,7 +145,7 @@ public class EmployeeController {
         try {
             return employeeValidate.validateEmployee(request);
         } catch (Exception e) {
-            return employeeValidate.buildErrorResponse(Constants.CODE_ER023);
+            return employeeValidate.buildResponse(Constants.CODE_ER023);
         }
     }
 

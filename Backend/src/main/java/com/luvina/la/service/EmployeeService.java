@@ -59,7 +59,7 @@ public interface EmployeeService {
      * @param params    Danh sách tham số
      * @return Phản hồi lỗi
      */
-    ErrorResponse buildErrorResponse(String errorCode, List<String> params);
+    ErrorResponse buildResponse(String errorCode, List<String> params);
 
     /**
      * Xây dựng phản hồi lỗi với params rỗng.
@@ -67,7 +67,7 @@ public interface EmployeeService {
      * @param errorCode Mã lỗi
      * @return Phản hồi lỗi
      */
-    ErrorResponse buildErrorResponse(String errorCode);
+    ErrorResponse buildResponse(String errorCode);
 
     /**
      * Lấy chi tiết nhân viên theo ID.

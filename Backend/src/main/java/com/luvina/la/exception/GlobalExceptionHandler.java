@@ -41,12 +41,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleSystemError(Exception ex) {
-        ErrorResponse response = employeeService.buildErrorResponse(Constants.CODE_ER023);
+        ErrorResponse response = employeeService.buildResponse(Constants.CODE_ER023);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    /**
-     * Xử lý các lỗi RuntimeException khác nếu cần cụ thể hóa.
-     * Hiện tại được gộp chung vào xử lý Exception nhưng có thể mở rộng tại đây.
-     */
 }

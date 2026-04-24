@@ -5,6 +5,8 @@
  */
 package com.luvina.la.config;
 
+import org.springframework.http.HttpStatus;
+
 /**
  * Lớp Constants lưu trữ cấu hình tĩnh của hệ thống.
  * 
@@ -41,10 +43,10 @@ public class Constants {
         };
 
         // Các mã định danh HTTP Code
-        public static final String CODE_SUCCESS = "200";
-        public static final String CODE_SYSTEM_ERROR = "500";
-        public static final String CODE_NOT_FOUND = "404";
-        public static final String CODE_UNAUTHORIZED = "401";
+        public static final String CODE_SUCCESS = HttpStatus.OK.name();
+        public static final String CODE_SYSTEM_ERROR = HttpStatus.INTERNAL_SERVER_ERROR.name();
+        public static final String CODE_NOT_FOUND = HttpStatus.NOT_FOUND.name();
+        public static final String CODE_UNAUTHORIZED = HttpStatus.UNAUTHORIZED.name();
 
         // Các mã định danh lỗi hệ thống
         public static final String CODE_ER001 = "ER001";

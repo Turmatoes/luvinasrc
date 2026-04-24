@@ -161,7 +161,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @return EmployeeResponse chứa mã lỗi và danh sách tham số
      */
     @Override
-    public ErrorResponse buildErrorResponse(String errorCode, List<String> params) {
+    public ErrorResponse buildResponse(String errorCode, List<String> params) {
         ErrorResponse response = new ErrorResponse();
         response.setCode(errorCode);
         response.setParams(params != null ? params : new java.util.ArrayList<>());
@@ -169,8 +169,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public ErrorResponse buildErrorResponse(String errorCode) {
-        return buildErrorResponse(errorCode, null);
+    public ErrorResponse buildResponse(String errorCode) {
+        return buildResponse(errorCode, null);
     }
 
     /**
@@ -270,7 +270,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return response;
 
         } catch (Exception e) {
-            return buildErrorResponse(Constants.CODE_ER023);
+            return buildResponse(Constants.CODE_ER023);
         }
     }
 
