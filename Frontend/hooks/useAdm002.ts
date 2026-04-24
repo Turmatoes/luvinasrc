@@ -8,6 +8,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { employeeApi } from '@/lib/api/employee.api';
+import { departmentApi } from '@/lib/api/department.api';
 import { EmployeeListResponse, DepartmentDTO } from '@/types/employee';
 import { SortDirection, SortKey } from '@/components/employees/EmployeeTable';
 import { getMessage } from '@/lib/utils/messageHelper';
@@ -72,7 +73,7 @@ export function useAdm002() {
   useEffect(() => {
     const loadDepartments = async () => {
       try {
-        const response = await employeeApi.getDepartments();
+        const response = await departmentApi.getDepartments();
         setDepartments(response);
       } catch (err) {
         console.error('Lỗi khi tải danh sách phòng ban:', err);

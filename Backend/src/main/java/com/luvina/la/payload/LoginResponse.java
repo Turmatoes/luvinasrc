@@ -6,10 +6,10 @@
 
 package com.luvina.la.payload;
 
-import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Đối tượng phản hồi (Response Payload) cho chức năng đăng nhập.
@@ -17,17 +17,14 @@ import lombok.Data;
  * Format lỗi chuẩn: {code: "", params: []}
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LoginResponse {
+public class LoginResponse extends ErrorResponse {
 
     /** Token truy cập JWT */
     private String accessToken;
     /** Kiểu token (thường là Bearer) */
     private String tokenType;
-    /** Mã lỗi theo chuẩn hệ thống */
-    private String code;
-    /** Danh sách tham số cho message */
-    private List<String> params;
 
     /**
      * Constructor cho phản hồi đăng nhập thành công.
@@ -35,6 +32,7 @@ public class LoginResponse {
      * @param accessToken Token JWT được tạo
      */
     public LoginResponse(String accessToken) {
+        super();
         this.accessToken = accessToken;
         this.tokenType = "Bearer";
     }
@@ -47,8 +45,7 @@ public class LoginResponse {
      * @param params Danh sách tham số
      */
     public LoginResponse(String code, List<String> params) {
-        this.code = code;
-        this.params = params != null ? params : new ArrayList<>();
+        super(code, params);
     }
 
 }

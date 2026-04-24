@@ -9,6 +9,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { employeeApi } from '@/lib/api/employee.api';
+import { departmentApi } from '@/lib/api/department.api';
+import { certificationApi } from '@/lib/api/certification.api';
 import { DepartmentDTO, CertificationDTO, EmployeeFormValues } from '@/types/employee';
 import { getMessage } from '@/lib/utils/messageHelper';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -52,7 +54,7 @@ export function useAdm004() {
   const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
   const [certifications, setCertifications] = useState<CertificationDTO[]>([]);
   const [loading, setLoading] = useState(false);
-  const [systemError, setSystemError] = useState<string | null>(null);
+
   const [initialized, setInitialized] = useState(false);
 
   // Khởi tạo React Hook Form
@@ -86,8 +88,8 @@ export function useAdm004() {
    */
   const loadMasterData = async () => {
     const [depts, certs] = await Promise.all([
-      employeeApi.getDepartments(),
-      employeeApi.getCertifications(),
+      departmentApi.getDepartments(),
+      certificationApi.getCertifications(),
     ]);
     setDepartments(depts);
     setCertifications(certs);
@@ -165,8 +167,8 @@ export function useAdm004() {
         } else if (errorCode === 'ER012') {
           setError('certificationEndDate', { message: errorMessage });
         } else {
-          // Lỗi chung hoặc lỗi hệ thống
-          setSystemError(errorMessage);
+          // Lỗi hệ thống hoặc các lỗi khác không map được -> Redirect sang màn hình lỗi
+          redirectToSystemError(errorCode);
         }
         setLoading(false);
         return;
@@ -203,7 +205,7 @@ export function useAdm004() {
     departments,
     certifications,
     loading,
-    systemError,
+
     isEditMode,
     handleBack,
     handleCertificationChange,

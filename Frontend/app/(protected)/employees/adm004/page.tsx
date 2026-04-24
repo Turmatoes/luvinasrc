@@ -21,7 +21,7 @@ function EmployeeInputPageContent() {
   // Sử dụng Hook để quản lý toàn bộ logic nghiệp vụ
   const hookData = useAdm004();
 
-  const { loading, systemError } = hookData;
+  const { loading } = hookData;
 
   // Trạng thái Loading
   if (loading) {
@@ -30,12 +30,7 @@ function EmployeeInputPageContent() {
 
   return (
     <>
-      {/* Trạng thái Error */}
-      {systemError && (
-        <div className="alert alert-danger" role="alert">
-          {systemError}
-        </div>
-      )}
+
 
       {/* Giao diện Form nhập liệu */}
       <EmployeeInputForm {...hookData} />

@@ -8,8 +8,7 @@ package com.luvina.la.service;
 
 import com.luvina.la.dto.EmployeeDTO;
 import com.luvina.la.payload.EmployeeRequest;
-import com.luvina.la.payload.EmployeeListResponse;
-import com.luvina.la.payload.EmployeeResponse;
+import com.luvina.la.payload.ErrorResponse;
 import java.util.List;
 
 /**
@@ -60,7 +59,7 @@ public interface EmployeeService {
      * @param params    Danh sách tham số
      * @return Phản hồi lỗi
      */
-    EmployeeResponse buildErrorResponse(String errorCode, List<String> params);
+    ErrorResponse buildErrorResponse(String errorCode, List<String> params);
 
     /**
      * Xây dựng phản hồi lỗi với params rỗng.
@@ -68,7 +67,7 @@ public interface EmployeeService {
      * @param errorCode Mã lỗi
      * @return Phản hồi lỗi
      */
-    EmployeeResponse buildErrorResponse(String errorCode);
+    ErrorResponse buildErrorResponse(String errorCode);
 
     /**
      * Lấy chi tiết nhân viên theo ID.
@@ -108,5 +107,5 @@ public interface EmployeeService {
      * @param request EmployeeRequest chứa thông tin nhân viên
      * @return EmployeeResponse chứa mã lỗi (SUCCESS hoặc mã lỗi cụ thể)
      */
-    EmployeeResponse addEmployee(EmployeeRequest request);
+    ErrorResponse addEmployee(EmployeeRequest request);
 }

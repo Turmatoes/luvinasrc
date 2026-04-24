@@ -40,3 +40,22 @@ export const MESSAGES: Record<string, string> = {
   MSG004: '削除しますか、よろしいでしょうか。',
   MSG005: '検索条件に該当するユーザが見つかりません。',
 };
+
+/**
+ * Tên các trường dữ liệu hiển thị (Labels).
+ */
+export const LABELS: Record<string, string> = {
+  ACCOUNT_NAME: 'アカウント名',
+  GROUP: 'グループ',
+  FULL_NAME: '氏名',
+  KANA_NAME: 'カタカナ氏名',
+  BIRTH_DATE: '生年月日',
+  EMAIL: 'メールアドレス',
+  TELEPHONE: '電話番号',
+  PASSWORD: 'パスワード',
+  PASSWORD_CONFIRM: 'パスワード（確認）',
+  CERTIFICATION: '資格',
+  CERT_START_DATE: '資格交付日',
+  CERT_END_DATE: '失効日',
+  SCORE: '点数',
+};

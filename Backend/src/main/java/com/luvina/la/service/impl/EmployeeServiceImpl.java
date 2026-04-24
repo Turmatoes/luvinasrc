@@ -12,9 +12,9 @@ import com.luvina.la.entity.Certification;
 import com.luvina.la.entity.Department;
 import com.luvina.la.entity.Employee;
 import com.luvina.la.entity.EmployeeCertification;
-import com.luvina.la.payload.EmployeeListResponse;
 import com.luvina.la.payload.EmployeeResponse;
 import com.luvina.la.payload.EmployeeRequest;
+import com.luvina.la.payload.ErrorResponse;
 import com.luvina.la.repository.CertificationRepository;
 import com.luvina.la.repository.DepartmentRepository;
 import com.luvina.la.repository.EmployeeCertificationRepository;
@@ -25,10 +25,8 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +41,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final DepartmentRepository departmentRepository;
     private final CertificationRepository certificationRepository;
     private final EmployeeCertificationRepository employeeCertificationRepository;
-    private final MessageSource messageSource;
     private final PasswordEncoder passwordEncoder;
     private final EmployeeValidate employeeValidate;
 
@@ -52,14 +49,12 @@ public class EmployeeServiceImpl implements EmployeeService {
             DepartmentRepository departmentRepository,
             CertificationRepository certificationRepository,
             EmployeeCertificationRepository employeeCertificationRepository,
-            MessageSource messageSource,
             PasswordEncoder passwordEncoder,
             EmployeeValidate employeeValidate) {
         this.employeeRepository = employeeRepository;
         this.departmentRepository = departmentRepository;
         this.certificationRepository = certificationRepository;
         this.employeeCertificationRepository = employeeCertificationRepository;
-        this.messageSource = messageSource;
         this.passwordEncoder = passwordEncoder;
         this.employeeValidate = employeeValidate;
     }
@@ -166,15 +161,15 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @return EmployeeResponse chứa mã lỗi và danh sách tham số
      */
     @Override
-    public EmployeeResponse buildErrorResponse(String errorCode, List<String> params) {
-        EmployeeResponse response = new EmployeeResponse();
+    public ErrorResponse buildErrorResponse(String errorCode, List<String> params) {
+        ErrorResponse response = new ErrorResponse();
         response.setCode(errorCode);
         response.setParams(params != null ? params : new java.util.ArrayList<>());
         return response;
     }
 
     @Override
-    public EmployeeResponse buildErrorResponse(String errorCode) {
+    public ErrorResponse buildErrorResponse(String errorCode) {
         return buildErrorResponse(errorCode, null);
     }
 
@@ -234,7 +229,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     @Transactional
-    public EmployeeResponse addEmployee(EmployeeRequest request) {
+    public ErrorResponse addEmployee(EmployeeRequest request) {
         try {
             // 1. Tạo entity Employee
             Employee employee = new Employee();
@@ -252,10 +247,10 @@ public class EmployeeServiceImpl implements EmployeeService {
             Department dept = departmentRepository.findById(request.getDepartmentId()).orElse(null);
             employee.setDepartment(dept);
 
-            // 2. Lưu Employee
+            // 2. Lưu Employee vào DB
             Employee savedEmployee = employeeRepository.save(employee);
 
-            // 3. Nếu có chứng chỉ, lưu vào bảng phụ
+            // 3. Nếu có chứng chỉ, lưu vào bảng EmployeeCertification trong DB
             if (request.getCertificationId() != null) {
                 Certification cert = certificationRepository.findById(request.getCertificationId()).orElse(null);
                 if (cert != null) {
@@ -269,7 +264,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 }
             }
 
-            // 4. Trả về thành công
+            // 4. Trả về thành công employee mới được tạo
             EmployeeResponse response = new EmployeeResponse();
             response.setCode(Constants.CODE_SUCCESS);
             return response;

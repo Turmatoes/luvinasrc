@@ -4,7 +4,7 @@
  * employee.api.ts, April 13, 2026 nxplong
  */
 import { apiClient } from './client';
-import { DepartmentDTO, EmployeeListResponse, CertificationDTO, EmployeeFormValues } from '@/types/employee';
+import { EmployeeListResponse, EmployeeFormValues } from '@/types/employee';
 import { SortDirection } from '@/components/employees/EmployeeTable';
 
 /**
@@ -36,25 +36,7 @@ export const employeeApi = {
     return response.data;
   },
 
-  /**
-   * Lấy danh sách phòng ban.
-   * 
-   * @returns Promise chứa mảng DepartmentDTO
-   */
-  getDepartments: async (): Promise<DepartmentDTO[]> => {
-    const response = await apiClient.get<DepartmentDTO[]>('/departments');
-    return response.data;
-  },
 
-  /**
-   * Lấy danh sách chứng chỉ.
-   * 
-   * @returns Promise chứa mảng CertificationDTO
-   */
-  getCertifications: async (): Promise<CertificationDTO[]> => {
-    const response = await apiClient.get<CertificationDTO[]>('/certifications');
-    return response.data;
-  },
 
   /**
    * Lấy chi tiết một nhân viên.
@@ -68,7 +50,8 @@ export const employeeApi = {
    * Validate dữ liệu nhân viên.
    */
   validateEmployee: async (data: EmployeeFormValues): Promise<any> => {
-    const response = await apiClient.post('/employees/validate', data);
+    const { employeeLoginPasswordConfirm, ...rest } = data;
+    const response = await apiClient.post('/employees/validate', rest);
     return response.data;
   },
 
@@ -76,7 +59,8 @@ export const employeeApi = {
    * Thêm mới nhân viên.
    */
   addEmployee: async (data: EmployeeFormValues): Promise<any> => {
-    const response = await apiClient.post('/employees', data);
+    const { employeeLoginPasswordConfirm, ...rest } = data;
+    const response = await apiClient.post('/employees', rest);
     return response.data;
   },
 
@@ -84,7 +68,8 @@ export const employeeApi = {
    * Cập nhật nhân viên.
    */
   updateEmployee: async (id: number, data: EmployeeFormValues): Promise<any> => {
-    const response = await apiClient.put(`/employees/${id}`, data);
+    const { employeeLoginPasswordConfirm, ...rest } = data;
+    const response = await apiClient.put(`/employees/${id}`, rest);
     return response.data;
   },
 };

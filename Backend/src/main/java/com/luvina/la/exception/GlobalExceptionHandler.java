@@ -5,7 +5,7 @@
  */
 package com.luvina.la.exception;
 
-import com.luvina.la.payload.EmployeeResponse;
+import com.luvina.la.payload.ErrorResponse;
 import com.luvina.la.service.EmployeeService;
 import com.luvina.la.config.Constants;
 import org.springframework.http.HttpStatus;
@@ -40,8 +40,8 @@ public class GlobalExceptionHandler {
      * @return ResponseEntity chứa thông tin lỗi ER023
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<EmployeeResponse> handleSystemError(Exception ex) {
-        EmployeeResponse response = employeeService.buildErrorResponse(Constants.CODE_ER023);
+    public ResponseEntity<ErrorResponse> handleSystemError(Exception ex) {
+        ErrorResponse response = employeeService.buildErrorResponse(Constants.CODE_ER023);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

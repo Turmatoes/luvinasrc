@@ -1,13 +1,13 @@
 /*
  * Copyright(C) 2010 Luvina Software Company
  *
- * ConfirmTable.tsx, April 21, 2026 nxplong
+ * EmployeeConfirmForm.tsx, April 24, 2026 nxplong
  */
 
 import React from 'react';
 import { EmployeeFormValues } from '@/types/employee';
 
-interface ConfirmTableProps {
+interface EmployeeConfirmFormProps {
   formData: EmployeeFormValues;
   departments: Record<string, string>;
   certifications: Record<string, string>;
@@ -16,7 +16,7 @@ interface ConfirmTableProps {
 /**
  * Component hiển thị danh sách thông tin nhân viên để xác nhận (ADM005).
  */
-const ConfirmTable: React.FC<ConfirmTableProps> = ({
+const EmployeeConfirmForm: React.FC<EmployeeConfirmFormProps> = ({
   formData,
   departments,
   certifications,
@@ -84,4 +84,4 @@ const ConfirmTable: React.FC<ConfirmTableProps> = ({
   );
 };
 
-export default ConfirmTable;
+export default EmployeeConfirmForm;

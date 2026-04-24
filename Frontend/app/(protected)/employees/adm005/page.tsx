@@ -8,7 +8,7 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useAdm005 } from '@/hooks/useAdm005';
 import { Suspense } from 'react';
-import ConfirmTable from '@/components/employees/ConfirmTable';
+import EmployeeConfirmForm from '@/components/employees/EmployeeConfirmForm';
 
 /**
  * Trang Xác nhận Thông tin nhân viên (ADM005 - Confirmation).
@@ -40,7 +40,7 @@ function EmployeeConfirmPageContent() {
             <p>情報確認</p>
             <p>入力された情報をＯＫボタンクリックでＤＢへ保存してください</p>
           </li>
-          <ConfirmTable
+          <EmployeeConfirmForm
             formData={formData}
             departments={departments}
             certifications={certifications}

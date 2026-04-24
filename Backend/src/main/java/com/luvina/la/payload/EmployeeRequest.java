@@ -22,7 +22,7 @@ public class EmployeeRequest implements Serializable {
     private String employeeEmail;
     private String employeeTelephone;
     private String employeeLoginPassword;
-    private String employeeLoginPasswordConfirm;
+
     private Long departmentId;
 
     // Thông tin chứng chỉ (Có thể null nếu không chọn)

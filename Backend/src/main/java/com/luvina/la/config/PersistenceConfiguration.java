@@ -8,7 +8,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
@@ -18,10 +17,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ConfigurationProperties("spring.datasource")
 public class PersistenceConfiguration extends HikariConfig {
 
-    private final Environment env;
-
-    PersistenceConfiguration(Environment env) {
-        this.env = env;
+    public PersistenceConfiguration() {
     }
 
     @Bean

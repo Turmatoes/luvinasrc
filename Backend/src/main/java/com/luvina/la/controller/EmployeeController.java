@@ -9,7 +9,7 @@ package com.luvina.la.controller;
 import com.luvina.la.config.Constants;
 import com.luvina.la.dto.EmployeeDTO;
 import com.luvina.la.payload.EmployeeListResponse;
-import com.luvina.la.payload.EmployeeResponse;
+import com.luvina.la.payload.ErrorResponse;
 import com.luvina.la.service.EmployeeService;
 import com.luvina.la.validate.EmployeeValidate;
 import com.luvina.la.payload.EmployeeRequest;
@@ -38,7 +38,7 @@ public class EmployeeController {
     /**
      * Constructor khởi tạo EmployeeController.
      *
-     * @param employeeService Dịch vụ xử lý nhân viên
+     * @param employeeService  Dịch vụ xử lý nhân viên
      * @param employeeValidate Dịch vụ validate nhân viên
      */
     public EmployeeController(EmployeeService employeeService, EmployeeValidate employeeValidate) {
@@ -60,7 +60,7 @@ public class EmployeeController {
      * @return EmployeeListResponse chứa tổng số bản ghi và danh sách nhân viên
      */
     @GetMapping("/employees")
-    public EmployeeResponse getEmployeeList(
+    public ErrorResponse getEmployeeList(
             @RequestParam(value = "employeeName", required = false, defaultValue = "") String employeeName,
             @RequestParam(value = "departmentId", required = false) Long departmentId,
             @RequestParam(value = "sortEmployeeName", required = false, defaultValue = "asc") String sortEmployeeName,
@@ -73,10 +73,10 @@ public class EmployeeController {
             String normalizedEmployeeName = employeeName == null ? "" : employeeName.trim();
 
             // 1. Validate parameter
-            EmployeeResponse error = employeeValidate.validateListParams(
+            ErrorResponse employeeResponse = employeeValidate.validateListParams(
                     sortEmployeeName, sortCertificationName, sortEndDate, offset, limit, normalizedEmployeeName);
-            if (error != null) {
-                return error;
+            if (employeeResponse != null) {
+                return employeeResponse;
             }
 
             String escapedEmployeeName = employeeService.escapeEmployeeName(normalizedEmployeeName);
@@ -141,7 +141,7 @@ public class EmployeeController {
      * Thực hiện các bước validate thông qua EmployeeValidate.
      */
     @PostMapping("/employees/validate")
-    public EmployeeResponse validateEmployee(@RequestBody EmployeeRequest request) {
+    public ErrorResponse validateEmployee(@RequestBody EmployeeRequest request) {
         try {
             return employeeValidate.validateEmployee(request);
         } catch (Exception e) {
@@ -153,11 +153,11 @@ public class EmployeeController {
      * Thêm mới nhân viên.
      */
     @PostMapping("/employees")
-    public EmployeeResponse addEmployee(@RequestBody EmployeeRequest request) {
-        // Thực hiện lại validate trước khi lưu
-        EmployeeResponse validateRes = validateEmployee(request);
-        if (validateRes != null && !Constants.CODE_SUCCESS.equals(validateRes.getCode())) {
-            return validateRes;
+    public ErrorResponse addEmployee(@RequestBody EmployeeRequest request) {
+        // Thực hiện lại validate trước khi lưu vào DB
+        ErrorResponse validateEmployee = validateEmployee(request);
+        if (validateEmployee != null && !Constants.CODE_SUCCESS.equals(validateEmployee.getCode())) {
+            return validateEmployee;
         }
         return employeeService.addEmployee(request);
     }

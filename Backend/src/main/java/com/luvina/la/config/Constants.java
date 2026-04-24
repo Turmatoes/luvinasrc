@@ -99,4 +99,7 @@ public class Constants {
         public static final String PARAM_START_DATE = "資格交付日";
         public static final String PARAM_END_DATE = "失効日";
         public static final String PARAM_SCORE = "点数";
+
+        public static final String PARAM_OFFSET = "オフセット";
+        public static final String PARAM_LIMIT = "リミット";
 }
