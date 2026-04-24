@@ -25,6 +25,11 @@ public class CertificationServiceImpl implements CertificationService {
         this.certificationRepository = certificationRepository;
     }
 
+    /**
+     * Lấy danh sách tất cả các chứng chỉ.
+     *
+     * @return Danh sách các chứng chỉ dưới dạng DTO
+     */
     @Override
     public List<CertificationDTO> getAllCertifications() {
         List<Certification> certifications = certificationRepository.findAll();

@@ -12,7 +12,18 @@ import {
   MAX_EMAIL_LENGTH, 
   MAX_TELEPHONE_LENGTH, 
   MIN_PASSWORD_LENGTH, 
-  MAX_PASSWORD_LENGTH 
+  MAX_PASSWORD_LENGTH,
+  CODE_ER001,
+  CODE_ER002,
+  CODE_ER005,
+  CODE_ER006,
+  CODE_ER007,
+  CODE_ER008,
+  CODE_ER009,
+  CODE_ER012,
+  CODE_ER017,
+  CODE_ER018,
+  CODE_ER019,
 } from '../constants/config';
 import { 
   KATAKANA_REGEX, 
@@ -30,41 +41,41 @@ import {
 export const createEmployeeSchema = (isEditMode: boolean) => {
   return z.object({
     employeeLoginId: z.string()
-      .min(1, getMessage('ER001', [LABELS.ACCOUNT_NAME]))
-      .max(MAX_LOGIN_ID_LENGTH, getMessage('ER006', [LABELS.ACCOUNT_NAME, String(MAX_LOGIN_ID_LENGTH)]))
-      .regex(LOGIN_ID_REGEX, getMessage('ER019')),
+      .min(1, getMessage(CODE_ER001, [LABELS.ACCOUNT_NAME]))
+      .max(MAX_LOGIN_ID_LENGTH, getMessage(CODE_ER006, [LABELS.ACCOUNT_NAME, String(MAX_LOGIN_ID_LENGTH)]))
+      .regex(LOGIN_ID_REGEX, getMessage(CODE_ER019)),
 
     departmentId: z.string()
-      .min(1, getMessage('ER002', [LABELS.GROUP])),
+      .min(1, getMessage(CODE_ER002, [LABELS.GROUP])),
 
     employeeName: z.string()
-      .min(1, getMessage('ER001', [LABELS.FULL_NAME]))
-      .max(MAX_EMPLOYEE_NAME_LENGTH, getMessage('ER006', [LABELS.FULL_NAME, String(MAX_EMPLOYEE_NAME_LENGTH)])),
+      .min(1, getMessage(CODE_ER001, [LABELS.FULL_NAME]))
+      .max(MAX_EMPLOYEE_NAME_LENGTH, getMessage(CODE_ER006, [LABELS.FULL_NAME, String(MAX_EMPLOYEE_NAME_LENGTH)])),
 
     employeeNameKana: z.string()
-      .min(1, getMessage('ER001', [LABELS.KANA_NAME]))
-      .max(MAX_EMPLOYEE_NAME_LENGTH, getMessage('ER006', [LABELS.KANA_NAME, String(MAX_EMPLOYEE_NAME_LENGTH)]))
-      .regex(KATAKANA_REGEX, getMessage('ER009', [LABELS.KANA_NAME])),
+      .min(1, getMessage(CODE_ER001, [LABELS.KANA_NAME]))
+      .max(MAX_EMPLOYEE_NAME_LENGTH, getMessage(CODE_ER006, [LABELS.KANA_NAME, String(MAX_EMPLOYEE_NAME_LENGTH)]))
+      .regex(KATAKANA_REGEX, getMessage(CODE_ER009, [LABELS.KANA_NAME])),
 
     employeeBirthDate: z.string()
-      .min(1, getMessage('ER001', [LABELS.BIRTH_DATE])),
+      .min(1, getMessage(CODE_ER001, [LABELS.BIRTH_DATE])),
 
     employeeEmail: z.string()
-      .min(1, getMessage('ER001', [LABELS.EMAIL]))
-      .max(MAX_EMAIL_LENGTH, getMessage('ER006', [LABELS.EMAIL, String(MAX_EMAIL_LENGTH)]))
-      .email(getMessage('ER005', [LABELS.EMAIL, 'Email'])),
+      .min(1, getMessage(CODE_ER001, [LABELS.EMAIL]))
+      .max(MAX_EMAIL_LENGTH, getMessage(CODE_ER006, [LABELS.EMAIL, String(MAX_EMAIL_LENGTH)]))
+      .email(getMessage(CODE_ER005, [LABELS.EMAIL, 'Email'])),
 
     employeeTelephone: z.string()
-      .min(1, getMessage('ER001', [LABELS.TELEPHONE]))
-      .max(MAX_TELEPHONE_LENGTH, getMessage('ER006', [LABELS.TELEPHONE, String(MAX_TELEPHONE_LENGTH)]))
-      .regex(TELEPHONE_REGEX, getMessage('ER008', [LABELS.TELEPHONE])),
+      .min(1, getMessage(CODE_ER001, [LABELS.TELEPHONE]))
+      .max(MAX_TELEPHONE_LENGTH, getMessage(CODE_ER006, [LABELS.TELEPHONE, String(MAX_TELEPHONE_LENGTH)]))
+      .regex(TELEPHONE_REGEX, getMessage(CODE_ER008, [LABELS.TELEPHONE])),
 
     employeeLoginPassword: z.string().optional().superRefine((val, ctx) => {
       // Khi Add mode: bắt buộc
       if (!isEditMode && (!val || val.length === 0)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: getMessage('ER001', [LABELS.PASSWORD]),
+          message: getMessage(CODE_ER001, [LABELS.PASSWORD]),
         });
         return;
       }
@@ -74,7 +85,7 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
         if (val.length < MIN_PASSWORD_LENGTH || val.length > MAX_PASSWORD_LENGTH) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: getMessage('ER007', [LABELS.PASSWORD, String(MIN_PASSWORD_LENGTH), String(MAX_PASSWORD_LENGTH)]),
+            message: getMessage(CODE_ER007, [LABELS.PASSWORD, String(MIN_PASSWORD_LENGTH), String(MAX_PASSWORD_LENGTH)]),
           });
         }
       }
@@ -83,12 +94,12 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
     employeeLoginPasswordConfirm: z.string().optional(),
 
     certificationId: z.string().optional().refine(val => !val || val === '' || NUMERIC_REGEX.test(val), {
-      message: getMessage('ER018', [LABELS.CERTIFICATION]),
+      message: getMessage(CODE_ER018, [LABELS.CERTIFICATION]),
     }),
     certificationStartDate: z.string().optional(),
     certificationEndDate: z.string().optional(),
     score: z.string().optional().refine(val => !val || NUMERIC_REGEX.test(val), {
-      message: getMessage('ER018', [LABELS.SCORE]),
+      message: getMessage(CODE_ER018, [LABELS.SCORE]),
     }),
   }).superRefine((data, ctx) => {
     // 1. Kiểm tra xác nhận mật khẩu
@@ -97,7 +108,7 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
       ctx.addIssue({
         path: ['employeeLoginPasswordConfirm'],
         code: z.ZodIssueCode.custom,
-        message: getMessage('ER001', [LABELS.PASSWORD_CONFIRM]),
+        message: getMessage(CODE_ER001, [LABELS.PASSWORD_CONFIRM]),
       });
     }
 
@@ -107,7 +118,7 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
          ctx.addIssue({
           path: ['employeeLoginPasswordConfirm'],
           code: z.ZodIssueCode.custom,
-          message: getMessage('ER017'),
+          message: getMessage(CODE_ER017),
         });
       }
     }
@@ -118,21 +129,21 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
         ctx.addIssue({
           path: ['certificationStartDate'],
           code: z.ZodIssueCode.custom,
-          message: getMessage('ER001', [LABELS.CERT_START_DATE]),
+          message: getMessage(CODE_ER001, [LABELS.CERT_START_DATE]),
         });
       }
       if (!data.certificationEndDate) {
         ctx.addIssue({
           path: ['certificationEndDate'],
           code: z.ZodIssueCode.custom,
-          message: getMessage('ER001', [LABELS.CERT_END_DATE]),
+          message: getMessage(CODE_ER001, [LABELS.CERT_END_DATE]),
         });
       }
       if (!data.score) {
         ctx.addIssue({
           path: ['score'],
           code: z.ZodIssueCode.custom,
-          message: getMessage('ER001', [LABELS.SCORE]),
+          message: getMessage(CODE_ER001, [LABELS.SCORE]),
         });
       }
       
@@ -144,7 +155,7 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
           ctx.addIssue({
             path: ['certificationEndDate'],
             code: z.ZodIssueCode.custom,
-            message: getMessage('ER012', [LABELS.CERT_START_DATE]),
+            message: getMessage(CODE_ER012, [LABELS.CERT_START_DATE]),
           });
         }
       }

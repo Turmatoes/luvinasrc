@@ -12,6 +12,7 @@ import com.luvina.la.payload.EmployeeListResponse;
 import com.luvina.la.payload.ErrorResponse;
 import com.luvina.la.service.EmployeeService;
 import com.luvina.la.validate.EmployeeValidate;
+import com.luvina.la.payload.EmployeeDetailResponse;
 import com.luvina.la.payload.EmployeeRequest;
 import java.util.ArrayList;
 import java.util.List;
@@ -115,23 +116,34 @@ public class EmployeeController {
             return response;
 
         } catch (Exception e) {
+            // Lỗi hệ thống (Mã lỗi ER023)
             return employeeService.buildResponse(Constants.CODE_ER023);
         }
     }
 
     /**
-     * Lấy chi tiết một nhân viên.
+     * Lấy chi tiết một nhân viên hiển thị lên màn adm003
+     * 
+     * @param id ID của nhân viên
+     * @return EmployeeDetailResponse chứa thông tin nhân viên hoặc mã lỗi
      */
     @GetMapping("/employees/{id}")
-    public Object getEmployeeDetail(@PathVariable("id") Long id) {
+    public ErrorResponse getEmployeeDetail(@PathVariable("id") Long id) {
         try {
             EmployeeDTO employee = employeeService.getEmployeeById(id);
             if (employee == null) {
                 // Không tìm thấy nhân viên (Mã lỗi ER013)
                 return employeeService.buildResponse(Constants.CODE_ER013);
             }
-            return employee;
+
+            // Tạo dữ liệu response thành công
+            EmployeeDetailResponse response = new EmployeeDetailResponse();
+            response.setCode(Constants.CODE_SUCCESS);
+            response.setEmployeeDTO(employee);
+            return response;
+
         } catch (Exception e) {
+            // Lỗi hệ thống (Mã lỗi ER023)
             return employeeService.buildResponse(Constants.CODE_ER023);
         }
     }
@@ -145,6 +157,7 @@ public class EmployeeController {
         try {
             return employeeValidate.validateEmployee(request);
         } catch (Exception e) {
+            // Lỗi hệ thống (Mã lỗi ER023)
             return employeeValidate.buildResponse(Constants.CODE_ER023);
         }
     }

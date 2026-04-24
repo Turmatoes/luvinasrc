@@ -8,10 +8,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { employeeApi } from '@/lib/api/employee.api';
-import { getMessage } from '@/lib/utils/messageHelper';
 import { MESSAGES } from '@/lib/constants/messages';
 import { redirectToSystemError } from '@/lib/utils/errorHelper';
-import { ERR_SYSTEM } from '@/lib/constants/config';
+import { ERR_SYSTEM, ERR_SUCCESS } from '@/lib/constants/config';
 
 /**
  * Custom Hook useAdm003 quản lý logic cho màn hình Chi tiết nhân viên.
@@ -32,14 +31,22 @@ export function useAdm003() {
    */
   const fetchDetail = useCallback(async () => {
     if (!id) {
-      setError('ID nhân viên không hợp lệ.');
+      redirectToSystemError(ERR_SYSTEM);
       return;
     }
 
     setLoading(true);
     try {
-      const data = await employeeApi.getEmployeeDetail(parseInt(id));
-      setEmployee(data);
+      const res = await employeeApi.getEmployeeDetail(parseInt(id));
+      
+      if (res.code === ERR_SUCCESS) {
+        // res lúc này là EmployeeDetailResponse, chứa employeeDTO
+        setEmployee(res.employeeDTO);
+      } else {
+        // Xử lý lỗi từ Backend (ER013, ER023...)
+        // Redirect sang màn hình system_error với mã lỗi tương ứng
+        redirectToSystemError(res.code);
+      }
     } catch (err) {
       console.error('Lỗi khi tải dữ liệu nhân viên:', err);
       redirectToSystemError(ERR_SYSTEM);

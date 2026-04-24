@@ -3,6 +3,7 @@
  *
  * messages.ts, April 13, 2026 nxplong
  */
+
 /**
  * Các thông báo hệ thống.
  * Mapping từ Error/Message codes sang tiếng Việt.

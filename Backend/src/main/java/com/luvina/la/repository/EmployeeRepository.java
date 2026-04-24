@@ -101,9 +101,9 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                         "ec.end_date, " +
                         "ec.score " +
                         "FROM employees e " +
-                        "LEFT JOIN departments d ON e.department_id = d.department_id " +
+                        "INNER JOIN departments d ON e.department_id = d.department_id " +
                         "LEFT JOIN employees_certifications ec ON e.employee_id = ec.employee_id " +
                         "LEFT JOIN certifications c ON ec.certification_id = c.certification_id " +
-                        "WHERE e.employee_id = ?1", nativeQuery = true)
+                        "WHERE e.employee_id = ?1 AND (e.role IS NULL OR e.role = 0)", nativeQuery = true)
         List<Object[]> getEmployeeById(Long employeeId);
 }

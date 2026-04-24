@@ -65,11 +65,11 @@ export const employeeApi = {
   },
 
   /**
-   * Cập nhật nhân viên.
+   * Cập nhật nhân viên sẽ được triển khai sau 
    */
-  updateEmployee: async (id: number, data: EmployeeFormValues): Promise<any> => {
-    const { employeeLoginPasswordConfirm, ...rest } = data;
-    const response = await apiClient.put(`/employees/${id}`, rest);
-    return response.data;
-  },
+  // updateEmployee: async (id: number, data: EmployeeFormValues): Promise<any> => {
+  //   const { employeeLoginPasswordConfirm, ...rest } = data;
+  //   const response = await apiClient.put(`/employees/${id}`, rest);
+  //   return response.data;
+  // },
 };

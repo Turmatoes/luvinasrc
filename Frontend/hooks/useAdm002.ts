@@ -5,7 +5,7 @@
  */
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { employeeApi } from '@/lib/api/employee.api';
 import { departmentApi } from '@/lib/api/department.api';
@@ -52,13 +52,19 @@ export function useAdm002() {
     departmentId: urlParams.departmentId,
   });
 
-  // Đồng bộ searchForm khi URL thay đổi (trường hợp nhấn Back/Forward trình duyệt)
-  useEffect(() => {
+  // Derived state: Đồng bộ searchForm khi URL thay đổi (trường hợp nhấn Back/Forward)
+  // Cách này tối ưu hơn useEffect vì nó cập nhật ngay trong quá trình render, không gây ra extra render sau khi paint.
+  const prevUrlParamsRef = useRef(urlParams);
+  if (
+    prevUrlParamsRef.current.employeeName !== urlParams.employeeName ||
+    prevUrlParamsRef.current.departmentId !== urlParams.departmentId
+  ) {
+    prevUrlParamsRef.current = urlParams;
     setSearchForm({
       employeeName: urlParams.employeeName,
       departmentId: urlParams.departmentId,
     });
-  }, [urlParams.employeeName, urlParams.departmentId]);
+  }
 
   // --- 3. Trạng thái dữ liệu ---
   const [data, setData] = useState<EmployeeListResponse | null>(null);
@@ -67,22 +73,7 @@ export function useAdm002() {
   const [departmentError, setDepartmentError] = useState<string | null>(null);
   const [employeeError, setEmployeeError] = useState<string | null>(null);
   const [employeeNameError, setEmployeeNameError] = useState<string | null>(null);
-
-  /**
-   * Tải danh sách phòng ban khi hook khởi tạo.
-   */
-  useEffect(() => {
-    const loadDepartments = async () => {
-      try {
-        const response = await departmentApi.getDepartments();
-        setDepartments(response);
-      } catch (err) {
-        console.error('Lỗi khi tải danh sách phòng ban:', err);
-        redirectToSystemError(ERR_SYSTEM);
-      }
-    };
-    loadDepartments();
-  }, []);
+  const [initialized, setInitialized] = useState(false);
 
   /**
    * Hàm helper để cập nhật URL dựa trên các tham số mới.
@@ -119,10 +110,22 @@ export function useAdm002() {
   }, [pathname, router, searchParams]);
 
   /**
+   * Tải danh mục phòng ban
+   */
+  const loadMasterData = async () => {
+    try {
+      const depts = await departmentApi.getDepartments();
+      setDepartments(depts);
+    } catch (err) {
+      console.error('Lỗi khi tải danh sách phòng ban:', err);
+      redirectToSystemError(ERR_SYSTEM);
+    }
+  };
+
+  /**
    * Logic chính để tải danh sách nhân viên từ API Service.
    */
   const loadEmployees = useCallback(async () => {
-    setLoading(true);
     setEmployeeError(null);
     try {
       const response = await employeeApi.getEmployees({
@@ -157,17 +160,30 @@ export function useAdm002() {
         setEmployeeError(getMessage(errorCode));
       }
       setData(null);
-    } finally {
-      setLoading(false);
     }
   }, [urlParams, updateUrl]);
 
   /**
-   * Tự động gọi lại API khi URL parameters thay đổi.
+   * Logic khởi tạo và tải dữ liệu (gộp chung vào 1 useEffect để rõ ràng từng bước).
    */
   useEffect(() => {
-    loadEmployees();
-  }, [loadEmployees]);
+    const initialize = async () => {
+      setLoading(true);
+      try {
+        if (!initialized) {
+          // Bước 1: Load master data (phòng ban) trong lần đầu tiên
+          await loadMasterData();
+          setInitialized(true);
+        }
+        // Bước 2: Luôn load lại employees khi có sự thay đổi từ urlParams
+        await loadEmployees();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initialize();
+  }, [loadEmployees, initialized]);
 
   // --- Các hàm xử lý sự kiện (Actions) ---
 
