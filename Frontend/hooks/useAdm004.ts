@@ -122,8 +122,27 @@ export function useAdm004() {
         } else {
           if (isEditMode) {
             // Trường hợp chỉnh sửa (Edit): Luôn fetch mới từ API
-            const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId));
-            reset(detail);
+            const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId!));
+            
+            // Format dữ liệu trả về từ Backend để khớp với EmployeeFormValues
+            const formattedDetail: EmployeeFormValues = {
+              employeeId: detail.employeeId,
+              employeeLoginId: detail.employeeLoginId || '',
+              departmentId: detail.departmentId ? detail.departmentId.toString() : '',
+              employeeName: detail.employeeName || '',
+              employeeNameKana: detail.employeeNameKana || '',
+              employeeBirthDate: detail.employeeBirthDate ? detail.employeeBirthDate.replace(/-/g, '/') : '',
+              employeeEmail: detail.employeeEmail || '',
+              employeeTelephone: detail.employeeTelephone || '',
+              employeeLoginPassword: '', // Mật khẩu không trả về hoặc để trống
+              employeeLoginPasswordConfirm: '',
+              certificationId: detail.certificationId ? detail.certificationId.toString() : '',
+              certificationStartDate: detail.certificationStartDate ? detail.certificationStartDate.replace(/-/g, '/') : '',
+              certificationEndDate: detail.certificationEndDate ? detail.certificationEndDate.replace(/-/g, '/') : '',
+              score: detail.score ? detail.score.toString() : '',
+            };
+
+            reset(formattedDetail);
           } else {
             // Trường hợp thêm mới (Add): Form trống
             reset(DEFAULT_FORM_VALUES);
@@ -151,8 +170,11 @@ export function useAdm004() {
   const onSubmit: SubmitHandler<EmployeeFormValues> = async (values) => {
     setLoading(true);
     try {
+      // Đính kèm employeeId nếu đang ở chế độ Edit
+      const payload = isEditMode ? { ...values, employeeId: parseInt(employeeId!) } : values;
+
       // Gọi API Validate từ Backend
-      const res = await employeeApi.validateEmployee(values);
+      const res = await employeeApi.validateEmployee(payload);
 
       if (res.code !== ERR_SUCCESS) {
         // Thông báo lỗi từ Backend (Format chuẩn: {code: "ERxxx", params: [...]})
@@ -177,7 +199,7 @@ export function useAdm004() {
       }
 
       // Nếu Validate OK (Nút 確認) -> Lưu session và chuyển trang
-      setEmployeeToSession(STORAGE_KEY, values);
+      setEmployeeToSession(STORAGE_KEY, payload);
       const nextPath = employeeId ? `/employees/adm005?id=${employeeId}` : '/employees/adm005';
       router.push(nextPath);
     } catch (err) {

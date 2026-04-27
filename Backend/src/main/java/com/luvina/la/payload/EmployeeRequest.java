@@ -15,6 +15,7 @@ import lombok.Data;
 public class EmployeeRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    private Long employeeId;
     private String employeeLoginId;
     private String employeeName;
     private String employeeNameKana;

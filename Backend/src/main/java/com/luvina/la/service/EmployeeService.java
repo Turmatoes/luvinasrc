@@ -110,6 +110,14 @@ public interface EmployeeService {
     ErrorResponse addEmployee(EmployeeRequest request);
 
     /**
+     * Cập nhật nhân viên.
+     * 
+     * @param request EmployeeRequest chứa thông tin nhân viên
+     * @return ErrorResponse chứa mã lỗi
+     */
+    ErrorResponse updateEmployee(EmployeeRequest request);
+
+    /**
      * Xóa nhân viên.
      * 
      * @param employeeId ID của nhân viên cần xóa

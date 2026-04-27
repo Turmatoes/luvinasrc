@@ -277,6 +277,68 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
+     * Cập nhật thông tin nhân viên
+     *
+     * @param request EmployeeRequest chứa thông tin nhân viên
+     * @return ErrorResponse chứa mã lỗi
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ErrorResponse updateEmployee(EmployeeRequest request) {
+        try {
+            Employee employee = employeeRepository.findById(request.getEmployeeId()).orElse(null);
+            if (employee == null) {
+                return buildResponse(Constants.CODE_SYSTEM_ERROR, request.getEmployeeId(), Constants.CODE_ER013, Arrays.asList(" ID"));
+            }
+
+            // Cập nhật thông tin cơ bản
+            employee.setEmployeeName(request.getEmployeeName());
+            employee.setEmployeeNameKana(request.getEmployeeNameKana());
+            employee.setEmployeeEmail(request.getEmployeeEmail());
+            employee.setEmployeeTelephone(request.getEmployeeTelephone());
+            employee.setEmployeeLoginId(request.getEmployeeLoginId());
+
+            // Chỉ cập nhật mật khẩu nếu có truyền lên
+            if (request.getEmployeeLoginPassword() != null && !request.getEmployeeLoginPassword().isEmpty()) {
+                employee.setEmployeeLoginPassword(passwordEncoder.encode(request.getEmployeeLoginPassword()));
+            }
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+            employee.setEmployeeBirthDate(LocalDate.parse(request.getEmployeeBirthDate(), formatter));
+
+            Department dept = departmentRepository.findById(request.getDepartmentId()).orElse(null);
+            employee.setDepartment(dept);
+
+            employeeRepository.save(employee);
+
+            // Cập nhật chứng chỉ tiếng Nhật
+            // Xóa chứng chỉ cũ trước
+            employeeRepository.deleteCertificationsByEmployeeId(request.getEmployeeId());
+
+            // Thêm chứng chỉ mới nếu có trong request
+            if (request.getCertificationId() != null) {
+                Certification cert = certificationRepository.findById(request.getCertificationId()).orElse(null);
+                if (cert != null) {
+                    EmployeeCertification empCert = new EmployeeCertification();
+                    empCert.setEmployee(employee);
+                    empCert.setCertification(cert);
+                    empCert.setStartDate(LocalDate.parse(request.getCertificationStartDate(), formatter));
+                    empCert.setEndDate(LocalDate.parse(request.getCertificationEndDate(), formatter));
+                    empCert.setScore(new BigDecimal(request.getScore()));
+                    employeeCertificationRepository.save(empCert);
+                }
+            }
+
+            return buildResponse(Constants.CODE_SUCCESS, request.getEmployeeId(), Constants.CODE_MSG002, new java.util.ArrayList<>());
+
+        } catch (Exception e) {
+            // Nếu có lỗi thì Rollback transaction và trả về ER015
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return buildResponse(Constants.CODE_SYSTEM_ERROR, request.getEmployeeId(), Constants.CODE_ER015, new java.util.ArrayList<>());
+        }
+    }
+
+    /**
      * Build response trả về cho chức năng Delete Employee.
      *
      * @param code Mã trạng thái (200, 500)

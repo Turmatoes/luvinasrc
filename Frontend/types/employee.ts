@@ -76,6 +76,7 @@ export interface EmployeeUpdateRequest {
 
 // Unified Form Schema
 export interface EmployeeFormValues {
+  employeeId?: number;
   employeeLoginId: string;
   departmentId: string;
   employeeName: string;

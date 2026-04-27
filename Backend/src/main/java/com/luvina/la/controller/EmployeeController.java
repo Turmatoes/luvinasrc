@@ -177,6 +177,19 @@ public class EmployeeController {
     }
 
     /**
+     * Cập nhật thông tin nhân viên.
+     */
+    @org.springframework.web.bind.annotation.PutMapping("/employees/{id}")
+    public ErrorResponse updateEmployee(@PathVariable("id") Long id, @RequestBody EmployeeRequest request) {
+        request.setEmployeeId(id);
+        ErrorResponse validateEmployee = validateEmployee(request);
+        if (validateEmployee != null && !Constants.CODE_SUCCESS.equals(validateEmployee.getCode())) {
+            return validateEmployee;
+        }
+        return employeeService.updateEmployee(request);
+    }
+
+    /**
      * Xóa thông tin nhân viên.
      * Sử dụng nhiều path mapping để bắt được case missing path variable (nếu có).
      * "/employees/{id}": Path mặc định, mong đợi một ID cụ thể để xóa

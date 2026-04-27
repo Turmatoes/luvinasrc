@@ -222,8 +222,17 @@ public class EmployeeValidate {
     public ErrorResponse validateEmployee(EmployeeRequest request) {
         ErrorResponse employeeResponse;
 
+        boolean isUpdate = request.getEmployeeId() != null;
+
+        // Nếu là Update, Validate [employeeId]
+        if (isUpdate) {
+            if (!employeeRepository.existsById(request.getEmployeeId())) {
+                return buildResponse(Constants.CODE_ER013, java.util.Arrays.asList(" ID"));
+            }
+        }
+
         // 1.1 Validate [employee_login_id]
-        employeeResponse = validateLoginId(request.getEmployeeLoginId());
+        employeeResponse = validateLoginId(request.getEmployeeLoginId(), request.getEmployeeId());
         if (employeeResponse != null)
             return employeeResponse;
 
@@ -253,7 +262,7 @@ public class EmployeeValidate {
             return employeeResponse;
 
         // 1.7 Validate [employee_login_password]
-        employeeResponse = validatePassword(request.getEmployeeLoginPassword());
+        employeeResponse = validatePassword(request.getEmployeeLoginPassword(), isUpdate);
         if (employeeResponse != null)
             return employeeResponse;
 
@@ -274,10 +283,10 @@ public class EmployeeValidate {
      * Validate Login ID.
      * 
      * @param loginId Login ID cần validate
-     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
-     *         lỗi)
+     * @param currentEmployeeId ID của employee đang cập nhật (null nếu là Add mới)
+     * @return ErrorResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có lỗi)
      */
-    public ErrorResponse validateLoginId(String loginId) {
+    public ErrorResponse validateLoginId(String loginId, Long currentEmployeeId) {
         // Check [employee_login_id] required (ER001)
         if (loginId == null || loginId.isEmpty()) {
             return buildResponse(Constants.CODE_ER001, java.util.Arrays.asList(Constants.PARAM_LOGIN_ID));
@@ -288,9 +297,14 @@ public class EmployeeValidate {
             // Check [employee_login_id] format (ER019)
         } else if (!isValidLoginId(loginId)) {
             return buildResponse(Constants.CODE_ER019);
+        } else {
             // Check [employee_login_id] existence (ER003)
-        } else if (employeeRepository.findByEmployeeLoginId(loginId).isPresent()) {
-            return buildResponse(Constants.CODE_ER003, java.util.Arrays.asList(Constants.PARAM_LOGIN_ID));
+            java.util.Optional<com.luvina.la.entity.Employee> existing = employeeRepository.findByEmployeeLoginId(loginId);
+            if (existing.isPresent()) {
+                if (currentEmployeeId == null || !existing.get().getEmployeeId().equals(currentEmployeeId)) {
+                    return buildResponse(Constants.CODE_ER003, java.util.Arrays.asList(Constants.PARAM_LOGIN_ID));
+                }
+            }
         }
         return null;
     }
@@ -402,20 +416,24 @@ public class EmployeeValidate {
      * Validate Password.
      * 
      * @param password Mật khẩu cần validate
-     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
-     *         lỗi)
+     * @param isUpdate Cờ đánh dấu là chức năng Update
+     * @return ErrorResponse chứa mã lỗi (nếu có lỗi) hoặc null
      */
-    public ErrorResponse validatePassword(String password) {
-        // Check [employee_login_password] required (ER001)
+    public ErrorResponse validatePassword(String password, boolean isUpdate) {
         if (password == null || password.isEmpty()) {
-            return buildResponse(Constants.CODE_ER001, java.util.Arrays.asList(Constants.PARAM_PASSWORD));
-            // Check [employee_login_password] min/max length (ER007)
-        } else if (!isValidMinLength(password, Constants.MIN_PASSWORD_LENGTH)
-                || !isValidMaxLength(password, Constants.MAX_PASSWORD_LENGTH)) {
-            return buildResponse(Constants.CODE_ER007, java.util.Arrays.asList(
-                    Constants.PARAM_PASSWORD,
-                    String.valueOf(Constants.MIN_PASSWORD_LENGTH),
-                    String.valueOf(Constants.MAX_PASSWORD_LENGTH)));
+            // Đối với Add mới thì required, Update thì allow blank (không sửa)
+            if (!isUpdate) {
+                return buildResponse(Constants.CODE_ER001, java.util.Arrays.asList(Constants.PARAM_PASSWORD));
+            }
+        } else {
+            // Có nhập password, validate length
+            if (!isValidMinLength(password, Constants.MIN_PASSWORD_LENGTH)
+                    || !isValidMaxLength(password, Constants.MAX_PASSWORD_LENGTH)) {
+                return buildResponse(Constants.CODE_ER007, java.util.Arrays.asList(
+                        Constants.PARAM_PASSWORD,
+                        String.valueOf(Constants.MIN_PASSWORD_LENGTH),
+                        String.valueOf(Constants.MAX_PASSWORD_LENGTH)));
+            }
         }
         return null;
     }
