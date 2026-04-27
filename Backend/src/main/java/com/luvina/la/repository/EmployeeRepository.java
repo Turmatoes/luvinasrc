@@ -106,4 +106,14 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                         "LEFT JOIN certifications c ON ec.certification_id = c.certification_id " +
                         "WHERE e.employee_id = ?1 AND (e.role IS NULL OR e.role = 0)", nativeQuery = true)
         List<Object[]> getEmployeeById(Long employeeId);
+
+        // 2. Xóa thông tin trình độ tiếng Nhật của nhân viên
+        @org.springframework.data.jpa.repository.Modifying
+        @Query(value = "DELETE FROM employees_certifications WHERE employee_id = ?1", nativeQuery = true)
+        void deleteCertificationsByEmployeeId(Long employeeId);
+
+        // 3. Xóa thông tin nhân viên
+        @org.springframework.data.jpa.repository.Modifying
+        @Query(value = "DELETE FROM employees WHERE employee_id = ?1", nativeQuery = true)
+        void deleteEmployeeById(Long employeeId);
 }

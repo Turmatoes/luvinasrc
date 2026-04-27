@@ -38,7 +38,7 @@ export function useAdm003() {
     setLoading(true);
     try {
       const res = await employeeApi.getEmployeeDetail(parseInt(id));
-      
+
       if (res.code === ERR_SUCCESS) {
         // res lúc này là EmployeeDetailResponse, chứa employeeDTO
         setEmployee(res.employeeDTO);
@@ -71,9 +71,23 @@ export function useAdm003() {
    */
   const handleDelete = async () => {
     if (window.confirm(MESSAGES.MSG004)) {
-      // Logic xóa sẽ được triển khai sau khi có API
-      console.log('Xóa nhân viên:', id);
-      router.push('/employees/adm006');
+      setLoading(true);
+      try {
+        const res = await employeeApi.deleteEmployee(parseInt(id!));
+        if (res.code === ERR_SUCCESS || res.code === '200' || res.code === 200) {
+          // Thành công thì qua trang ADM006 (hoàn tất)
+          router.push('/employees/adm006');
+        } else {
+          redirectToSystemError(res.message?.code || res.code);
+        }
+      } catch (err: any) {
+        console.error('Lỗi khi xóa nhân viên:', err);
+        // Lấy ErrorResponse từ payload do axios ném ra (Http 500)
+        const errorCode = err?.response?.data?.message?.code || err?.response?.data?.code || ERR_SYSTEM;
+        redirectToSystemError(errorCode);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

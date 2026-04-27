@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import java.util.Arrays;
 
 /**
  * Thực hiện dịch vụ nhân viên (EmployeeService).
@@ -271,6 +273,69 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         } catch (Exception e) {
             return buildResponse(Constants.CODE_ER023);
+        }
+    }
+
+    /**
+     * Build response trả về cho chức năng Delete Employee.
+     *
+     * @param code Mã trạng thái (200, 500)
+     * @param employeeId ID của nhân viên
+     * @param msgCode Mã thông báo
+     * @param params Tham số
+     * @return ErrorResponse
+     */
+    @Override
+    public ErrorResponse buildResponse(String code, Long employeeId, String msgCode, List<String> params) {
+        ErrorResponse response = new ErrorResponse();
+        response.setCode(code);
+        response.setEmployeeId(employeeId);
+        
+        ErrorResponse message = new ErrorResponse();
+        message.setCode(msgCode);
+        message.setParams(params != null ? params : new java.util.ArrayList<>());
+        
+        response.setMessage(message);
+        return response;
+    }
+
+    /**
+     * Xóa nhân viên theo logic thiết kế:
+     * 1. Validate parameter
+     * 2. Xóa thông tin trình độ tiếng Nhật
+     * 3. Xóa thông tin nhân viên
+     * 
+     * @param employeeId ID nhân viên cần xóa
+     * @return ErrorResponse chứa kết quả
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ErrorResponse deleteEmployee(Long employeeId) {
+        // 1. Validate parameter
+        if (employeeId == null) {
+            return buildResponse(Constants.CODE_SYSTEM_ERROR, null, Constants.CODE_ER001, Arrays.asList(" ID"));
+        }
+
+        Employee employee = employeeRepository.findById(employeeId).orElse(null);
+        if (employee == null) {
+            return buildResponse(Constants.CODE_SYSTEM_ERROR, employeeId, Constants.CODE_ER014, Arrays.asList(" ID"));
+        }
+
+        try {
+            // 2. Xóa thông tin trình độ tiếng Nhật của nhân viên (bảng employees_certifications)
+            employeeRepository.deleteCertificationsByEmployeeId(employeeId);
+
+            // 3. Xóa thông tin nhân viên (bảng employees)
+            employeeRepository.deleteEmployeeById(employeeId);
+
+            // 4. Tạo dữ liệu response cho API (Trường hợp không có lỗi xảy ra)
+            return buildResponse(Constants.CODE_SUCCESS, employeeId, Constants.CODE_MSG003, new java.util.ArrayList<>());
+
+        } catch (Exception e) {
+            // Nếu có lỗi khi xóa thì Rollback transaction
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            // Trả về lỗi với mã lỗi ER015 và chuyển sang bước 4
+            return buildResponse(Constants.CODE_SYSTEM_ERROR, employeeId, Constants.CODE_ER015, new java.util.ArrayList<>());
         }
     }
 

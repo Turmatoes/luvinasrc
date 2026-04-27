@@ -72,4 +72,12 @@ export const employeeApi = {
   //   const response = await apiClient.put(`/employees/${id}`, rest);
   //   return response.data;
   // },
+
+  /**
+   * Xóa nhân viên.
+   */
+  deleteEmployee: async (id: number): Promise<any> => {
+    const response = await apiClient.delete(`/employees/${id}`);
+    return response.data;
+  },
 };

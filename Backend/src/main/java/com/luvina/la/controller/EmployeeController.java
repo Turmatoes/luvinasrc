@@ -19,6 +19,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -73,7 +74,7 @@ public class EmployeeController {
         try {
             String normalizedEmployeeName = employeeName == null ? "" : employeeName.trim();
 
-            // 1. Validate parameter
+            // Validate parameter
             ErrorResponse employeeResponse = employeeValidate.validateListParams(
                     sortEmployeeName, sortCertificationName, sortEndDate, offset, limit, normalizedEmployeeName);
             if (employeeResponse != null) {
@@ -82,12 +83,12 @@ public class EmployeeController {
 
             String escapedEmployeeName = employeeService.escapeEmployeeName(normalizedEmployeeName);
 
-            // 2.1 Lấy tổng số nhân viên từ DB
+            // Lấy tổng số nhân viên từ DB
             Long totalRecords = employeeService.countEmployeesWithFilter(
                     escapedEmployeeName,
                     departmentId);
 
-            // 2.2 Nếu không có bản ghi nào, trả về response rỗng
+            // Nếu không có bản ghi nào, trả về response rỗng
             if (totalRecords == 0) {
                 EmployeeListResponse emptyResponse = new EmployeeListResponse();
                 emptyResponse.setCode(Constants.CODE_SUCCESS);
@@ -96,7 +97,7 @@ public class EmployeeController {
                 return emptyResponse;
             }
 
-            // 2.3 Lấy danh sách nhân viên thực tế theo phân trang
+            // Lấy danh sách nhân viên thực tế theo phân trang
             List<EmployeeDTO> employees = employeeService.getListEmployee(
                     escapedEmployeeName,
                     departmentId,
@@ -106,12 +107,12 @@ public class EmployeeController {
                     limit,
                     offset);
 
-            // 3. Tạo dữ liệu response thành công cho API
+            // Tạo dữ liệu response thành công 
             EmployeeListResponse response = new EmployeeListResponse();
             response.setCode(Constants.CODE_SUCCESS);
             response.setTotalRecords(totalRecords);
             response.setEmployees(employees);
-            response.setParams(new ArrayList<>()); // Đảm bảo params luôn là [] theo thiết kế
+            response.setParams(new ArrayList<>()); // Đảm bảo params luôn là []
 
             return response;
 
@@ -173,5 +174,21 @@ public class EmployeeController {
             return validateEmployee;
         }
         return employeeService.addEmployee(request);
+    }
+
+    /**
+     * Xóa thông tin nhân viên.
+     * Sử dụng nhiều path mapping để bắt được case missing path variable (nếu có).
+     * "/employees/{id}": Path mặc định, mong đợi một ID cụ thể để xóa
+     * "/employees": "Fallback" path. Nếu Spring không tìm thấy path nào khớp phía trên, nó sẽ chạy cái này.
+     * "/employees/": Path "rỗng" để bắt trường hợp người dùng gõ thêm dấu / ở cuối.
+     * 
+     * @param id ID của nhân viên
+     * @return EmployeeDeleteResponse
+     */
+    @DeleteMapping({"/employees/{id}", "/employees", "/employees/"})
+    public ErrorResponse deleteEmployee(
+            @PathVariable(value = "id", required = false) Long id) {
+        return employeeService.deleteEmployee(id);
     }
 }

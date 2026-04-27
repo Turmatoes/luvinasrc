@@ -108,4 +108,23 @@ public interface EmployeeService {
      * @return EmployeeResponse chứa mã lỗi (SUCCESS hoặc mã lỗi cụ thể)
      */
     ErrorResponse addEmployee(EmployeeRequest request);
+
+    /**
+     * Xóa nhân viên.
+     * 
+     * @param employeeId ID của nhân viên cần xóa
+     * @return ErrorResponse chứa kết quả xóa
+     */
+    ErrorResponse deleteEmployee(Long employeeId);
+
+    /**
+     * Xây dựng phản hồi cho chức năng có lồng object message (vd: Xóa nhân viên).
+     * 
+     * @param code Mã trạng thái (200, 500)
+     * @param employeeId ID của nhân viên
+     * @param msgCode Mã thông báo lỗi hoặc thành công
+     * @param params Danh sách tham số
+     * @return ErrorResponse
+     */
+    ErrorResponse buildResponse(String code, Long employeeId, String msgCode, List<String> params);
 }

@@ -23,5 +23,12 @@ public class ErrorResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String code;
+    private Long employeeId;
+    private ErrorResponse message;
     private List<String> params;
+
+    public ErrorResponse(String code, List<String> params) {
+        this.code = code;
+        this.params = params;
+    }
 }
