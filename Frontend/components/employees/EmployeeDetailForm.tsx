@@ -56,27 +56,23 @@ export default function EmployeeDetailForm({
             <label className="col-form-label col-sm-2">電話番号</label>
             <div className="col-sm col-sm-10">{employee.employeeTelephone}</div>
           </li>
-          {employee.certificationName && (
-            <>
-              <li className="title mt-12"><a href="#!">日本語能力</a></li>
-              <li className="form-group row d-flex">
-                <label className="col-form-label col-sm-2">資格</label>
-                <div className="col-sm col-sm-10">{employee.certificationName}</div>
-              </li>
-              <li className="form-group row d-flex">
-                <label className="col-form-label col-sm-2">資格交付日</label>
-                <div className="col-sm col-sm-10">{employee.certificationStartDate}</div>
-              </li>
-              <li className="form-group row d-flex">
-                <label className="col-form-label col-sm-2">失効日</label>
-                <div className="col-sm col-sm-10">{employee.certificationEndDate}</div>
-              </li>
-              <li className="form-group row d-flex">
-                <label className="col-form-label col-sm-2">点数</label>
-                <div className="col-sm col-sm-10">{employee.score}</div>
-              </li>
-            </>
-          )}
+          <li className="title mt-12"><a href="#!">日本語能力</a></li>
+          <li className="form-group row d-flex">
+            <label className="col-form-label col-sm-2">資格</label>
+            <div className="col-sm col-sm-10">{employee.certificationName || ''}</div>
+          </li>
+          <li className="form-group row d-flex">
+            <label className="col-form-label col-sm-2">資格交付日</label>
+            <div className="col-sm col-sm-10">{employee.certificationStartDate || ''}</div>
+          </li>
+          <li className="form-group row d-flex">
+            <label className="col-form-label col-sm-2">失効日</label>
+            <div className="col-sm col-sm-10">{employee.certificationEndDate || ''}</div>
+          </li>
+          <li className="form-group row d-flex">
+            <label className="col-form-label col-sm-2">点数</label>
+            <div className="col-sm col-sm-10">{employee.score || ''}</div>
+          </li>
           <li className="form-group row d-flex">
             <div className="btn-group col-sm col-sm-10 ml">
               <button type="button" onClick={handleEdit} className="btn btn-primary btn-sm">編集</button>

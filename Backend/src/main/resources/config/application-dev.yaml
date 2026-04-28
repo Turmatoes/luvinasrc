@@ -10,7 +10,7 @@ spring:
   datasource:
     # jdbc properties to connect to database
     # createDatabaseIfNotExist=true: tự tạo database nếu không tồn tại
-    jdbcUrl: jdbc:mysql://localhost:3306/user-manage?createDatabaseIfNotExist=true
+    jdbcUrl: jdbc:mysql://localhost:3306/user-manage?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8
     username: root
     password: LA.luvina1234
     isAutoCommit: false
@@ -34,7 +34,7 @@ spring:
   jpa:
     hibernate:
       # validate: kiểm tra schema có hợp lệ không (Flyway sẽ tạo bảng từ migration)
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect

@@ -163,7 +163,7 @@ public class DataLoader implements CommandLineRunner {
             anhThu1.setEmployeeLoginId("anhthu01");
             anhThu1.setEmployeeLoginPassword(passwordEncoder.encode("123"));
             anhThu1.setEmployeeName("Nguyễn Anh Thứ");
-            anhThu1.setEmployeeNameKana("ã‚¢ãƒ³ãƒ ãƒ¥ãƒ¼");
+            anhThu1.setEmployeeNameKana("グエンアイントゥー");
             anhThu1.setEmployeeEmail("anhthu01@luvina.net");
             anhThu1.setEmployeeTelephone("0915000001");
             anhThu1.setEmployeeBirthDate(LocalDate.of(1990, 1, 10));
@@ -175,7 +175,7 @@ public class DataLoader implements CommandLineRunner {
             anhThu2.setEmployeeLoginId("anhthu02");
             anhThu2.setEmployeeLoginPassword(passwordEncoder.encode("123"));
             anhThu2.setEmployeeName("Nguyễn Anh Thứ");
-            anhThu2.setEmployeeNameKana("ã‚¢ãƒ³ãƒãƒ¥ãƒ¼");
+            anhThu2.setEmployeeNameKana("グエンアイントゥー");
             anhThu2.setEmployeeEmail("anhthu02@luvina.net");
             anhThu2.setEmployeeTelephone("0915000002");
             anhThu2.setEmployeeBirthDate(LocalDate.of(1990, 1, 10));
@@ -187,7 +187,7 @@ public class DataLoader implements CommandLineRunner {
             anhThu3.setEmployeeLoginId("anhthu03");
             anhThu3.setEmployeeLoginPassword(passwordEncoder.encode("123"));
             anhThu3.setEmployeeName("Nguyễn Anh Thứ");
-            anhThu3.setEmployeeNameKana("ã‚¢ãƒ³ãƒãƒ¥ãƒ¼");
+            anhThu3.setEmployeeNameKana("グエンアイントゥー");
             anhThu3.setEmployeeEmail("anhthu03@luvina.net");
             anhThu3.setEmployeeTelephone("0915000003");
             anhThu3.setEmployeeBirthDate(LocalDate.of(1990, 1, 10));
@@ -199,7 +199,7 @@ public class DataLoader implements CommandLineRunner {
             anhThu4.setEmployeeLoginId("anhthu04");
             anhThu4.setEmployeeLoginPassword(passwordEncoder.encode("123"));
             anhThu4.setEmployeeName("Nguyễn Anh Thứ");
-            anhThu4.setEmployeeNameKana("ã‚¢ãƒ³ãƒãƒ¥ãƒ¼");
+            anhThu4.setEmployeeNameKana("グエンアイントゥー");
             anhThu4.setEmployeeEmail("anhthu04@luvina.net");
             anhThu4.setEmployeeTelephone("0915000004");
             anhThu4.setEmployeeBirthDate(LocalDate.of(1990, 1, 10));

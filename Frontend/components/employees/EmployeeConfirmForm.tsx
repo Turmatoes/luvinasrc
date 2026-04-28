@@ -55,31 +55,27 @@ const EmployeeConfirmForm: React.FC<EmployeeConfirmFormProps> = ({
       </li>
 
       {/* Hiển thị thông tin chứng chỉ nếu có chọn */}
-      {formData.certificationId && (
-        <>
-          <li className="title mt-12">
-            <a href="#!">日本語能力</a>
-          </li>
-          <li className="form-group row d-flex">
-            <label className="col-form-label col-sm-2">資格</label>
-            <div className="col-sm col-sm-10">
-              {certifications[formData.certificationId] || formData.certificationId || '-'}
-            </div>
-          </li>
-          <li className="form-group row d-flex">
-            <label className="col-form-label col-sm-2">資格交付日</label>
-            <div className="col-sm col-sm-10">{formData.certificationStartDate || '-'}</div>
-          </li>
-          <li className="form-group row d-flex">
-            <label className="col-form-label col-sm-2">失効日</label>
-            <div className="col-sm col-sm-10">{formData.certificationEndDate || '-'}</div>
-          </li>
-          <li className="form-group row d-flex">
-            <label className="col-form-label col-sm-2">点数</label>
-            <div className="col-sm col-sm-10">{formData.score || '-'}</div>
-          </li>
-        </>
-      )}
+      <li className="title mt-12">
+        <a href="#!">日本語能力</a>
+      </li>
+      <li className="form-group row d-flex">
+        <label className="col-form-label col-sm-2">資格</label>
+        <div className="col-sm col-sm-10">
+          {(formData.certificationId && certifications[formData.certificationId]) || ''}
+        </div>
+      </li>
+      <li className="form-group row d-flex">
+        <label className="col-form-label col-sm-2">資格交付日</label>
+        <div className="col-sm col-sm-10">{formData.certificationStartDate || ''}</div>
+      </li>
+      <li className="form-group row d-flex">
+        <label className="col-form-label col-sm-2">失効日</label>
+        <div className="col-sm col-sm-10">{formData.certificationEndDate || ''}</div>
+      </li>
+      <li className="form-group row d-flex">
+        <label className="col-form-label col-sm-2">点数</label>
+        <div className="col-sm col-sm-10">{formData.score || ''}</div>
+      </li>
     </>
   );
 };

@@ -155,7 +155,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         return dto;
     }
 
-
     /**
      * Check tồn tại Login ID
      * 
@@ -211,7 +210,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @return EmployeeResponse chứa mã lỗi
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ErrorResponse addEmployee(EmployeeRequest request) {
         try {
             // 1. Tạo entity Employee
@@ -231,14 +230,14 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.setDepartment(dept);
 
             // 2. Lưu Employee vào DB
-            Employee savedEmployee = employeeRepository.save(employee);
+            Employee addEmployee = employeeRepository.save(employee);
 
             // 3. Nếu có chứng chỉ, lưu vào bảng EmployeeCertification trong DB
             if (request.getCertificationId() != null) {
                 Certification cert = certificationRepository.findById(request.getCertificationId()).orElse(null);
                 if (cert != null) {
                     EmployeeCertification empCert = new EmployeeCertification();
-                    empCert.setEmployee(savedEmployee);
+                    empCert.setEmployee(addEmployee);
                     empCert.setCertification(cert);
                     empCert.setStartDate(LocalDate.parse(request.getCertificationStartDate(), formatter));
                     empCert.setEndDate(LocalDate.parse(request.getCertificationEndDate(), formatter));
@@ -248,12 +247,14 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
 
             // 4. Trả về thành công employee mới được tạo
-            EmployeeResponse response = new EmployeeResponse();
-            response.setCode(Constants.CODE_SUCCESS);
-            return response;
+            return ErrorResponse.build(Constants.CODE_SUCCESS, addEmployee.getEmployeeId(), Constants.CODE_MSG001,
+                    new java.util.ArrayList<>());
 
         } catch (Exception e) {
-            return ErrorResponse.build(Constants.CODE_ER023);
+            // Nếu có lỗi thì Rollback transaction và trả về ER015
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, null, Constants.CODE_ER015,
+                    new java.util.ArrayList<>());
         }
     }
 
@@ -269,7 +270,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         try {
             Employee employee = employeeRepository.findById(request.getEmployeeId()).orElse(null);
             if (employee == null) {
-                return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, request.getEmployeeId(), Constants.CODE_ER013, Arrays.asList(" ID"));
+                return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, request.getEmployeeId(), Constants.CODE_ER013,
+                        Arrays.asList(" ID"));
             }
 
             // Cập nhật thông tin cơ bản
@@ -310,15 +312,16 @@ public class EmployeeServiceImpl implements EmployeeService {
                 }
             }
 
-            return ErrorResponse.build(Constants.CODE_SUCCESS, request.getEmployeeId(), Constants.CODE_MSG002, new java.util.ArrayList<>());
+            return ErrorResponse.build(Constants.CODE_SUCCESS, request.getEmployeeId(), Constants.CODE_MSG002,
+                    new java.util.ArrayList<>());
 
         } catch (Exception e) {
             // Nếu có lỗi thì Rollback transaction và trả về ER015
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, request.getEmployeeId(), Constants.CODE_ER015, new java.util.ArrayList<>());
+            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, request.getEmployeeId(), Constants.CODE_ER015,
+                    new java.util.ArrayList<>());
         }
     }
-
 
     /**
      * Xóa nhân viên theo logic thiết kế:
@@ -339,24 +342,28 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee employee = employeeRepository.findById(employeeId).orElse(null);
         if (employee == null) {
-            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, employeeId, Constants.CODE_ER014, Arrays.asList(" ID"));
+            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, employeeId, Constants.CODE_ER014,
+                    Arrays.asList(" ID"));
         }
 
         try {
-            // 2. Xóa thông tin trình độ tiếng Nhật của nhân viên (bảng employees_certifications)
+            // 2. Xóa thông tin trình độ tiếng Nhật của nhân viên (bảng
+            // employees_certifications)
             employeeRepository.deleteCertificationsByEmployeeId(employeeId);
 
             // 3. Xóa thông tin nhân viên (bảng employees)
             employeeRepository.deleteEmployeeById(employeeId);
 
             // 4. Tạo dữ liệu response cho API (Trường hợp không có lỗi xảy ra)
-            return ErrorResponse.build(Constants.CODE_SUCCESS, employeeId, Constants.CODE_MSG003, new java.util.ArrayList<>());
+            return ErrorResponse.build(Constants.CODE_SUCCESS, employeeId, Constants.CODE_MSG003,
+                    new java.util.ArrayList<>());
 
         } catch (Exception e) {
             // Nếu có lỗi khi xóa thì Rollback transaction
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             // Trả về lỗi với mã lỗi ER015 và chuyển sang bước 4
-            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, employeeId, Constants.CODE_ER015, new java.util.ArrayList<>());
+            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, employeeId, Constants.CODE_ER015,
+                    new java.util.ArrayList<>());
         }
     }
 
