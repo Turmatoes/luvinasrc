@@ -6,12 +6,10 @@
 
 package com.luvina.la.controller;
 
-import com.luvina.la.dto.DepartmentDTO;
 import com.luvina.la.service.DepartmentService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -36,10 +34,14 @@ public class DepartmentController {
     /**
      * Lấy danh sách tất cả các phòng ban.
      * 
-     * @return Danh sách DepartmentDTO
+     * @return Danh sách DepartmentDTO hoặc ErrorResponse chứa mã lỗi
      */
     @GetMapping("/departments")
-    public List<DepartmentDTO> getAllDepartments() {
-        return departmentService.getAllDepartments();
+    public Object getAllDepartments() {
+        try {
+            return departmentService.getAllDepartments();
+        } catch (Exception e) {
+            return com.luvina.la.payload.ErrorResponse.build(com.luvina.la.config.Constants.CODE_ER023);
+        }
     }
 }

@@ -53,23 +53,6 @@ public interface EmployeeService {
     Long countEmployeesWithFilter(String employeeName, Long departmentId);
 
     /**
-     * Xây dựng phản hồi lỗi có hỗ trợ params.
-     *
-     * @param errorCode Mã lỗi
-     * @param params    Danh sách tham số
-     * @return Phản hồi lỗi
-     */
-    ErrorResponse buildResponse(String errorCode, List<String> params);
-
-    /**
-     * Xây dựng phản hồi lỗi với params rỗng.
-     *
-     * @param errorCode Mã lỗi
-     * @return Phản hồi lỗi
-     */
-    ErrorResponse buildResponse(String errorCode);
-
-    /**
      * Lấy chi tiết nhân viên theo ID.
      * 
      * @param id ID của nhân viên
@@ -124,15 +107,4 @@ public interface EmployeeService {
      * @return ErrorResponse chứa kết quả xóa
      */
     ErrorResponse deleteEmployee(Long employeeId);
-
-    /**
-     * Xây dựng phản hồi cho chức năng có lồng object message (vd: Xóa nhân viên).
-     * 
-     * @param code Mã trạng thái (200, 500)
-     * @param employeeId ID của nhân viên
-     * @param msgCode Mã thông báo lỗi hoặc thành công
-     * @param params Danh sách tham số
-     * @return ErrorResponse
-     */
-    ErrorResponse buildResponse(String code, Long employeeId, String msgCode, List<String> params);
 }

@@ -118,7 +118,7 @@ public class EmployeeController {
 
         } catch (Exception e) {
             // Lỗi hệ thống (Mã lỗi ER023)
-            return employeeService.buildResponse(Constants.CODE_ER023);
+            return ErrorResponse.build(Constants.CODE_ER023);
         }
     }
 
@@ -134,7 +134,7 @@ public class EmployeeController {
             EmployeeDTO employee = employeeService.getEmployeeById(id);
             if (employee == null) {
                 // Không tìm thấy nhân viên (Mã lỗi ER013)
-                return employeeService.buildResponse(Constants.CODE_ER013);
+                return ErrorResponse.build(Constants.CODE_ER013);
             }
 
             // Tạo dữ liệu response thành công
@@ -145,7 +145,7 @@ public class EmployeeController {
 
         } catch (Exception e) {
             // Lỗi hệ thống (Mã lỗi ER023)
-            return employeeService.buildResponse(Constants.CODE_ER023);
+            return ErrorResponse.build(Constants.CODE_ER023);
         }
     }
 
@@ -159,7 +159,7 @@ public class EmployeeController {
             return employeeValidate.validateEmployee(request);
         } catch (Exception e) {
             // Lỗi hệ thống (Mã lỗi ER023)
-            return employeeValidate.buildResponse(Constants.CODE_ER023);
+            return ErrorResponse.build(Constants.CODE_ER023);
         }
     }
 

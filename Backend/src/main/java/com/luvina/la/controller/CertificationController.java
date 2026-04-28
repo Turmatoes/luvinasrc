@@ -5,9 +5,7 @@
  */
 package com.luvina.la.controller;
 
-import com.luvina.la.dto.CertificationDTO;
 import com.luvina.la.service.CertificationService;
-import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,10 +25,15 @@ public class CertificationController {
 
     /**
      * Lấy danh sách tất cả chứng chỉ.
-     * @return Danh sách CertificationDTO
+     * 
+     * @return Danh sách CertificationDTO hoặc ErrorResponse chứa mã lỗi
      */
     @GetMapping
-    public List<CertificationDTO> getAllCertifications() {
-        return certificationService.getAllCertifications();
+    public Object getAllCertifications() {
+        try {
+            return certificationService.getAllCertifications();
+        } catch (Exception e) {
+            return com.luvina.la.payload.ErrorResponse.build(com.luvina.la.config.Constants.CODE_ER023);
+        }
     }
 }

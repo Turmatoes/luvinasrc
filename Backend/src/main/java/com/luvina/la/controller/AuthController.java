@@ -46,12 +46,17 @@ public class AuthController {
      */
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
-        log.info("Login request received - username: {}", loginRequest.getUsername());
-        LoginResponse response = authService.authenticate(loginRequest);
-        log.info("Login response: accessToken={}, code={}",
-                response.getAccessToken() != null ? response.getAccessToken().substring(0, 20) + "..." : "null",
-                response.getCode());
-        return response;
+        try {
+            log.info("Login request received - username: {}", loginRequest.getUsername());
+            LoginResponse response = authService.authenticate(loginRequest);
+            log.info("Login response: accessToken={}, code={}",
+                    response.getAccessToken() != null ? response.getAccessToken().substring(0, 20) + "..." : "null",
+                    response.getCode());
+            return response;
+        } catch (Exception e) {
+            log.error("System error during login: ", e);
+            return new LoginResponse(com.luvina.la.config.Constants.CODE_ER023, null);
+        }
     }
 
     /**

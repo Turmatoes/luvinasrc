@@ -155,25 +155,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         return dto;
     }
 
-    /**
-     * Build response lỗi trả về format {Error code, params}
-     * 
-     * @param errorCode Mã lỗi
-     * @param params    Danh sách tham số
-     * @return EmployeeResponse chứa mã lỗi và danh sách tham số
-     */
-    @Override
-    public ErrorResponse buildResponse(String errorCode, List<String> params) {
-        ErrorResponse response = new ErrorResponse();
-        response.setCode(errorCode);
-        response.setParams(params != null ? params : new java.util.ArrayList<>());
-        return response;
-    }
-
-    @Override
-    public ErrorResponse buildResponse(String errorCode) {
-        return buildResponse(errorCode, null);
-    }
 
     /**
      * Check tồn tại Login ID
@@ -272,7 +253,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             return response;
 
         } catch (Exception e) {
-            return buildResponse(Constants.CODE_ER023);
+            return ErrorResponse.build(Constants.CODE_ER023);
         }
     }
 
@@ -288,7 +269,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         try {
             Employee employee = employeeRepository.findById(request.getEmployeeId()).orElse(null);
             if (employee == null) {
-                return buildResponse(Constants.CODE_SYSTEM_ERROR, request.getEmployeeId(), Constants.CODE_ER013, Arrays.asList(" ID"));
+                return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, request.getEmployeeId(), Constants.CODE_ER013, Arrays.asList(" ID"));
             }
 
             // Cập nhật thông tin cơ bản
@@ -329,37 +310,15 @@ public class EmployeeServiceImpl implements EmployeeService {
                 }
             }
 
-            return buildResponse(Constants.CODE_SUCCESS, request.getEmployeeId(), Constants.CODE_MSG002, new java.util.ArrayList<>());
+            return ErrorResponse.build(Constants.CODE_SUCCESS, request.getEmployeeId(), Constants.CODE_MSG002, new java.util.ArrayList<>());
 
         } catch (Exception e) {
             // Nếu có lỗi thì Rollback transaction và trả về ER015
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return buildResponse(Constants.CODE_SYSTEM_ERROR, request.getEmployeeId(), Constants.CODE_ER015, new java.util.ArrayList<>());
+            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, request.getEmployeeId(), Constants.CODE_ER015, new java.util.ArrayList<>());
         }
     }
 
-    /**
-     * Build response trả về cho chức năng Delete Employee.
-     *
-     * @param code Mã trạng thái (200, 500)
-     * @param employeeId ID của nhân viên
-     * @param msgCode Mã thông báo
-     * @param params Tham số
-     * @return ErrorResponse
-     */
-    @Override
-    public ErrorResponse buildResponse(String code, Long employeeId, String msgCode, List<String> params) {
-        ErrorResponse response = new ErrorResponse();
-        response.setCode(code);
-        response.setEmployeeId(employeeId);
-        
-        ErrorResponse message = new ErrorResponse();
-        message.setCode(msgCode);
-        message.setParams(params != null ? params : new java.util.ArrayList<>());
-        
-        response.setMessage(message);
-        return response;
-    }
 
     /**
      * Xóa nhân viên theo logic thiết kế:
@@ -375,12 +334,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     public ErrorResponse deleteEmployee(Long employeeId) {
         // 1. Validate parameter
         if (employeeId == null) {
-            return buildResponse(Constants.CODE_SYSTEM_ERROR, null, Constants.CODE_ER001, Arrays.asList(" ID"));
+            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, null, Constants.CODE_ER001, Arrays.asList(" ID"));
         }
 
         Employee employee = employeeRepository.findById(employeeId).orElse(null);
         if (employee == null) {
-            return buildResponse(Constants.CODE_SYSTEM_ERROR, employeeId, Constants.CODE_ER014, Arrays.asList(" ID"));
+            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, employeeId, Constants.CODE_ER014, Arrays.asList(" ID"));
         }
 
         try {
@@ -391,13 +350,13 @@ public class EmployeeServiceImpl implements EmployeeService {
             employeeRepository.deleteEmployeeById(employeeId);
 
             // 4. Tạo dữ liệu response cho API (Trường hợp không có lỗi xảy ra)
-            return buildResponse(Constants.CODE_SUCCESS, employeeId, Constants.CODE_MSG003, new java.util.ArrayList<>());
+            return ErrorResponse.build(Constants.CODE_SUCCESS, employeeId, Constants.CODE_MSG003, new java.util.ArrayList<>());
 
         } catch (Exception e) {
             // Nếu có lỗi khi xóa thì Rollback transaction
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             // Trả về lỗi với mã lỗi ER015 và chuyển sang bước 4
-            return buildResponse(Constants.CODE_SYSTEM_ERROR, employeeId, Constants.CODE_ER015, new java.util.ArrayList<>());
+            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, employeeId, Constants.CODE_ER015, new java.util.ArrayList<>());
         }
     }
 
