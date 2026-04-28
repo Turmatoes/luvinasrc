@@ -6,12 +6,12 @@
 import { z } from 'zod';
 import { getMessage } from '../utils/messageHelper';
 import { LABELS } from '../constants/messages';
-import { 
-  MAX_LOGIN_ID_LENGTH, 
-  MAX_EMPLOYEE_NAME_LENGTH, 
-  MAX_EMAIL_LENGTH, 
-  MAX_TELEPHONE_LENGTH, 
-  MIN_PASSWORD_LENGTH, 
+import {
+  MAX_LOGIN_ID_LENGTH,
+  MAX_EMPLOYEE_NAME_LENGTH,
+  MAX_EMAIL_LENGTH,
+  MAX_TELEPHONE_LENGTH,
+  MIN_PASSWORD_LENGTH,
   MAX_PASSWORD_LENGTH,
   CODE_ER001,
   CODE_ER002,
@@ -25,15 +25,15 @@ import {
   CODE_ER018,
   CODE_ER019,
 } from '../constants/config';
-import { 
-  KATAKANA_REGEX, 
-  LOGIN_ID_REGEX, 
-  TELEPHONE_REGEX, 
-  NUMERIC_REGEX 
+import {
+  KATAKANA_REGEX,
+  LOGIN_ID_REGEX,
+  TELEPHONE_REGEX,
+  NUMERIC_REGEX
 } from '../constants/format';
 
 /**
- * Factory function tạo Employee Schema dựa trên chế độ (Add/Edit).
+ * Tạo Employee Schema dựa trên chế độ (Add/Edit).
  * 
  * @param isEditMode true nếu đang ở chế độ chỉnh sửa
  * @returns Zod Schema
@@ -79,7 +79,7 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
         });
         return;
       }
-      
+
       // Nếu có nhập (trong cả Add/Edit): check độ dài
       if (val && val.length > 0) {
         if (val.length < MIN_PASSWORD_LENGTH || val.length > MAX_PASSWORD_LENGTH) {
@@ -115,7 +115,7 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
     // So khớp mật khẩu
     if (data.employeeLoginPassword !== data.employeeLoginPasswordConfirm) {
       if (data.employeeLoginPassword || data.employeeLoginPasswordConfirm) {
-         ctx.addIssue({
+        ctx.addIssue({
           path: ['employeeLoginPasswordConfirm'],
           code: z.ZodIssueCode.custom,
           message: getMessage(CODE_ER017),
@@ -146,7 +146,7 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
           message: getMessage(CODE_ER001, [LABELS.SCORE]),
         });
       }
-      
+
       // ER012: EndDate > StartDate
       if (data.certificationStartDate && data.certificationEndDate) {
         const start = new Date(data.certificationStartDate);

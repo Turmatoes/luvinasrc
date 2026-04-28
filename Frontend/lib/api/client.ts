@@ -19,8 +19,6 @@ const apiClient = axios.create({
   },
 });
 
-
-
 /**
  * Thiết lập interceptors cho axios client.
  */
@@ -76,4 +74,3 @@ export function setupInterceptors(client: ReturnType<typeof axios.create>) {
 setupInterceptors(apiClient);
 
 export { apiClient };
-
