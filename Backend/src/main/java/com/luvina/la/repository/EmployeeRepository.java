@@ -21,15 +21,37 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EmployeeRepository extends CrudRepository<Employee, Long> {
 
+        /**
+         * Tìm kiếm nhân viên theo tài khoản đăng nhập
+         * 
+         * @param employeeLoginId Tài khoản đăng nhập
+         * @return Optional chứa thông tin nhân viên
+         */
         Optional<Employee> findByEmployeeLoginId(String employeeLoginId);
 
+        /**
+         * Tìm kiếm nhân viên theo ID
+         * 
+         * @param employeeId ID nhân viên
+         * @return Optional chứa thông tin nhân viên
+         */
         Optional<Employee> findByEmployeeId(Long employeeId);
 
-        // Lấy tổng số nhân viên (where role = 0 or role IS NULL để lọc admin)
+        /**
+         * Lấy tổng số nhân viên (where role = 0 or role IS NULL để lọc admin)
+         * 
+         * @return Tổng số nhân viên
+         */
         @Query("SELECT COUNT(e) FROM Employee e WHERE e.role IS NULL OR e.role = 0")
         Long countNonAdminEmployees();
 
-        // Lấy tổng số nhân viên (where role = 0 or role IS NULL để lọc admin)
+        /**
+         * Lấy tổng số nhân viên với bộ lọc
+         * 
+         * @param employeeName Tên nhân viên
+         * @param departmentId ID phòng ban
+         * @return Tổng số nhân viên
+         */
         @Query(value = "SELECT COUNT(e.employee_id) " +
                         "FROM employees e " +
                         "INNER JOIN departments d ON e.department_id = d.department_id " +
@@ -41,7 +63,18 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                         @Param("employeeName") String employeeName,
                         @Param("departmentId") Long departmentId);
 
-        // Lấy danh sách nhân viên (where role = 0 or role IS NULL để lọc admin)
+        /**
+         * Lấy danh sách nhân viên (where role = 0 or role IS NULL để lọc admin)
+         * 
+         * @param employeeName          Tên nhân viên
+         * @param departmentId          ID phòng ban
+         * @param sortEmployeeName      Sắp xếp theo tên nhân viên
+         * @param sortCertificationName Sắp xếp theo chứng chỉ
+         * @param sortEndDate           Sắp xếp theo ngày hết hạn
+         * @param limit                 Số lượng nhân viên
+         * @param offset                Số lượng nhân viên đã bỏ qua
+         * @return Danh sách nhân viên
+         */
         @Query(value = "SELECT " +
                         "e.employee_id, " +
                         "e.employee_name, " +
@@ -84,7 +117,12 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                         @Param("limit") Integer limit,
                         @Param("offset") Integer offset);
 
-        // Lấy chi tiết nhân viên theo ID
+        /**
+         * Lấy chi tiết nhân viên theo ID
+         * 
+         * @param employeeId ID nhân viên
+         * @return Danh sách nhân viên
+         */
         @Query(value = "SELECT " +
                         "e.employee_id, " +
                         "e.department_id, " +
@@ -107,12 +145,20 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                         "WHERE e.employee_id = ?1 AND (e.role IS NULL OR e.role = 0)", nativeQuery = true)
         List<Object[]> getEmployeeById(Long employeeId);
 
-        // 2. Xóa thông tin trình độ tiếng Nhật của nhân viên
+        /**
+         * 1. Xóa thông tin trình độ tiếng Nhật của nhân viên
+         * 
+         * @param employeeId ID nhân viên
+         */
         @org.springframework.data.jpa.repository.Modifying
         @Query(value = "DELETE FROM employees_certifications WHERE employee_id = ?1", nativeQuery = true)
         void deleteCertificationsByEmployeeId(Long employeeId);
 
-        // 3. Xóa thông tin nhân viên
+        /**
+         * 2. Xóa thông tin nhân viên
+         * 
+         * @param employeeId ID nhân viên
+         */
         @org.springframework.data.jpa.repository.Modifying
         @Query(value = "DELETE FROM employees WHERE employee_id = ?1", nativeQuery = true)
         void deleteEmployeeById(Long employeeId);
