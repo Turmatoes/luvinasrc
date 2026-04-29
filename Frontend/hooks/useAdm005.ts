@@ -113,7 +113,7 @@ export function useAdm005() {
             router.push(nextPath);
         } catch (err) {
             console.error('Lỗi khi lưu dữ liệu:', err);
-            //Gọi đến System Error khi gặp lỗi
+            // Redirect sang màn hình system_error với mã lỗi ER014
             redirectToSystemError(ERR_SYSTEM);
         } finally {
             setLoading(false);

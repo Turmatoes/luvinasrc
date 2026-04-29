@@ -14,6 +14,10 @@ interface EmployeeDetailFormProps {
 
 /**
  * Component hiển thị form chi tiết nhân viên (ADM003).
+ * @param employee - Đối tượng chứa thông tin nhân viên
+ * @param handleEdit - Hàm xử lý khi nhấn nút chỉnh sửa
+ * @param handleDelete - Hàm xử lý khi nhấn nút xóa
+ * @param handleBack - Hàm xử lý khi nhấn nút quay lại
  */
 export default function EmployeeDetailForm({
   employee,
@@ -21,6 +25,7 @@ export default function EmployeeDetailForm({
   handleDelete,
   handleBack,
 }: EmployeeDetailFormProps) {
+  // Kiểm tra nếu employee không tồn tại thì không hiển thị gì cả
   if (!employee) return null;
 
   return (

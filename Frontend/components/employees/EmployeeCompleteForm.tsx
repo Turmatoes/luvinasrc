@@ -12,8 +12,9 @@ interface EmployeeCompleteFormProps {
 
 /**
  * Component hiển thị giao diện thông báo hoàn tất tác vụ (ADM006).
- * 
  * @param props Các props chứa nội dung tin nhắn và hàm xử lý nút OK
+ * @param displayMessage - Nội dung tin nhắn
+ * @param handleOk - Hàm xử lý khi nhấn nút OK 
  */
 const EmployeeCompleteForm: React.FC<EmployeeCompleteFormProps> = ({
   displayMessage,
@@ -25,13 +26,13 @@ const EmployeeCompleteForm: React.FC<EmployeeCompleteFormProps> = ({
       <div className="notification-box">
         {/* Nội dung thông báo (Đăng ký/Cập nhật/Xóa thành công) */}
         <h1 className="msg-title">{displayMessage}</h1>
-        
+
         {/* Nút OK để quay lại màn hình danh sách */}
         {/* Thêm class mt-12 để tạo khoảng cách (margin-top) với dòng chữ thông báo */}
         <div className="notification-box-btn mt-12">
-          <button 
-            type="button" 
-            onClick={handleOk} 
+          <button
+            type="button"
+            onClick={handleOk}
             className="btn btn-primary btn-sm"
           >
             OK

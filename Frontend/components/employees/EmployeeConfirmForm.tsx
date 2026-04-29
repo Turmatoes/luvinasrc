@@ -15,6 +15,9 @@ interface EmployeeConfirmFormProps {
 
 /**
  * Component hiển thị danh sách thông tin nhân viên để xác nhận (ADM005).
+ * @param formData - Đối tượng chứa dữ liệu thông tin nhân viên
+ * @param departments - Đối tượng chứa thông tin phòng ban
+ * @param certifications - Đối tượng chứa thông tin chứng chỉ
  */
 const EmployeeConfirmForm: React.FC<EmployeeConfirmFormProps> = ({
   formData,

@@ -14,6 +14,22 @@ type EmployeeListFormProps = ReturnType<typeof useAdm002>;
 
 /**
  * Component hiển thị form danh sách nhân viên (ADM002).
+ * @param data - Đối tượng chứa dữ liệu danh sách nhân viên
+ * @param departments - Đối tượng chứa thông tin phòng ban
+ * @param loading - Trạng thái loading
+ * @param departmentError - Lỗi khi lấy danh sách phòng ban
+ * @param employeeError - Lỗi khi lấy danh sách nhân viên
+ * @param employeeNameError - Lỗi khi tìm kiếm tên nhân viên
+ * @param searchForm - Form tìm kiếm
+ * @param filters - Bộ lọc
+ * @param totalPages - Tổng số trang
+ * @param pageNumbers - Danh sách số trang
+ * @param handleSearch - Hàm xử lý khi tìm kiếm
+ * @param handlePageChange - Hàm xử lý khi thay đổi trang
+ * @param handleSort - Hàm xử lý khi sắp xếp
+ * @param handleDepartmentChange - Hàm xử lý khi thay đổi phòng ban
+ * @param handleEmployeeNameChange - Hàm xử lý khi thay đổi tên nhân viên
+ * @param searchParams - Tham số tìm kiếm
  */
 export default function EmployeeListForm({
   data,
@@ -36,9 +52,9 @@ export default function EmployeeListForm({
   const employees = data?.employees ?? [];
   const tableData = data
     ? {
-        ...data,
-        employees,
-      }
+      ...data,
+      employees,
+    }
     : null;
 
   return (
@@ -75,10 +91,10 @@ export default function EmployeeListForm({
       {/* Hiển thị bảng dữ liệu và phân trang */}
       {!loading && tableData && employees.length > 0 && (
         <>
-          <EmployeeTable 
-            data={tableData} 
-            sort={filters.sort} 
-            onSort={handleSort} 
+          <EmployeeTable
+            data={tableData}
+            sort={filters.sort}
+            onSort={handleSort}
             currentQueryString={searchParams.toString()}
           />
 

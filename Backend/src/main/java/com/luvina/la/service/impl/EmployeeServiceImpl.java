@@ -125,6 +125,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * Lấy chi tiết nhân viên theo ID.
+     * 
+     * @param id - ID nhân viên
+     * @return EmployeeDTO chứa thông tin chi tiết nhân viên
      */
     @Override
     public EmployeeDTO getEmployeeById(Long id) {
@@ -331,7 +334,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     public ErrorResponse deleteEmployee(Long employeeId) {
         // 1. Validate parameter
         if (employeeId == null) {
-            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, null, Constants.CODE_ER001, Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
+            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, null, Constants.CODE_ER001,
+                    Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
         }
 
         Employee employee = employeeRepository.findById(employeeId).orElse(null);

@@ -32,6 +32,7 @@ export function useAdm003() {
    */
   const fetchDetail = useCallback(async () => {
     if (!id) {
+      // Redirect sang màn hình system_error với mã lỗi ER013
       redirectToSystemError(ERR_SYSTEM);
       return;
     }

@@ -62,6 +62,8 @@ export default function EmployeeInputForm({
 
   /**
    * Chuyển đổi Date sang định dạng YYYY/MM/DD để lưu vào state.
+   * @param date - Giá trị Date cần chuyển đổi
+   * @returns Giá trị Date dạng chuỗi YYYY/MM/DD
    */
   const formatDate = (date: Date | null): string => {
     if (!date) return '';
@@ -73,6 +75,9 @@ export default function EmployeeInputForm({
 
   /**
    * Hiển thị lỗi cho từng trường.
+   * @param fieldName - Tên trường cần hiển thị lỗi
+   * @param extraClass - Lớp CSS bổ sung
+   * @returns Component lỗi
    */
   const renderError = (fieldName: keyof EmployeeFormValues, extraClass = '') => {
     const error = errors[fieldName];

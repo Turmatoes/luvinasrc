@@ -204,13 +204,13 @@ export function useAdm004() {
       // Nếu Validate OK (Nút 確認) -> Lưu session và chuyển trang
       setEmployeeToSession(STORAGE_KEY, payload);
       // Chuyển sang màn hình xác nhận, đính kèm ID (nếu có) và giữ các tham số tìm kiếm/sắp xếp
-      const nextPath = employeeId 
-        ? `/employees/adm005?id=${employeeId}&${searchParams.toString()}` 
+      const nextPath = employeeId
+        ? `/employees/adm005?id=${employeeId}&${searchParams.toString()}`
         : `/employees/adm005?${searchParams.toString()}`;
       router.push(nextPath);
     } catch (err) {
       console.error('Lỗi validate:', err);
-      // Gọi đến System Error khi gặp lỗi
+      // Redirect sang màn hình system_error với mã lỗi ER014
       redirectToSystemError(ERR_SYSTEM);
     } finally {
       setLoading(false);
@@ -224,7 +224,7 @@ export function useAdm004() {
   const handleBack = () => {
     // Xóa sạch dữ liệu tạm lưu trong session storage của màn hình ADM004
     clearSessionData(STORAGE_KEY);
-    
+
     if (isEditMode) {
       // Nếu đang chỉnh sửa: Quay lại màn hình Chi tiết nhân viên (ADM003) và giữ nguyên các tham số
       router.push(`/employees/adm003?id=${employeeId}&${searchParams.toString()}`);

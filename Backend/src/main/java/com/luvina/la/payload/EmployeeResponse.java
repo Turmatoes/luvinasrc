@@ -22,10 +22,19 @@ import java.util.List;
 public class EmployeeResponse extends ErrorResponse {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Constructor mặc định
+     */
     public EmployeeResponse() {
         super();
     }
 
+    /**
+     * Constructor với mã lỗi và danh sách tham số
+     * 
+     * @param code   Mã lỗi
+     * @param params Danh sách tham số
+     */
     public EmployeeResponse(String code, List<String> params) {
         super(code, params);
     }
