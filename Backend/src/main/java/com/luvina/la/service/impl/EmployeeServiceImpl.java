@@ -238,13 +238,13 @@ public class EmployeeServiceImpl implements EmployeeService {
             if (request.getCertificationId() != null) {
                 Certification cert = certificationRepository.findById(request.getCertificationId()).orElse(null);
                 if (cert != null) {
-                    EmployeeCertification empCert = new EmployeeCertification();
-                    empCert.setEmployee(addEmployee);
-                    empCert.setCertification(cert);
-                    empCert.setStartDate(LocalDate.parse(request.getCertificationStartDate(), formatter));
-                    empCert.setEndDate(LocalDate.parse(request.getCertificationEndDate(), formatter));
-                    empCert.setScore(new BigDecimal(request.getScore()));
-                    employeeCertificationRepository.save(empCert);
+                    EmployeeCertification employeeCertification = new EmployeeCertification();
+                    employeeCertification.setEmployee(addEmployee);
+                    employeeCertification.setCertification(cert);
+                    employeeCertification.setStartDate(LocalDate.parse(request.getCertificationStartDate(), formatter));
+                    employeeCertification.setEndDate(LocalDate.parse(request.getCertificationEndDate(), formatter));
+                    employeeCertification.setScore(new BigDecimal(request.getScore()));
+                    employeeCertificationRepository.save(employeeCertification);
                 }
             }
 
