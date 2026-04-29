@@ -12,7 +12,6 @@ import com.luvina.la.entity.Certification;
 import com.luvina.la.entity.Department;
 import com.luvina.la.entity.Employee;
 import com.luvina.la.entity.EmployeeCertification;
-import com.luvina.la.payload.EmployeeResponse;
 import com.luvina.la.payload.EmployeeRequest;
 import com.luvina.la.payload.ErrorResponse;
 import com.luvina.la.repository.CertificationRepository;

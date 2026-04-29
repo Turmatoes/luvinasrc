@@ -31,6 +31,7 @@ export default function EmployeeListForm({
   handleSort,
   handleDepartmentChange,
   handleEmployeeNameChange,
+  searchParams,
 }: EmployeeListFormProps) {
   const employees = data?.employees ?? [];
   const tableData = data
@@ -58,6 +59,7 @@ export default function EmployeeListForm({
         onDepartmentChange={handleDepartmentChange}
         onEmployeeNameChange={handleEmployeeNameChange}
         onSearch={handleSearch}
+        currentQueryString={searchParams.toString()}
       />
 
       {/* Trạng thái Loading */}
@@ -73,7 +75,12 @@ export default function EmployeeListForm({
       {/* Hiển thị bảng dữ liệu và phân trang */}
       {!loading && tableData && employees.length > 0 && (
         <>
-          <EmployeeTable data={tableData} sort={filters.sort} onSort={handleSort} />
+          <EmployeeTable 
+            data={tableData} 
+            sort={filters.sort} 
+            onSort={handleSort} 
+            currentQueryString={searchParams.toString()}
+          />
 
           {totalPages > 1 && (
             <Pagination

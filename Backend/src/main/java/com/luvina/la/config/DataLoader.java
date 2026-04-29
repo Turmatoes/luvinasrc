@@ -19,6 +19,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.math.BigDecimal;
+import org.springframework.transaction.annotation.Transactional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 @Component
 /**
@@ -40,14 +43,26 @@ public class DataLoader implements CommandLineRunner {
     @Autowired
     private EmployeeCertificationRepository employeeCertificationRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
-        // dữ liệu ban đầu
-        long totalEmployees = employeeRepository.count();
-        if (totalEmployees == 0) {
+        // Thực hiện xóa dữ liệu cũ để tránh xung đột hoặc lỗi phông chữ khi khởi tạo lại
+        // Sử dụng Native Query để TRUNCATE vì nó nhanh và reset cả AI (Auto Increment)
+        entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
+        entityManager.createNativeQuery("TRUNCATE TABLE employees_certifications").executeUpdate();
+        entityManager.createNativeQuery("TRUNCATE TABLE employees").executeUpdate();
+        entityManager.createNativeQuery("TRUNCATE TABLE certifications").executeUpdate();
+        entityManager.createNativeQuery("TRUNCATE TABLE departments").executeUpdate();
+        entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
+
+        // Tiến hành khởi tạo dữ liệu mẫu chuẩn (UTF-8)
+        if (true) { // Luôn chạy vì đã truncate ở trên
             // Tạo phòng ban
             Department dept1 = new Department();
             dept1.setDepartmentName("Phòng IT");

@@ -19,6 +19,7 @@ interface SearchFormProps {
   onDepartmentChange: (departmentId: number | null) => void;
   onEmployeeNameChange: (name: string) => void;
   onSearch: (name: string, departmentId: number | null) => void;
+  currentQueryString?: string;
 }
 
 /**
@@ -40,6 +41,7 @@ export default function SearchForm({
   onDepartmentChange,
   onEmployeeNameChange,
   onSearch,
+  currentQueryString,
 }: SearchFormProps) {
   const router = useRouter();
 
@@ -104,7 +106,7 @@ export default function SearchForm({
               </button>
               <button
                 type="button"
-                onClick={() => router.push('/employees/adm004')}
+                onClick={() => router.push(`/employees/adm004${currentQueryString ? `?${currentQueryString}` : ''}`)}
                 className="btn btn-secondary btn-sm"
               >
                 新規追加

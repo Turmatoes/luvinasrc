@@ -285,5 +285,6 @@ export function useAdm002() {
     handleSort,
     handleDepartmentChange,
     handleEmployeeNameChange,
+    searchParams,
   };
 }

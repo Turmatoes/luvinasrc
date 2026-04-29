@@ -12,6 +12,8 @@ import { EmployeeFormValues } from '@/types/employee';
 
 import { getStorageKey, getSessionData, clearSessionData } from '@/lib/utils/sessionStorage';
 import { employeeApi } from '@/lib/api/employee.api';
+import { departmentApi } from '@/lib/api/department.api';
+import { certificationApi } from '@/lib/api/certification.api';
 import { redirectToSystemError } from '@/lib/utils/errorHelper';
 import { ERR_SYSTEM, ERR_SUCCESS } from '@/lib/constants/config';
 
@@ -36,26 +38,49 @@ export function useAdm005() {
     const [loading, setLoading] = useState(true);
 
     /**
-     * Thực hiện lấy dữ liệu từ sessionStorage hiển thị lên màn hình adm005
+     * Thực hiện lấy dữ liệu từ sessionStorage và Master data (Phòng ban, Chứng chỉ)
      */
     useEffect(() => {
-        setLoading(true);
-        try {
-            // Đọc dữ liệu từ sessionStorage
-            const employeeData = getSessionData(STORAGE_KEY);
-            if (employeeData) {
-                setFormData(employeeData);
-            } else {
-                // redirect lại màn hình adm004 nếu như không có dữ liệu trên sessionStorage
+        const initialize = async () => {
+            setLoading(true);
+            try {
+                // 1. Tải dữ liệu danh mục để hiển thị Tên thay vì ID
+                const [depts, certs] = await Promise.all([
+                    departmentApi.getDepartments(),
+                    certificationApi.getCertifications(),
+                ]);
+
+                // Chuyển đổi danh sách sang Object Map để lookup nhanh theo ID
+                const deptMap: { [key: string]: string } = {};
+                depts.forEach(d => {
+                    deptMap[d.departmentId.toString()] = d.departmentName;
+                });
+                setDepartments(deptMap);
+
+                const certMap: { [key: string]: string } = {};
+                certs.forEach(c => {
+                    certMap[c.certificationId.toString()] = c.certificationName;
+                });
+                setCertifications(certMap);
+
+                // 2. Đọc dữ liệu nhân viên từ sessionStorage (do ADM004 truyền sang)
+                const employeeData = getSessionData(STORAGE_KEY);
+                if (employeeData) {
+                    setFormData(employeeData);
+                } else {
+                    // Nếu không có dữ liệu, quay lại màn hình nhập liệu
+                    router.push('/employees/adm004');
+                }
+            } catch (err) {
+                console.error('Lỗi khởi tạo ADM005:', err);
+                // redirect lại màn hình adm004 nếu có lỗi xảy ra
                 router.push('/employees/adm004');
-                return;
+            } finally {
+                setLoading(false);
             }
-        } catch (err) {
-            // redirect lại màn hình adm004 nếu có lỗi xảy ra
-            router.push('/employees/adm004');
-        } finally {
-            setLoading(false);
-        }
+        };
+
+        initialize();
     }, [router]);
 
     /**
@@ -85,8 +110,10 @@ export function useAdm005() {
             }
 
             // Xóa sessionStorage khi hoàn tất thành công và chuyển sang màn hình thông báo (ADM006)
+            // Truyền type để ADM006 biết hiển thị thông báo "Đăng ký" hay "Cập nhật"
             clearSessionData(STORAGE_KEY);
-            router.push('/employees/adm006');
+            const nextPath = `/employees/adm006?type=${id ? 'edit' : 'add'}`;
+            router.push(nextPath);
         } catch (err) {
             console.error('Lỗi khi lưu dữ liệu:', err);
             //Gọi đến System Error khi gặp lỗi
@@ -101,8 +128,8 @@ export function useAdm005() {
      */
     const handleBack = () => {
         // Không xóa session ở đây - để ADM004 đọc và xóa sau
-        // Thêm mode=back để ADM004 biết là quay về từ ADM005
-        router.push(`/employees/adm004?mode=back${id ? '&id=' + id : ''}`);
+        // Thêm mode=back để ADM004 biết là quay về từ ADM005, đính kèm ID và các tham số tìm kiếm
+        router.push(`/employees/adm004?mode=back${id ? '&id=' + id : ''}&${searchParams.toString()}`);
     };
 
     return {

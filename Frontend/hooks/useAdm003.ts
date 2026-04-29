@@ -11,6 +11,7 @@ import { employeeApi } from '@/lib/api/employee.api';
 import { MESSAGES } from '@/lib/constants/messages';
 import { redirectToSystemError } from '@/lib/utils/errorHelper';
 import { ERR_SYSTEM, ERR_SUCCESS } from '@/lib/constants/config';
+import { getAdm002ReturnUrl } from '@/lib/utils/queryHelper';
 
 /**
  * Custom Hook useAdm003 quản lý logic cho màn hình Chi tiết nhân viên.
@@ -63,7 +64,8 @@ export function useAdm003() {
    * Điều hướng sang màn hình chỉnh sửa.
    */
   const handleEdit = () => {
-    router.push(`/employees/adm004?id=${id}`);
+    // Điều hướng sang màn hình ADM004 kèm theo ID và giữ nguyên các tham số tìm kiếm/sắp xếp
+    router.push(`/employees/adm004?id=${id}&${searchParams.toString()}`);
   };
 
   /**
@@ -75,8 +77,8 @@ export function useAdm003() {
       try {
         const res = await employeeApi.deleteEmployee(parseInt(id!));
         if (res.code === ERR_SUCCESS || res.code === '200' || res.code === 200) {
-          // Thành công thì qua trang ADM006 (hoàn tất)
-          router.push('/employees/adm006');
+          // Thành công thì qua trang ADM006 (hoàn tất) với loại tác vụ là xóa
+          router.push('/employees/adm006?type=delete');
         } else {
           redirectToSystemError(res.message?.code || res.code);
         }
@@ -95,7 +97,8 @@ export function useAdm003() {
    * Quay lại màn hình danh sách.
    */
   const handleBack = () => {
-    router.push('/employees/adm002');
+    // Quay lại màn hình danh sách và giữ nguyên trạng thái tìm kiếm/sắp xếp
+    router.push(getAdm002ReturnUrl(searchParams));
   };
 
   return {

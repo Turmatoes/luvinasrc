@@ -1,22 +1,40 @@
 'use client';
-
+/**
+ * Copyright(C) 2010 Luvina Software Company
+ * 
+ * page.tsx (ADM006), April 29, 2026 nxplong
+ */
 import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
-import { MESSAGES } from '@/lib/constants/messages';
+import { useAdm006 } from '@/hooks/useAdm006';
+import EmployeeCompleteForm from '@/components/employees/EmployeeCompleteForm';
+import { Suspense } from 'react';
 
-export default function EmployeeCompletePage() {
+/**
+ * Nội dung trang hoàn tất (ADM006).
+ * Kết nối logic từ Hook useAdm006 vào giao diện EmployeeCompleteForm.
+ */
+function EmployeeCompleteContent() {
+  // Xác thực người dùng
   useAuth();
-  const router = useRouter();
-  return (
-    <div className="box-shadow">
-      <div className="notification-box">
-        <h1 className="msg-title">{MESSAGES.MSG001} or {MESSAGES.MSG002} or {MESSAGES.MSG003}</h1>
-        <div className="notification-box-btn">
-          <button type="button" onClick={() => router.push('/employees/adm002')} className="btn btn-primary btn-sm">OK</button>
 
-        </div>
-      </div>
-    </div>
+  // Sử dụng Hook để lấy dữ liệu tin nhắn và hàm xử lý
+  const { displayMessage, handleOk } = useAdm006();
+
+  return (
+    <EmployeeCompleteForm
+      displayMessage={displayMessage}
+      handleOk={handleOk}
+    />
   );
 }
 
+/**
+ * Bọc trong Suspense để hỗ trợ useRouter và client-side rendering
+ */
+export default function EmployeeCompletePage() {
+  return (
+    <Suspense fallback={<div className="text-center py-4">ローディング中...</div>}>
+      <EmployeeCompleteContent />
+    </Suspense>
+  );
+}

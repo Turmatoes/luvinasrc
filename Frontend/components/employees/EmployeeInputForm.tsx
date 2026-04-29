@@ -213,35 +213,39 @@ export default function EmployeeInputForm({
             </div>
           </li>
 
-          {/* パスワード */}
-          <li className="form-group row d-flex">
-            <label className="col-form-label col-sm-2">
-              <i className="relative">パスワード:{!isEditMode && <span className="note-red">*</span>}</i>
-            </label>
-            <div className="col-sm col-sm-10">
-              <input
-                type="password"
-                className={`form-control ${errors.employeeLoginPassword ? 'is-invalid border-danger' : ''}`}
-                {...register('employeeLoginPassword')}
-              />
-              {renderError('employeeLoginPassword')}
-            </div>
-          </li>
+          {/* パスワード - Chỉ hiển thị khi thêm mới (Add mode) */}
+          {!isEditMode && (
+            <li className="form-group row d-flex">
+              <label className="col-form-label col-sm-2">
+                <i className="relative">パスワード:<span className="note-red">*</span></i>
+              </label>
+              <div className="col-sm col-sm-10">
+                <input
+                  type="password"
+                  className={`form-control ${errors.employeeLoginPassword ? 'is-invalid border-danger' : ''}`}
+                  {...register('employeeLoginPassword')}
+                />
+                {renderError('employeeLoginPassword')}
+              </div>
+            </li>
+          )}
 
-          {/* パスワード確認 */}
-          <li className="form-group row d-flex">
-            <label className="col-form-label col-sm-2">
-              <i className="relative">パスワード（確認）:</i>
-            </label>
-            <div className="col-sm col-sm-10">
-              <input
-                type="password"
-                className={`form-control ${errors.employeeLoginPasswordConfirm ? 'is-invalid border-danger' : ''}`}
-                {...register('employeeLoginPasswordConfirm')}
-              />
-              {renderError('employeeLoginPasswordConfirm')}
-            </div>
-          </li>
+          {/* パスワード確認 - Chỉ hiển thị khi thêm mới (Add mode) */}
+          {!isEditMode && (
+            <li className="form-group row d-flex">
+              <label className="col-form-label col-sm-2">
+                <i className="relative">パスワード（確認）:</i>
+              </label>
+              <div className="col-sm col-sm-10">
+                <input
+                  type="password"
+                  className={`form-control ${errors.employeeLoginPasswordConfirm ? 'is-invalid border-danger' : ''}`}
+                  {...register('employeeLoginPasswordConfirm')}
+                />
+                {renderError('employeeLoginPasswordConfirm')}
+              </div>
+            </li>
+          )}
 
           <li className="title mt-12"><a href="#!">日本語能力</a></li>
 

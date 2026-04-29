@@ -16,6 +16,7 @@ interface Props {
   data: EmployeeListResponse;
   sort: Record<SortKey, SortDirection>;
   onSort: (key: SortKey) => void;
+  currentQueryString?: string;
 }
 
 /**
@@ -36,7 +37,7 @@ function sortIcon(direction: SortDirection) {
  * @param onSort Hàm xử lý khi sắp xếp
  * @returns Component hiển thị danh sách nhân viên
  */
-export default function EmployeeTable({ data, sort, onSort }: Props) {
+export default function EmployeeTable({ data, sort, onSort, currentQueryString }: Props) {
   return (
     <div className="row row-table">
       <div className="css-grid-table box-shadow">
@@ -85,7 +86,9 @@ export default function EmployeeTable({ data, sort, onSort }: Props) {
           {data.employees.map((emp, idx) => (
             <React.Fragment key={`${emp.employeeId}-${idx}`}>
               <div className="bor-l-none text-center">
-                <Link href={`/employees/adm003?id=${emp.employeeId}`}>{emp.employeeId}</Link>
+                <Link href={`/employees/adm003?id=${emp.employeeId}${currentQueryString ? `&${currentQueryString}` : ''}`}>
+                  {emp.employeeId}
+                </Link>
               </div>
               <div>{emp.employeeName}</div>
               <div>{emp.employeeBirthDate || ''}</div>

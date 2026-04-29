@@ -19,6 +19,7 @@ import { getStorageKey, getSessionData, setEmployeeToSession, clearSessionData }
 import { redirectToSystemError } from '@/lib/utils/errorHelper';
 import { ERR_SYSTEM, ERR_SUCCESS, CODE_ER003, CODE_ER004, CODE_ER012 } from '@/lib/constants/config';
 import { LABELS } from '@/lib/constants/messages';
+import { getAdm002ReturnUrl } from '@/lib/utils/queryHelper';
 
 // Key cho storage
 const STORAGE_KEY = getStorageKey('ADM004');
@@ -107,11 +108,13 @@ export function useAdm004() {
       try {
         // Tải dữ liệu danh mục phòng ban và chứng chỉ
         await loadMasterData();
-        // TH 1: Quay lại từ màn hình confirm (adm005 -> adm004)
+        // 2. Xử lý logic khởi tạo dữ liệu Form
         if (isBackFromADM005) {
-          const employeeData = getSessionData(STORAGE_KEY);
-          if (employeeData) {
-            reset(employeeData);
+          // Trường hợp quay lại từ màn hình xác nhận (ADM005 -> ADM004): 
+          // Chỉ lúc này mới dùng dữ liệu từ session
+          const savedData = getSessionData(STORAGE_KEY);
+          if (savedData) {
+            reset(savedData);
           }
           // Xóa session ngay sau khi dữ liệu được load thành công lên màn adm004
           clearSessionData(STORAGE_KEY);
@@ -119,36 +122,36 @@ export function useAdm004() {
           // Xóa mode=back khỏi URL để tránh F5 bị lặp lại logic back
           const newUrl = employeeId ? `/employees/adm004?id=${employeeId}` : '/employees/adm004';
           router.replace(newUrl);
-        } else {
-          if (isEditMode) {
-            // Trường hợp chỉnh sửa (Edit): Luôn fetch mới từ API
-            const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId!));
-            
-            // Format dữ liệu trả về từ Backend để khớp với EmployeeFormValues
-            const formattedDetail: EmployeeFormValues = {
-              employeeId: detail.employeeId,
-              employeeLoginId: detail.employeeLoginId || '',
-              departmentId: detail.departmentId ? detail.departmentId.toString() : '',
-              employeeName: detail.employeeName || '',
-              employeeNameKana: detail.employeeNameKana || '',
-              employeeBirthDate: detail.employeeBirthDate ? detail.employeeBirthDate.replace(/-/g, '/') : '',
-              employeeEmail: detail.employeeEmail || '',
-              employeeTelephone: detail.employeeTelephone || '',
-              employeeLoginPassword: '', // Mật khẩu không trả về hoặc để trống
-              employeeLoginPasswordConfirm: '',
-              certificationId: detail.certificationId ? detail.certificationId.toString() : '',
-              certificationStartDate: detail.certificationStartDate ? detail.certificationStartDate.replace(/-/g, '/') : '',
-              certificationEndDate: detail.certificationEndDate ? detail.certificationEndDate.replace(/-/g, '/') : '',
-              score: detail.score ? detail.score.toString() : '',
-            };
+        } else if (isEditMode) {
+          // Trường hợp KHÔNG phải quay lại từ confirm và đang ở chế độ Chỉnh sửa (Edit): 
+          // Luôn fetch mới từ API (đúng logic "đẩy data từ DB lên")
+          const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId!));
 
+          if (detail.code === ERR_SUCCESS) {
+            const dto = detail.employeeDTO;
+            // Ánh xạ từ EmployeeDTO (Backend) sang EmployeeFormValues (Frontend)
+            const formattedDetail: EmployeeFormValues = {
+              employeeName: dto.employeeName,
+              employeeNameKana: dto.employeeNameKana,
+              employeeBirthDate: dto.employeeBirthDate ? dto.employeeBirthDate.replace(/-/g, '/') : '',
+              employeeEmail: dto.employeeEmail,
+              employeeTelephone: dto.employeeTelephone,
+              employeeLoginId: dto.employeeLoginId,
+              employeeLoginPassword: '', // Mật khẩu không trả về từ API
+              employeeLoginPasswordConfirm: '',
+              departmentId: dto.departmentId ? dto.departmentId.toString() : '',
+              certificationId: dto.certificationId ? dto.certificationId.toString() : '',
+              certificationStartDate: dto.certificationStartDate ? dto.certificationStartDate.replace(/-/g, '/') : '',
+              certificationEndDate: dto.certificationEndDate ? dto.certificationEndDate.replace(/-/g, '/') : '',
+              score: dto.score ? dto.score.toString() : '',
+            };
             reset(formattedDetail);
           } else {
-            // Trường hợp thêm mới (Add): Form trống
-            reset(DEFAULT_FORM_VALUES);
+            redirectToSystemError(detail.code);
           }
-          // Luôn đảm bảo session sạch khi vào mới
-          clearSessionData(STORAGE_KEY);
+        } else {
+          // Trường hợp Thêm mới (Add) và không phải back từ confirm: Form trống
+          reset(DEFAULT_FORM_VALUES);
         }
 
         setInitialized(true);
@@ -200,7 +203,10 @@ export function useAdm004() {
 
       // Nếu Validate OK (Nút 確認) -> Lưu session và chuyển trang
       setEmployeeToSession(STORAGE_KEY, payload);
-      const nextPath = employeeId ? `/employees/adm005?id=${employeeId}` : '/employees/adm005';
+      // Chuyển sang màn hình xác nhận, đính kèm ID (nếu có) và giữ các tham số tìm kiếm/sắp xếp
+      const nextPath = employeeId 
+        ? `/employees/adm005?id=${employeeId}&${searchParams.toString()}` 
+        : `/employees/adm005?${searchParams.toString()}`;
       router.push(nextPath);
     } catch (err) {
       console.error('Lỗi validate:', err);
@@ -212,11 +218,20 @@ export function useAdm004() {
   };
 
   /**
-   * Xử lý quay lại trang danh sách (adm002 -> adm004)
+   * Xử lý khi nhấn nút "Quay lại" (戻る).
+   * Điều hướng người dùng về màn hình phù hợp tùy theo chế độ (Add/Edit).
    */
   const handleBack = () => {
+    // Xóa sạch dữ liệu tạm lưu trong session storage của màn hình ADM004
     clearSessionData(STORAGE_KEY);
-    router.push('/employees/adm002');
+    
+    if (isEditMode) {
+      // Nếu đang chỉnh sửa: Quay lại màn hình Chi tiết nhân viên (ADM003) và giữ nguyên các tham số
+      router.push(`/employees/adm003?id=${employeeId}&${searchParams.toString()}`);
+    } else {
+      // Nếu đang thêm mới: Quay lại màn hình Danh sách nhân viên (ADM002) và khôi phục trạng thái tìm kiếm
+      router.push(getAdm002ReturnUrl(searchParams));
+    }
   };
 
   return {
