@@ -91,22 +91,19 @@ export function useAdm005() {
 
         setLoading(true);
         try {
-            // LUỒNG 1: THỰC HIỆN VALIDATE LẠI TOÀN BỘ TẠI BACKEND
-            // Đảm bảo dữ liệu vẫn hợp lệ ngay trước thời điểm lưu (phòng trường hợp trùng ID phát sinh giữa chừng)
-            const validateRes = await employeeApi.validateEmployee(formData);
-
-            if (validateRes.code !== ERR_SUCCESS) {
-                // Nếu phát sinh bất kỳ lỗi validate nào ở bước cuối cùng, coi như là lỗi hệ thống nghiệp vụ
-                redirectToSystemError(validateRes.code, validateRes.message);
-                return;
+            // Validation đã được thực hiện bên trong các API này tại Backend
+            let res;
+            if (id) {
+                res = await employeeApi.updateEmployee(parseInt(id), formData);
+            } else {
+                res = await employeeApi.addEmployee(formData);
             }
 
-            // LUỒNG 2: HOÀN THÀNH TÁC VỤ VÀ ĐẨY DỮ LIỆU VÀO DB
-            // Tùy theo mode (Add/Edit) để gọi API tương ứng
-            if (id) {
-                await employeeApi.updateEmployee(parseInt(id), formData);
-            } else {
-                await employeeApi.addEmployee(formData);
+            // Kiểm tra kết quả trả về từ API
+            if (res.code !== ERR_SUCCESS) {
+                // Nếu có lỗi (bao gồm cả lỗi validate hoặc lỗi hệ thống), chuyển hướng sang màn hình lỗi
+                redirectToSystemError(res.code, res.message);
+                return;
             }
 
             // Xóa sessionStorage khi hoàn tất thành công và chuyển sang màn hình thông báo (ADM006)

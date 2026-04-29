@@ -270,26 +270,21 @@ public class EmployeeServiceImpl implements EmployeeService {
             Employee employee = employeeRepository.findById(request.getEmployeeId()).orElse(null);
             if (employee == null) {
                 return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, request.getEmployeeId(), Constants.CODE_ER013,
-                        Arrays.asList(" ID"));
+                        Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
             }
 
-            // Cập nhật thông tin cơ bản
+            // Cập nhật thông tin cơ bản (không có Password)
             employee.setEmployeeName(request.getEmployeeName());
             employee.setEmployeeNameKana(request.getEmployeeNameKana());
             employee.setEmployeeEmail(request.getEmployeeEmail());
             employee.setEmployeeTelephone(request.getEmployeeTelephone());
             employee.setEmployeeLoginId(request.getEmployeeLoginId());
 
-            // Chỉ cập nhật mật khẩu nếu có truyền lên
-            if (request.getEmployeeLoginPassword() != null && !request.getEmployeeLoginPassword().isEmpty()) {
-                employee.setEmployeeLoginPassword(passwordEncoder.encode(request.getEmployeeLoginPassword()));
-            }
-
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
             employee.setEmployeeBirthDate(LocalDate.parse(request.getEmployeeBirthDate(), formatter));
 
-            Department dept = departmentRepository.findById(request.getDepartmentId()).orElse(null);
-            employee.setDepartment(dept);
+            Department department = departmentRepository.findById(request.getDepartmentId()).orElse(null);
+            employee.setDepartment(department);
 
             employeeRepository.save(employee);
 
@@ -301,13 +296,13 @@ public class EmployeeServiceImpl implements EmployeeService {
             if (request.getCertificationId() != null) {
                 Certification cert = certificationRepository.findById(request.getCertificationId()).orElse(null);
                 if (cert != null) {
-                    EmployeeCertification empCert = new EmployeeCertification();
-                    empCert.setEmployee(employee);
-                    empCert.setCertification(cert);
-                    empCert.setStartDate(LocalDate.parse(request.getCertificationStartDate(), formatter));
-                    empCert.setEndDate(LocalDate.parse(request.getCertificationEndDate(), formatter));
-                    empCert.setScore(new BigDecimal(request.getScore()));
-                    employeeCertificationRepository.save(empCert);
+                    EmployeeCertification employeeCertification = new EmployeeCertification();
+                    employeeCertification.setEmployee(employee);
+                    employeeCertification.setCertification(cert);
+                    employeeCertification.setStartDate(LocalDate.parse(request.getCertificationStartDate(), formatter));
+                    employeeCertification.setEndDate(LocalDate.parse(request.getCertificationEndDate(), formatter));
+                    employeeCertification.setScore(new BigDecimal(request.getScore()));
+                    employeeCertificationRepository.save(employeeCertification);
                 }
             }
 
@@ -336,13 +331,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     public ErrorResponse deleteEmployee(Long employeeId) {
         // 1. Validate parameter
         if (employeeId == null) {
-            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, null, Constants.CODE_ER001, Arrays.asList(" ID"));
+            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, null, Constants.CODE_ER001, Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
         }
 
         Employee employee = employeeRepository.findById(employeeId).orElse(null);
         if (employee == null) {
             return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, employeeId, Constants.CODE_ER014,
-                    Arrays.asList(" ID"));
+                    Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
         }
 
         try {

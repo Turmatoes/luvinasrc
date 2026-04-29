@@ -19,6 +19,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -107,7 +108,7 @@ public class EmployeeController {
                     limit,
                     offset);
 
-            // Tạo dữ liệu response thành công 
+            // Tạo dữ liệu response thành công
             EmployeeListResponse response = new EmployeeListResponse();
             response.setCode(Constants.CODE_SUCCESS);
             response.setTotalRecords(totalRecords);
@@ -150,13 +151,15 @@ public class EmployeeController {
     }
 
     /**
-     * Validate dữ liệu nhân viên trước khi xác nhận.
-     * Thực hiện các bước validate thông qua EmployeeValidate.
+     * API Validate dữ liệu nhân viên trước khi xác nhận (nút 確認 tại màn adm004)
+     * 
+     * @param request EmployeeRequest chứa thông tin nhân viên
+     * @return ErrorResponse chứa thông tin nhân viên hoặc mã lỗi
      */
     @PostMapping("/employees/validate")
     public ErrorResponse validateEmployee(@RequestBody EmployeeRequest request) {
         try {
-            return employeeValidate.validateEmployee(request);
+            return employeeValidate.validateExistenceOnly(request);
         } catch (Exception e) {
             // Lỗi hệ thống (Mã lỗi ER023)
             return ErrorResponse.build(Constants.CODE_ER023);
@@ -165,43 +168,46 @@ public class EmployeeController {
 
     /**
      * Thêm mới nhân viên.
+     * 
+     * @param request EmployeeRequest chứa thông tin nhân viên
+     * @return ErrorResponse chứa thông tin nhân viên hoặc mã lỗi
      */
     @PostMapping("/employees")
     public ErrorResponse addEmployee(@RequestBody EmployeeRequest request) {
-        // Thực hiện lại validate trước khi lưu vào DB
-        ErrorResponse validateEmployee = validateEmployee(request);
-        if (validateEmployee != null && !Constants.CODE_SUCCESS.equals(validateEmployee.getCode())) {
-            return validateEmployee;
+        // Thực hiện lại validate trước khi lưu vào DB thông qua lớp EmployeeValidate
+        ErrorResponse validateRes = employeeValidate.validateEmployee(request);
+        if (validateRes != null && !Constants.CODE_SUCCESS.equals(validateRes.getCode())) {
+            return validateRes;
         }
         return employeeService.addEmployee(request);
     }
 
     /**
      * Cập nhật thông tin nhân viên.
+     * 
+     * @param id      ID của nhân viên
+     * @param request EmployeeRequest chứa thông tin nhân viên
+     * @return ErrorResponse chứa thông tin nhân viên hoặc mã lỗi
      */
-    @org.springframework.web.bind.annotation.PutMapping("/employees/{id}")
+    @PutMapping("/employees/{id}")
     public ErrorResponse updateEmployee(@PathVariable("id") Long id, @RequestBody EmployeeRequest request) {
         request.setEmployeeId(id);
-        ErrorResponse validateEmployee = validateEmployee(request);
-        if (validateEmployee != null && !Constants.CODE_SUCCESS.equals(validateEmployee.getCode())) {
-            return validateEmployee;
+        // Thực hiện lại validate trước khi lưu vào DB thông qua lớp EmployeeValidate
+        ErrorResponse validateRes = employeeValidate.validateEmployee(request);
+        if (validateRes != null && !Constants.CODE_SUCCESS.equals(validateRes.getCode())) {
+            return validateRes;
         }
         return employeeService.updateEmployee(request);
     }
 
     /**
      * Xóa thông tin nhân viên.
-     * Sử dụng nhiều path mapping để bắt được case missing path variable (nếu có).
-     * "/employees/{id}": Path mặc định, mong đợi một ID cụ thể để xóa
-     * "/employees": "Fallback" path. Nếu Spring không tìm thấy path nào khớp phía trên, nó sẽ chạy cái này.
-     * "/employees/": Path "rỗng" để bắt trường hợp người dùng gõ thêm dấu / ở cuối.
      * 
      * @param id ID của nhân viên
-     * @return EmployeeDeleteResponse
+     * @return ErrorResponse
      */
-    @DeleteMapping({"/employees/{id}", "/employees", "/employees/"})
-    public ErrorResponse deleteEmployee(
-            @PathVariable(value = "id", required = false) Long id) {
+    @DeleteMapping("/employees/{id}")
+    public ErrorResponse deleteEmployee(@PathVariable("id") Long id) {
         return employeeService.deleteEmployee(id);
     }
 }

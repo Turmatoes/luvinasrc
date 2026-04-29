@@ -20,18 +20,20 @@ function SystemErrorContent() {
   const message = searchParams.get('message') || 'システムエラーが発生しました。';
 
   return (
-    <div className="notification-box" style={{ padding: '50px 20px', textAlign: 'center', backgroundColor: '#fff', borderRadius: '8px', marginTop: '30px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+    <div className="notification-box" style={{ padding: '50px 20px', textAlign: 'center', backgroundColor: '#fff5f5', borderRadius: '0', marginTop: '0', boxShadow: 'none' }}>
       <h1 className="title note-err" style={{ fontSize: '24px', color: '#d9534f', marginBottom: '30px' }}>
         {message}
       </h1>
-      <button
-        type="button"
-        className="btn btn-primary btn-sm"
-        onClick={() => router.push('/employees/adm002')}
-        style={{ padding: '8px 30px', cursor: 'pointer' }}
-      >
-        OK
-      </button>
+      <div style={{ paddingTop: '15px' }}>
+        <button
+          type="button"
+          className="btn btn-primary btn-sm"
+          onClick={() => router.push('/employees/adm002')}
+          style={{ padding: '8px 30px', cursor: 'pointer' }}
+        >
+          OK
+        </button>
+      </div>
     </div>
   );
 }

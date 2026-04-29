@@ -207,7 +207,7 @@ public class EmployeeValidate {
         // Nếu là Update, Validate [employeeId]
         if (isUpdate) {
             if (!employeeRepository.existsById(request.getEmployeeId())) {
-                return ErrorResponse.build(Constants.CODE_ER013, java.util.Arrays.asList(" ID"));
+                return ErrorResponse.build(Constants.CODE_ER013, java.util.Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
             }
         }
 
@@ -241,10 +241,12 @@ public class EmployeeValidate {
         if (employeeResponse != null)
             return employeeResponse;
 
-        // 1.7 Validate [employee_login_password]
-        employeeResponse = validatePassword(request.getEmployeeLoginPassword(), isUpdate);
-        if (employeeResponse != null)
-            return employeeResponse;
+        // 1.7 Validate [employee_login_password] (Chỉ validate khi Thêm mới)
+        if (!isUpdate) {
+            employeeResponse = validatePassword(request.getEmployeeLoginPassword(), false);
+            if (employeeResponse != null)
+                return employeeResponse;
+        }
 
         // 1.8 Validate [department_id]
         employeeResponse = validateDepartment(request.getDepartmentId());
@@ -255,6 +257,51 @@ public class EmployeeValidate {
         employeeResponse = validateCertification(request);
         if (employeeResponse != null)
             return employeeResponse;
+
+        return ErrorResponse.build(Constants.CODE_SUCCESS);
+    }
+
+    /**
+     * Chỉ kiểm tra tính tồn tại của các trường dữ liệu (ID, LoginID, Department, Certification).
+     * Dùng cho nút [確認] tại màn hình ADM004.
+     * 
+     * @param request EmployeeRequest
+     * @return ErrorResponse
+     */
+    public ErrorResponse validateExistenceOnly(EmployeeRequest request) {
+        boolean isUpdate = request.getEmployeeId() != null;
+
+        // 1. Kiểm tra tồn tại của Employee ID (nếu là Update) - ER013
+        if (isUpdate) {
+            if (!employeeRepository.existsById(request.getEmployeeId())) {
+                return ErrorResponse.build(Constants.CODE_ER013, java.util.Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
+            }
+        }
+
+        // 2. Kiểm tra tồn tại của Login ID (Trùng lặp) - ER003
+        if (request.getEmployeeLoginId() != null && !request.getEmployeeLoginId().isEmpty()) {
+            java.util.Optional<com.luvina.la.entity.Employee> existing = employeeRepository
+                    .findByEmployeeLoginId(request.getEmployeeLoginId());
+            if (existing.isPresent()) {
+                if (!isUpdate || !existing.get().getEmployeeId().equals(request.getEmployeeId())) {
+                    return ErrorResponse.build(Constants.CODE_ER003, java.util.Arrays.asList(Constants.PARAM_LOGIN_ID));
+                }
+            }
+        }
+
+        // 3. Kiểm tra tồn tại của Department ID - ER004
+        if (request.getDepartmentId() != null) {
+            if (!departmentRepository.existsById(request.getDepartmentId())) {
+                return ErrorResponse.build(Constants.CODE_ER004, java.util.Arrays.asList(Constants.PARAM_DEPARTMENT));
+            }
+        }
+
+        // 4. Kiểm tra tồn tại của Certification ID (nếu có chọn) - ER004
+        if (request.getCertificationId() != null) {
+            if (!certificationRepository.existsById(request.getCertificationId())) {
+                return ErrorResponse.build(Constants.CODE_ER004, java.util.Arrays.asList(Constants.PARAM_CERTIFICATION));
+            }
+        }
 
         return ErrorResponse.build(Constants.CODE_SUCCESS);
     }
