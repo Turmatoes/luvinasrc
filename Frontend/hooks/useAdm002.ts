@@ -9,10 +9,9 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { employeeApi } from '@/lib/api/employee.api';
 import { departmentApi } from '@/lib/api/department.api';
-import { EmployeeListResponse, DepartmentDTO } from '@/types/employee';
-import { SortDirection, SortKey } from '@/components/employees/EmployeeTable';
+import { EmployeeListResponse, DepartmentDTO, SortDirection, SortKey } from '@/types/employee';
 import { getMessage } from '@/lib/utils/messageHelper';
-import { LIMIT_PER_PAGE, MAX_EMPLOYEE_NAME_LENGTH, ERR_SYSTEM, CODE_ER006 } from '@/lib/constants/config';
+import { LIMIT_PER_PAGE, MAX_EMPLOYEE_NAME_LENGTH, ERR_SYSTEM, CODE_ER006, PARAM_NAME, PARAM_DEPT, PARAM_PAGE, PARAM_SORT_NAME, PARAM_SORT_CERT, PARAM_SORT_DATE } from '@/lib/constants/config';
 import { redirectToSystemError } from '@/lib/utils/errorHelper';
 import { LABELS } from '@/lib/constants/messages';
 
@@ -35,13 +34,13 @@ export function useAdm002() {
   // --- 1. Đọc trạng thái từ URL ---
   const urlParams = useMemo(() => {
     return {
-      employeeName: searchParams.get('name') || '',
-      departmentId: searchParams.get('dept') ? parseInt(searchParams.get('dept')!) : null,
-      currentPage: searchParams.get('page') ? parseInt(searchParams.get('page')!) : 1,
+      employeeName: searchParams.get(PARAM_NAME) || '',
+      departmentId: searchParams.get(PARAM_DEPT) ? parseInt(searchParams.get(PARAM_DEPT)!) : null,
+      currentPage: searchParams.get(PARAM_PAGE) ? parseInt(searchParams.get(PARAM_PAGE)!) : 1,
       sort: {
-        employeeName: (searchParams.get('sortName') as SortDirection) || DEFAULT_SORT.employeeName,
-        certificationName: (searchParams.get('sortCert') as SortDirection) || DEFAULT_SORT.certificationName,
-        certificationEndDate: (searchParams.get('sortDate') as SortDirection) || DEFAULT_SORT.certificationEndDate,
+        employeeName: (searchParams.get(PARAM_SORT_NAME) as SortDirection) || DEFAULT_SORT.employeeName,
+        certificationName: (searchParams.get(PARAM_SORT_CERT) as SortDirection) || DEFAULT_SORT.certificationName,
+        certificationEndDate: (searchParams.get(PARAM_SORT_DATE) as SortDirection) || DEFAULT_SORT.certificationEndDate,
       } as Record<SortKey, SortDirection>,
     };
   }, [searchParams]);
@@ -87,23 +86,23 @@ export function useAdm002() {
     const newParams = new URLSearchParams(searchParams.toString());
     
     if (params.name !== undefined) {
-      if (params.name) newParams.set('name', params.name);
-      else newParams.delete('name');
+      if (params.name) newParams.set(PARAM_NAME, params.name);
+      else newParams.delete(PARAM_NAME);
     }
     
     if (params.dept !== undefined) {
-      if (params.dept) newParams.set('dept', params.dept.toString());
-      else newParams.delete('dept');
+      if (params.dept) newParams.set(PARAM_DEPT, params.dept.toString());
+      else newParams.delete(PARAM_DEPT);
     }
 
     if (params.page !== undefined) {
-      newParams.set('page', params.page.toString());
+      newParams.set(PARAM_PAGE, params.page.toString());
     }
 
     if (params.sort !== undefined) {
-      newParams.set('sortName', params.sort.employeeName);
-      newParams.set('sortCert', params.sort.certificationName);
-      newParams.set('sortDate', params.sort.certificationEndDate);
+      newParams.set(PARAM_SORT_NAME, params.sort.employeeName);
+      newParams.set(PARAM_SORT_CERT, params.sort.certificationName);
+      newParams.set(PARAM_SORT_DATE, params.sort.certificationEndDate);
     }
 
     router.replace(`${pathname}?${newParams.toString()}`);

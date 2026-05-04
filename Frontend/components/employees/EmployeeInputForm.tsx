@@ -8,21 +8,7 @@
 import React, { useRef } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { DepartmentDTO, CertificationDTO, EmployeeFormValues } from '@/types/employee';
-import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
-
-interface EmployeeInputFormProps {
-  register: UseFormRegister<EmployeeFormValues>;
-  handleSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
-  errors: FieldErrors<EmployeeFormValues>;
-  setValue: UseFormSetValue<EmployeeFormValues>;
-  watch: UseFormWatch<EmployeeFormValues>;
-  departments: DepartmentDTO[];
-  certifications: CertificationDTO[];
-  isEditMode: boolean;
-  handleBack: () => void;
-  handleCertificationChange: (value: string) => void;
-}
+import { EmployeeInputFormProps, EmployeeFormValues } from '@/types/employee';
 
 /**
  * Component Form nhập liệu nhân viên (ADM004).

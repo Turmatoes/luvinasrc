@@ -17,7 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { createEmployeeSchema } from '@/lib/validation/employee';
 import { getStorageKey, getSessionData, setEmployeeToSession, clearSessionData } from '@/lib/utils/sessionStorage';
 import { redirectToSystemError } from '@/lib/utils/errorHelper';
-import { ERR_SYSTEM, ERR_SUCCESS, CODE_ER003, CODE_ER004, CODE_ER012 } from '@/lib/constants/config';
+import { ERR_SYSTEM, ERR_SUCCESS, CODE_ER003, CODE_ER004, CODE_ER012, PARAM_ID, PARAM_MODE, MODE_BACK } from '@/lib/constants/config';
 import { LABELS } from '@/lib/constants/messages';
 import { getAdm002ReturnUrl } from '@/lib/utils/queryHelper';
 
@@ -49,10 +49,10 @@ const DEFAULT_FORM_VALUES: EmployeeFormValues = {
 export function useAdm004() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const employeeId = searchParams.get('id');
-  const modeBack = searchParams.get('mode');
+  const employeeId = searchParams.get(PARAM_ID);
+  const modeBack = searchParams.get(PARAM_MODE);
   const isEditMode = !!employeeId;
-  const isBackFromADM005 = modeBack === 'back';
+  const isBackFromADM005 = modeBack === MODE_BACK;
 
   const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
   const [certifications, setCertifications] = useState<CertificationDTO[]>([]);
@@ -120,7 +120,7 @@ export function useAdm004() {
           clearSessionData(STORAGE_KEY);
 
           // Xóa mode=back khỏi URL để tránh F5 bị lặp lại logic back
-          const newUrl = employeeId ? `/employees/adm004?id=${employeeId}` : '/employees/adm004';
+          const newUrl = employeeId ? `/employees/adm004?${PARAM_ID}=${employeeId}` : '/employees/adm004';
           router.replace(newUrl);
         } else if (isEditMode) {
           // Trường hợp KHÔNG phải quay lại từ confirm và đang ở chế độ Chỉnh sửa (Edit): 
@@ -205,7 +205,7 @@ export function useAdm004() {
       setEmployeeToSession(STORAGE_KEY, payload);
       // Chuyển sang màn hình xác nhận, đính kèm ID (nếu có) và giữ các tham số tìm kiếm/sắp xếp
       const nextPath = employeeId
-        ? `/employees/adm005?id=${employeeId}&${searchParams.toString()}`
+        ? `/employees/adm005?${PARAM_ID}=${employeeId}&${searchParams.toString()}`
         : `/employees/adm005?${searchParams.toString()}`;
       router.push(nextPath);
     } catch (err) {
@@ -227,7 +227,7 @@ export function useAdm004() {
 
     if (isEditMode) {
       // Nếu đang chỉnh sửa: Quay lại màn hình Chi tiết nhân viên (ADM003) và giữ nguyên các tham số
-      router.push(`/employees/adm003?id=${employeeId}&${searchParams.toString()}`);
+      router.push(`/employees/adm003?${PARAM_ID}=${employeeId}&${searchParams.toString()}`);
     } else {
       // Nếu đang thêm mới: Quay lại màn hình Danh sách nhân viên (ADM002) và khôi phục trạng thái tìm kiếm
       router.push(getAdm002ReturnUrl(searchParams));

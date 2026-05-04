@@ -5,12 +5,7 @@
  */
 import React from 'react';
 
-interface EmployeeDetailFormProps {
-  employee: any;
-  handleEdit: () => void;
-  handleDelete: () => void;
-  handleBack: () => void;
-}
+import { EmployeeDetailFormProps } from '@/types/employee';
 
 /**
  * Component hiển thị form chi tiết nhân viên (ADM003).

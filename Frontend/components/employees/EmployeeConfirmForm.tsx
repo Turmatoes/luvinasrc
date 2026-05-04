@@ -5,13 +5,7 @@
  */
 
 import React from 'react';
-import { EmployeeFormValues } from '@/types/employee';
-
-interface EmployeeConfirmFormProps {
-  formData: EmployeeFormValues;
-  departments: Record<string, string>;
-  certifications: Record<string, string>;
-}
+import { EmployeeConfirmFormProps } from '@/types/employee';
 
 /**
  * Component hiển thị danh sách thông tin nhân viên để xác nhận (ADM005).
@@ -19,11 +13,11 @@ interface EmployeeConfirmFormProps {
  * @param departments - Đối tượng chứa thông tin phòng ban
  * @param certifications - Đối tượng chứa thông tin chứng chỉ
  */
-const EmployeeConfirmForm: React.FC<EmployeeConfirmFormProps> = ({
+export default function EmployeeConfirmForm({
   formData,
   departments,
   certifications,
-}) => {
+}: EmployeeConfirmFormProps) {
   return (
     <>
       <li className="form-group row d-flex">
@@ -81,6 +75,4 @@ const EmployeeConfirmForm: React.FC<EmployeeConfirmFormProps> = ({
       </li>
     </>
   );
-};
-
-export default EmployeeConfirmForm;
+}

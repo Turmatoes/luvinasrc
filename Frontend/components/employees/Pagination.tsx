@@ -5,12 +5,7 @@
  */
 'use client';
 
-interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  pageNumbers: (number | string)[];
-  onPageChange: (page: number) => void;
-}
+import { PaginationProps } from '@/types/employee';
 
 /**
  * Component hiển thị phân trang (Pure UI Component).

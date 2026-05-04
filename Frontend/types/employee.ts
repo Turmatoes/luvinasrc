@@ -3,6 +3,7 @@
  *
  * employee.ts, April 20, 2026 longnxp
  */
+import { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
 
 // Department DTO 
 export interface DepartmentDTO {
@@ -90,5 +91,60 @@ export interface EmployeeFormValues {
   certificationStartDate?: string;
   certificationEndDate?: string;
   score?: string;
+}
+
+// Props for Components
+export interface EmployeeConfirmFormProps {
+  formData: EmployeeFormValues;
+  departments: Record<string, string>;
+  certifications: Record<string, string>;
+}
+
+export interface EmployeeDetailFormProps {
+  employee: any;
+  handleEdit: () => void;
+  handleDelete: () => void;
+  handleBack: () => void;
+}
+
+export interface EmployeeInputFormProps {
+  register: UseFormRegister<EmployeeFormValues>;
+  handleSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
+  errors: FieldErrors<EmployeeFormValues>;
+  setValue: UseFormSetValue<EmployeeFormValues>;
+  watch: UseFormWatch<EmployeeFormValues>;
+  departments: DepartmentDTO[];
+  certifications: CertificationDTO[];
+  isEditMode: boolean;
+  handleBack: () => void;
+  handleCertificationChange: (value: string) => void;
+}
+
+export type SortDirection = 'asc' | 'desc';
+export type SortKey = 'employeeName' | 'certificationName' | 'certificationEndDate';
+
+export interface EmployeeTableProps {
+  data: EmployeeListResponse;
+  sort: Record<SortKey, SortDirection>;
+  onSort: (key: SortKey) => void;
+  currentQueryString?: string;
+}
+
+export interface SearchFormProps {
+  departments: DepartmentDTO[];
+  selectedDepartmentId: number | null;
+  employeeName: string;
+  employeeNameError: string | null;
+  onDepartmentChange: (departmentId: number | null) => void;
+  onEmployeeNameChange: (name: string) => void;
+  onSearch: (name: string, departmentId: number | null) => void;
+  currentQueryString?: string;
+}
+
+export interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  pageNumbers: (number | string)[];
+  onPageChange: (page: number) => void;
 }
 

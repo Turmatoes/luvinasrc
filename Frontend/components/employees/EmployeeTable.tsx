@@ -7,17 +7,7 @@
 
 import Link from 'next/link';
 import React from 'react';
-import { EmployeeListResponse } from '@/types/employee';
-
-export type SortDirection = 'asc' | 'desc';
-export type SortKey = 'employeeName' | 'certificationName' | 'certificationEndDate';
-
-interface Props {
-  data: EmployeeListResponse;
-  sort: Record<SortKey, SortDirection>;
-  onSort: (key: SortKey) => void;
-  currentQueryString?: string;
-}
+import { EmployeeTableProps, SortDirection, SortKey } from '@/types/employee';
 
 /**
  * Hàm hiển thị icon sắp xếp.
@@ -37,7 +27,7 @@ function sortIcon(direction: SortDirection) {
  * @param onSort Hàm xử lý khi sắp xếp
  * @returns Component hiển thị danh sách nhân viên
  */
-export default function EmployeeTable({ data, sort, onSort, currentQueryString }: Props) {
+export default function EmployeeTable({ data, sort, onSort, currentQueryString }: EmployeeTableProps) {
   return (
     <div className="row row-table">
       <div className="css-grid-table box-shadow">

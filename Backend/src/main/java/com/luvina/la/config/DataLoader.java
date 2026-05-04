@@ -111,7 +111,7 @@ public class DataLoader implements CommandLineRunner {
             admin.setEmployeeLoginId("admin");
             admin.setEmployeeLoginPassword(passwordEncoder.encode("123"));
             admin.setEmployeeName("Quản Trị Viên");
-            admin.setEmployeeNameKana("クアンチビエン");
+            admin.setEmployeeNameKana("ｸｱﾝﾁﾋﾞｴﾝ");
             admin.setEmployeeEmail("admin@luvina.net");
             admin.setDepartment(dept1);
             admin.setEmployeeBirthDate(LocalDate.of(1985, 3, 15));
@@ -121,37 +121,37 @@ public class DataLoader implements CommandLineRunner {
             // Tạo 30 nhân viên thường (role = 0, sẽ xuất hiện trong danh sách nhân viên)
             Employee[] employees = new Employee[30];
             String[][] empData = {
-                    { "emp001", "Nguyễn Thị Mai Hương", "グエンティマイフォン", "ntmhuong@luvina.net", "0914326386",
+                    { "emp001", "Nguyễn Thị Mai Hương", "ｸﾞｴﾝﾃｨﾏｲﾌｫﾝ", "ntmhuong@luvina.net", "0914326386",
                             "1983-07-08" },
-                    { "emp002", "Lê Thị Xoa", "レティソア", "xoalt@luvina.net", "0914326387", "1983-06-15" },
-                    { "emp003", "Đặng Thị Hân", "ダンティハン", "handt@luvina.net", "0914326388", "1985-05-20" },
-                    { "emp004", "Phạm Thanh Tâm", "ファムタインタム", "ptam@luvina.net", "0914326389", "1988-09-10" },
-                    { "emp005", "Trần Văn Hùng", "トランヴァンフン", "thung@luvina.net", "0914326390", "1987-02-14" },
-                    { "emp006", "Hoàng Minh Dũng", "ホアンミンズン", "mdung@luvina.net", "0914326391", "1990-11-25" },
-                    { "emp007", "Vũ Thanh Hương", "ブタインフォン", "thuong@luvina.net", "0914326392", "1986-04-08" },
-                    { "emp008", "Bùi Quốc Anh", "ブイクオックアン", "qanh@luvina.net", "0914326393", "1989-12-03" },
-                    { "emp009", "Phan Văn Tú", "ファンヴァンツ", "vtu@luvina.net", "0914326394", "1984-08-19" },
-                    { "emp010", "Cao Thanh Trí", "カオタインチ", "ttri@luvina.net", "0914326395", "1991-06-27" },
-                    { "emp011", "Dương Thị Linh", "ドゥオンティリン", "tlinh@luvina.net", "0914326396", "1988-01-12" },
-                    { "emp012", "Lý Minh Quân", "リミンクアン", "mquaan@luvina.net", "0914326397", "1987-10-05" },
-                    { "emp013", "Tạ Quỳnh Anh", "タクインアン", "qanhh@luvina.net", "0914326398", "1985-07-22" },
-                    { "emp014", "Ngô Thị Hương", "ゴティフォン", "thuong2@luvina.net", "0914326399", "1990-03-14" },
-                    { "emp015", "Đỗ Văn Khoa", "ドヴァンコア", "vkhoa@luvina.net", "0914326400", "1989-09-08" },
-                    { "emp016", "Hà Thị Bích", "ハティビック", "tbich@luvina.net", "0914326401", "1992-05-16" },
-                    { "emp017", "Đinh Văn Sơn", "ディンヴァンソン", "vson@luvina.net", "0914326402", "1986-12-30" },
-                    { "emp018", "Lâm Trọng Nghĩa", "ラムトロンニギア", "tnghia@luvina.net", "0914326403", "1988-11-18" },
-                    { "emp019", "Nông Thị Hồng", "ノンティホン", "thong@luvina.net", "0914326404", "1991-02-09" },
-                    { "emp020", "Võ Minh Đức", "ボミンドゥック", "mduc@luvina.net", "0914326405", "1989-07-26" },
-                    { "emp021", "Trần Hồng Nhạn", "トランホンニャン", "hnhan@luvina.net", "0914326406", "1984-11-03" },
-                    { "emp022", "Lê Thị Hương Giang", "レティフォンザン", "hgiang@luvina.net", "0914326407", "1992-09-14" },
-                    { "emp023", "Phạm Minh Châu", "ファムミンチャウ", "mchau@luvina.net", "0914326408", "1990-04-27" },
-                    { "emp024", "Nguyễn Văn Thắng", "グエンヴァンタン", "vthang@luvina.net", "0914326409", "1987-08-11" },
-                    { "emp025", "Đào Thị Thu Hà", "ダオティトゥハ", "thua@luvina.net", "0914326410", "1989-06-19" },
-                    { "emp026", "Hoàng Văn Quyết", "ホアンヴァンクエット", "vquyet@luvina.net", "0914326411", "1986-03-05" },
-                    { "emp027", "Bùi Thị Yên", "ブイティイェン", "tyen@luvina.net", "0914326412", "1991-10-22" },
-                    { "emp028", "Vũ Thị Thảo", "ブティタオ", "tthao@luvina.net", "0914326413", "1988-12-08" },
-                    { "emp029", "Lương Thị Hạnh", "ルオンティハイン", "thhanh@luvina.net", "0914326414", "1985-02-17" },
-                    { "emp030", "Tô Văn Mạnh", "トヴァンマイン", "vmanh@luvina.net", "0914326415", "1990-07-29" }
+                    { "emp002", "Lê Thị Xoa", "ﾚﾃｨｿｱ", "xoalt@luvina.net", "0914326387", "1983-06-15" },
+                    { "emp003", "Đặng Thị Hân", "ﾀﾞﾝﾃｨﾊﾝ", "handt@luvina.net", "0914326388", "1985-05-20" },
+                    { "emp004", "Phạm Thanh Tâm", "ﾌｧﾑﾀｲﾝﾀﾑ", "ptam@luvina.net", "0914326389", "1988-09-10" },
+                    { "emp005", "Trần Văn Hùng", "ﾄﾗﾝｳﾞｧﾝﾌﾝ", "thung@luvina.net", "0914326390", "1987-02-14" },
+                    { "emp006", "Hoàng Minh Dũng", "ﾎｱﾝﾐﾝｽﾞﾝ", "mdung@luvina.net", "0914326391", "1990-11-25" },
+                    { "emp007", "Vũ Thanh Hương", "ﾌﾞﾀｲﾝﾌｫﾝ", "thuong@luvina.net", "0914326392", "1986-04-08" },
+                    { "emp008", "Bùi Quốc Anh", "ﾌﾞｲｸｵｯｸｱﾝ", "qanh@luvina.net", "0914326393", "1989-12-03" },
+                    { "emp009", "Phan Văn Tú", "ﾌｧﾝｳﾞｧﾝﾂ", "vtu@luvina.net", "0914326394", "1984-08-19" },
+                    { "emp010", "Cao Thanh Trí", "ｶｵﾀｲﾝﾁ", "ttri@luvina.net", "0914326395", "1991-06-27" },
+                    { "emp011", "Dương Thị Linh", "ﾄﾞｩｵﾝﾃｨﾘﾝ", "tlinh@luvina.net", "0914326396", "1988-01-12" },
+                    { "emp012", "Lý Minh Quân", "ﾘﾐﾝｸｱﾝ", "mquaan@luvina.net", "0914326397", "1987-10-05" },
+                    { "emp013", "Tạ Quỳnh Anh", "ﾀｸｲﾝｱﾝ", "qanhh@luvina.net", "0914326398", "1985-07-22" },
+                    { "emp014", "Ngô Thị Hương", "ｺﾞﾃｨﾌｫﾝ", "thuong2@luvina.net", "0914326399", "1990-03-14" },
+                    { "emp015", "Đỗ Văn Khoa", "ﾄﾞｳﾞｧﾝｺｱ", "vkhoa@luvina.net", "0914326400", "1989-09-08" },
+                    { "emp016", "Hà Thị Bích", "ﾊﾃｨﾋﾞｯｸ", "tbich@luvina.net", "0914326401", "1992-05-16" },
+                    { "emp017", "Đinh Văn Sơn", "ﾃﾞｨﾝｳﾞｧﾝｿﾝ", "vson@luvina.net", "0914326402", "1986-12-30" },
+                    { "emp018", "Lâm Trọng Nghĩa", "ﾗﾑﾄﾛﾝﾆｷﾞｱ", "tnghia@luvina.net", "0914326403", "1988-11-18" },
+                    { "emp019", "Nông Thị Hồng", "ﾉﾝﾃｨﾎﾝ", "thong@luvina.net", "0914326404", "1991-02-09" },
+                    { "emp020", "Võ Minh Đức", "ﾎﾞﾐﾝﾄﾞｩｯｸ", "mduc@luvina.net", "0914326405", "1989-07-26" },
+                    { "emp021", "Trần Hồng Nhạn", "ﾄﾗﾝﾎﾝﾆｬﾝ", "hnhan@luvina.net", "0914326406", "1984-11-03" },
+                    { "emp022", "Lê Thị Hương Giang", "ﾚﾃｨﾌｫﾝｻﾞﾝ", "hgiang@luvina.net", "0914326407", "1992-09-14" },
+                    { "emp023", "Phạm Minh Châu", "ﾌｧﾑﾐﾝﾁｬｳ", "mchau@luvina.net", "0914326408", "1990-04-27" },
+                    { "emp024", "Nguyễn Văn Thắng", "ｸﾞｴﾝｳﾞｧﾝﾀﾝ", "vthang@luvina.net", "0914326409", "1987-08-11" },
+                    { "emp025", "Đào Thị Thu Hà", "ﾀﾞｵﾃｨﾄｩﾊ", "thua@luvina.net", "0914326410", "1989-06-19" },
+                    { "emp026", "Hoàng Văn Quyết", "ﾎｱﾝｳﾞｧﾝｸｴｯﾄ", "vquyet@luvina.net", "0914326411", "1986-03-05" },
+                    { "emp027", "Bùi Thị Yên", "ﾌﾞｲﾃｨｲｪﾝ", "tyen@luvina.net", "0914326412", "1991-10-22" },
+                    { "emp028", "Vũ Thị Thảo", "ﾌﾞﾃｨﾀｵ", "tthao@luvina.net", "0914326413", "1988-12-08" },
+                    { "emp029", "Lương Thị Hạnh", "ﾙｵﾝﾃｨﾊｲﾝ", "thhanh@luvina.net", "0914326414", "1985-02-17" },
+                    { "emp030", "Tô Văn Mạnh", "ﾄｳﾞｧﾝﾏｲﾝ", "vmanh@luvina.net", "0914326415", "1990-07-29" }
             };
 
             Department[] depts = { dept1, dept2, dept3, dept4 };
@@ -178,7 +178,7 @@ public class DataLoader implements CommandLineRunner {
             anhThu1.setEmployeeLoginId("anhthu01");
             anhThu1.setEmployeeLoginPassword(passwordEncoder.encode("123"));
             anhThu1.setEmployeeName("Nguyễn Anh Thứ");
-            anhThu1.setEmployeeNameKana("グエンアイントゥー");
+            anhThu1.setEmployeeNameKana("ｸﾞｴﾝｱｲﾝﾄｩｰ");
             anhThu1.setEmployeeEmail("anhthu01@luvina.net");
             anhThu1.setEmployeeTelephone("0915000001");
             anhThu1.setEmployeeBirthDate(LocalDate.of(1990, 1, 10));
@@ -190,7 +190,7 @@ public class DataLoader implements CommandLineRunner {
             anhThu2.setEmployeeLoginId("anhthu02");
             anhThu2.setEmployeeLoginPassword(passwordEncoder.encode("123"));
             anhThu2.setEmployeeName("Nguyễn Anh Thứ");
-            anhThu2.setEmployeeNameKana("グエンアイントゥー");
+            anhThu2.setEmployeeNameKana("ｸﾞｴﾝｱｲﾝﾄｩｰ");
             anhThu2.setEmployeeEmail("anhthu02@luvina.net");
             anhThu2.setEmployeeTelephone("0915000002");
             anhThu2.setEmployeeBirthDate(LocalDate.of(1990, 1, 10));
@@ -202,7 +202,7 @@ public class DataLoader implements CommandLineRunner {
             anhThu3.setEmployeeLoginId("anhthu03");
             anhThu3.setEmployeeLoginPassword(passwordEncoder.encode("123"));
             anhThu3.setEmployeeName("Nguyễn Anh Thứ");
-            anhThu3.setEmployeeNameKana("グエンアイントゥー");
+            anhThu3.setEmployeeNameKana("ｸﾞｴﾝｱｲﾝﾄｩｰ");
             anhThu3.setEmployeeEmail("anhthu03@luvina.net");
             anhThu3.setEmployeeTelephone("0915000003");
             anhThu3.setEmployeeBirthDate(LocalDate.of(1990, 1, 10));
@@ -214,7 +214,7 @@ public class DataLoader implements CommandLineRunner {
             anhThu4.setEmployeeLoginId("anhthu04");
             anhThu4.setEmployeeLoginPassword(passwordEncoder.encode("123"));
             anhThu4.setEmployeeName("Nguyễn Anh Thứ");
-            anhThu4.setEmployeeNameKana("グエンアイントゥー");
+            anhThu4.setEmployeeNameKana("ｸﾞｴﾝｱｲﾝﾄｩｰ");
             anhThu4.setEmployeeEmail("anhthu04@luvina.net");
             anhThu4.setEmployeeTelephone("0915000004");
             anhThu4.setEmployeeBirthDate(LocalDate.of(1990, 1, 10));

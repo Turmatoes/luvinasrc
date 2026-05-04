@@ -6,21 +6,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { DepartmentDTO } from '@/types/employee';
-
-/**
- * Interface cho props của SearchForm.
- */
-interface SearchFormProps {
-  departments: DepartmentDTO[];
-  selectedDepartmentId: number | null;
-  employeeName: string;
-  employeeNameError: string | null;
-  onDepartmentChange: (departmentId: number | null) => void;
-  onEmployeeNameChange: (name: string) => void;
-  onSearch: (name: string, departmentId: number | null) => void;
-  currentQueryString?: string;
-}
+import { SearchFormProps } from '@/types/employee';
 
 /**
  * Component hiển thị form tìm kiếm nhân viên.

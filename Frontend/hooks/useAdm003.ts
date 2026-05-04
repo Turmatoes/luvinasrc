@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { employeeApi } from '@/lib/api/employee.api';
 import { MESSAGES } from '@/lib/constants/messages';
 import { redirectToSystemError } from '@/lib/utils/errorHelper';
-import { ERR_SYSTEM, ERR_SUCCESS } from '@/lib/constants/config';
+import { ERR_SYSTEM, ERR_SUCCESS, PARAM_ID, PARAM_TYPE, MODE_DELETE } from '@/lib/constants/config';
 import { getAdm002ReturnUrl } from '@/lib/utils/queryHelper';
 
 /**
@@ -21,7 +21,7 @@ import { getAdm002ReturnUrl } from '@/lib/utils/queryHelper';
 export function useAdm003() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const id = searchParams.get('id');
+  const id = searchParams.get(PARAM_ID);
 
   const [employee, setEmployee] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -65,8 +65,7 @@ export function useAdm003() {
    * Điều hướng sang màn hình chỉnh sửa.
    */
   const handleEdit = () => {
-    // Điều hướng sang màn hình ADM004 kèm theo ID và giữ nguyên các tham số tìm kiếm/sắp xếp
-    router.push(`/employees/adm004?id=${id}&${searchParams.toString()}`);
+    router.push(`/employees/adm004?${PARAM_ID}=${id}&${searchParams.toString()}`);
   };
 
   /**
@@ -77,17 +76,13 @@ export function useAdm003() {
       setLoading(true);
       try {
         const res = await employeeApi.deleteEmployee(parseInt(id!));
-        if (res.code === ERR_SUCCESS || res.code === '200' || res.code === 200) {
-          // Thành công thì qua trang ADM006 (hoàn tất) với loại tác vụ là xóa
-          router.push('/employees/adm006?type=delete');
+        if (res.code === ERR_SUCCESS) {
+          router.push(`/employees/adm006?${PARAM_TYPE}=${MODE_DELETE}`);
         } else {
-          redirectToSystemError(res.message?.code || res.code);
+          redirectToSystemError(res.code);
         }
-      } catch (err: any) {
-        console.error('Lỗi khi xóa nhân viên:', err);
-        // Lấy ErrorResponse từ payload do axios ném ra (Http 500)
-        const errorCode = err?.response?.data?.message?.code || err?.response?.data?.code || ERR_SYSTEM;
-        redirectToSystemError(errorCode);
+      } catch (err) {
+        redirectToSystemError(ERR_SYSTEM);
       } finally {
         setLoading(false);
       }

@@ -7,6 +7,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { MESSAGES } from '@/lib/constants/messages';
+import { MODE_ADD, MODE_EDIT, MODE_DELETE, PARAM_TYPE } from '@/lib/constants/config';
 
 /**
  * Custom Hook useAdm006 quản lý logic cho màn hình Hoàn tất tác vụ (ADM006).
@@ -18,13 +19,13 @@ export function useAdm006() {
   const searchParams = useSearchParams();
   
   // Lấy loại tác vụ (add, edit, delete) từ query parameter
-  const type = searchParams.get('type');
+  const type = searchParams.get(PARAM_TYPE);
 
   // Xác định mã tin nhắn tương ứng với tác vụ
   let messageCode = 'MSG001'; // Mặc định là đăng ký (Add)
-  if (type === 'edit') {
+  if (type === MODE_EDIT) {
     messageCode = 'MSG002'; // Cập nhật (Edit)
-  } else if (type === 'delete') {
+  } else if (type === MODE_DELETE) {
     messageCode = 'MSG003'; // Xóa (Delete)
   }
 

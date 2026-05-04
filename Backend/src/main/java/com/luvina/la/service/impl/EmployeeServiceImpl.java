@@ -138,23 +138,23 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Object[] row = rows.get(0);
         // Mapping dữ liệu từ truy vấn native
-        EmployeeDTO dto = new EmployeeDTO();
-        dto.setEmployeeId(((Number) row[0]).longValue());
-        dto.setDepartmentId(((Number) row[1]).longValue());
-        dto.setDepartmentName((String) row[2]);
-        dto.setEmployeeName((String) row[3]);
-        dto.setEmployeeNameKana((String) row[4]);
-        dto.setEmployeeBirthDate(convertSqlDateToLocalDate(row[5]));
-        dto.setEmployeeEmail((String) row[6]);
-        dto.setEmployeeTelephone((String) row[7]);
-        dto.setEmployeeLoginId((String) row[8]);
-        dto.setCertificationId(row[9] != null ? ((Number) row[9]).longValue() : null);
-        dto.setCertificationName((String) row[10]);
-        dto.setCertificationStartDate(convertSqlDateToLocalDate(row[11]));
-        dto.setCertificationEndDate(convertSqlDateToLocalDate(row[12]));
-        dto.setScore(row[13] != null ? ((Number) row[13]).doubleValue() : null);
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setEmployeeId(((Number) row[0]).longValue());
+        employeeDTO.setDepartmentId(((Number) row[1]).longValue());
+        employeeDTO.setDepartmentName((String) row[2]);
+        employeeDTO.setEmployeeName((String) row[3]);
+        employeeDTO.setEmployeeNameKana((String) row[4]);
+        employeeDTO.setEmployeeBirthDate(convertSqlDateToLocalDate(row[5]));
+        employeeDTO.setEmployeeEmail((String) row[6]);
+        employeeDTO.setEmployeeTelephone((String) row[7]);
+        employeeDTO.setEmployeeLoginId((String) row[8]);
+        employeeDTO.setCertificationId(row[9] != null ? ((Number) row[9]).longValue() : null);
+        employeeDTO.setCertificationName((String) row[10]);
+        employeeDTO.setCertificationStartDate(convertSqlDateToLocalDate(row[11]));
+        employeeDTO.setCertificationEndDate(convertSqlDateToLocalDate(row[12]));
+        employeeDTO.setScore(row[13] != null ? ((Number) row[13]).doubleValue() : null);
 
-        return dto;
+        return employeeDTO;
     }
 
     /**
@@ -213,37 +213,40 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ErrorResponse addEmployee(EmployeeRequest request) {
+    public ErrorResponse addEmployee(EmployeeRequest employeeRequest) {
         try {
             // 1. Tạo entity Employee
             Employee employee = new Employee();
-            employee.setEmployeeName(request.getEmployeeName());
-            employee.setEmployeeNameKana(request.getEmployeeNameKana());
-            employee.setEmployeeEmail(request.getEmployeeEmail());
-            employee.setEmployeeTelephone(request.getEmployeeTelephone());
-            employee.setEmployeeLoginId(request.getEmployeeLoginId());
-            employee.setEmployeeLoginPassword(passwordEncoder.encode(request.getEmployeeLoginPassword()));
+            employee.setEmployeeName(employeeRequest.getEmployeeName());
+            employee.setEmployeeNameKana(employeeRequest.getEmployeeNameKana());
+            employee.setEmployeeEmail(employeeRequest.getEmployeeEmail());
+            employee.setEmployeeTelephone(employeeRequest.getEmployeeTelephone());
+            employee.setEmployeeLoginId(employeeRequest.getEmployeeLoginId());
+            employee.setEmployeeLoginPassword(passwordEncoder.encode(employeeRequest.getEmployeeLoginPassword()));
             employee.setRole(0); // Mặc định là nhân viên
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-            employee.setEmployeeBirthDate(LocalDate.parse(request.getEmployeeBirthDate(), formatter));
+            employee.setEmployeeBirthDate(LocalDate.parse(employeeRequest.getEmployeeBirthDate(), formatter));
 
-            Department dept = departmentRepository.findById(request.getDepartmentId()).orElse(null);
-            employee.setDepartment(dept);
+            Department department = departmentRepository.findById(employeeRequest.getDepartmentId()).orElse(null);
+            employee.setDepartment(department);
 
             // 2. Lưu Employee vào DB
             Employee addEmployee = employeeRepository.save(employee);
 
             // 3. Nếu có chứng chỉ, lưu vào bảng EmployeeCertification trong DB
-            if (request.getCertificationId() != null) {
-                Certification cert = certificationRepository.findById(request.getCertificationId()).orElse(null);
+            if (employeeRequest.getCertificationId() != null) {
+                Certification cert = certificationRepository.findById(employeeRequest.getCertificationId())
+                        .orElse(null);
                 if (cert != null) {
                     EmployeeCertification employeeCertification = new EmployeeCertification();
                     employeeCertification.setEmployee(addEmployee);
                     employeeCertification.setCertification(cert);
-                    employeeCertification.setStartDate(LocalDate.parse(request.getCertificationStartDate(), formatter));
-                    employeeCertification.setEndDate(LocalDate.parse(request.getCertificationEndDate(), formatter));
-                    employeeCertification.setScore(new BigDecimal(request.getScore()));
+                    employeeCertification
+                            .setStartDate(LocalDate.parse(employeeRequest.getCertificationStartDate(), formatter));
+                    employeeCertification
+                            .setEndDate(LocalDate.parse(employeeRequest.getCertificationEndDate(), formatter));
+                    employeeCertification.setScore(new BigDecimal(employeeRequest.getScore()));
                     employeeCertificationRepository.save(employeeCertification);
                 }
             }
@@ -268,54 +271,59 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ErrorResponse updateEmployee(EmployeeRequest request) {
+    public ErrorResponse updateEmployee(EmployeeRequest employeeRequest) {
         try {
-            Employee employee = employeeRepository.findById(request.getEmployeeId()).orElse(null);
+            Employee employee = employeeRepository.findById(employeeRequest.getEmployeeId()).orElse(null);
             if (employee == null) {
-                return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, request.getEmployeeId(), Constants.CODE_ER013,
+                return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, employeeRequest.getEmployeeId(),
+                        Constants.CODE_ER013,
                         Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
             }
 
             // Cập nhật thông tin cơ bản (không có Password)
-            employee.setEmployeeName(request.getEmployeeName());
-            employee.setEmployeeNameKana(request.getEmployeeNameKana());
-            employee.setEmployeeEmail(request.getEmployeeEmail());
-            employee.setEmployeeTelephone(request.getEmployeeTelephone());
-            employee.setEmployeeLoginId(request.getEmployeeLoginId());
+            employee.setEmployeeName(employeeRequest.getEmployeeName());
+            employee.setEmployeeNameKana(employeeRequest.getEmployeeNameKana());
+            employee.setEmployeeEmail(employeeRequest.getEmployeeEmail());
+            employee.setEmployeeTelephone(employeeRequest.getEmployeeTelephone());
+            employee.setEmployeeLoginId(employeeRequest.getEmployeeLoginId());
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-            employee.setEmployeeBirthDate(LocalDate.parse(request.getEmployeeBirthDate(), formatter));
+            employee.setEmployeeBirthDate(LocalDate.parse(employeeRequest.getEmployeeBirthDate(), formatter));
 
-            Department department = departmentRepository.findById(request.getDepartmentId()).orElse(null);
+            Department department = departmentRepository.findById(employeeRequest.getDepartmentId()).orElse(null);
             employee.setDepartment(department);
 
             employeeRepository.save(employee);
 
             // Cập nhật chứng chỉ tiếng Nhật
             // Xóa chứng chỉ cũ trước
-            employeeRepository.deleteCertificationsByEmployeeId(request.getEmployeeId());
+            employeeRepository.deleteCertificationsByEmployeeId(employeeRequest.getEmployeeId());
 
             // Thêm chứng chỉ mới nếu có trong request
-            if (request.getCertificationId() != null) {
-                Certification cert = certificationRepository.findById(request.getCertificationId()).orElse(null);
-                if (cert != null) {
+            if (employeeRequest.getCertificationId() != null) {
+                Certification certification = certificationRepository.findById(employeeRequest.getCertificationId())
+                        .orElse(null);
+                if (certification != null) {
                     EmployeeCertification employeeCertification = new EmployeeCertification();
                     employeeCertification.setEmployee(employee);
-                    employeeCertification.setCertification(cert);
-                    employeeCertification.setStartDate(LocalDate.parse(request.getCertificationStartDate(), formatter));
-                    employeeCertification.setEndDate(LocalDate.parse(request.getCertificationEndDate(), formatter));
-                    employeeCertification.setScore(new BigDecimal(request.getScore()));
+                    employeeCertification.setCertification(certification);
+                    employeeCertification
+                            .setStartDate(LocalDate.parse(employeeRequest.getCertificationStartDate(), formatter));
+                    employeeCertification
+                            .setEndDate(LocalDate.parse(employeeRequest.getCertificationEndDate(), formatter));
+                    employeeCertification.setScore(new BigDecimal(employeeRequest.getScore()));
                     employeeCertificationRepository.save(employeeCertification);
                 }
             }
 
-            return ErrorResponse.build(Constants.CODE_SUCCESS, request.getEmployeeId(), Constants.CODE_MSG002,
+            return ErrorResponse.build(Constants.CODE_SUCCESS, employeeRequest.getEmployeeId(), Constants.CODE_MSG002,
                     new java.util.ArrayList<>());
 
         } catch (Exception e) {
             // Nếu có lỗi thì Rollback transaction và trả về ER015
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, request.getEmployeeId(), Constants.CODE_ER015,
+            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, employeeRequest.getEmployeeId(),
+                    Constants.CODE_ER015,
                     new java.util.ArrayList<>());
         }
     }
@@ -368,18 +376,18 @@ public class EmployeeServiceImpl implements EmployeeService {
     /**
      * Chuyển đổi java.sql.Date sang java.time.LocalDate.
      * 
-     * @param obj Đối tượng cần chuyển đổi
+     * @param object Đối tượng cần chuyển đổi
      * @return LocalDate đã chuyển đổi
      */
-    private LocalDate convertSqlDateToLocalDate(Object obj) {
-        if (obj == null) {
+    private LocalDate convertSqlDateToLocalDate(Object object) {
+        if (object == null) {
             return null;
         }
-        if (obj instanceof Date) {
-            return ((Date) obj).toLocalDate();
+        if (object instanceof Date) {
+            return ((Date) object).toLocalDate();
         }
-        if (obj instanceof LocalDate) {
-            return (LocalDate) obj;
+        if (object instanceof LocalDate) {
+            return (LocalDate) object;
         }
         return null;
     }

@@ -15,7 +15,7 @@ import { employeeApi } from '@/lib/api/employee.api';
 import { departmentApi } from '@/lib/api/department.api';
 import { certificationApi } from '@/lib/api/certification.api';
 import { redirectToSystemError } from '@/lib/utils/errorHelper';
-import { ERR_SYSTEM, ERR_SUCCESS } from '@/lib/constants/config';
+import { ERR_SYSTEM, ERR_SUCCESS, MODE_ADD, MODE_EDIT, PARAM_ID, PARAM_TYPE, PARAM_MODE, MODE_BACK } from '@/lib/constants/config';
 
 // Key cho storage (phải match với ADM004)
 const STORAGE_KEY = getStorageKey('ADM004');
@@ -31,7 +31,7 @@ const STORAGE_KEY = getStorageKey('ADM004');
 export function useAdm005() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const id = searchParams.get('id');
+    const id = searchParams.get(PARAM_ID);
     const [formData, setFormData] = useState<EmployeeFormValues | null>(null);
     const [departments, setDepartments] = useState<{ [key: string]: string }>({});
     const [certifications, setCertifications] = useState<{ [key: string]: string }>({});
@@ -109,7 +109,7 @@ export function useAdm005() {
             // Xóa sessionStorage khi hoàn tất thành công và chuyển sang màn hình thông báo (ADM006)
             // Truyền type để ADM006 biết hiển thị thông báo "Đăng ký" hay "Cập nhật"
             clearSessionData(STORAGE_KEY);
-            const nextPath = `/employees/adm006?type=${id ? 'edit' : 'add'}`;
+            const nextPath = `/employees/adm006?${PARAM_TYPE}=${id ? MODE_EDIT : MODE_ADD}`;
             router.push(nextPath);
         } catch (err) {
             console.error('Lỗi khi lưu dữ liệu:', err);
@@ -126,7 +126,7 @@ export function useAdm005() {
     const handleBack = () => {
         // Không xóa session ở đây - để ADM004 đọc và xóa sau
         // Thêm mode=back để ADM004 biết là quay về từ ADM005, đính kèm ID và các tham số tìm kiếm
-        router.push(`/employees/adm004?mode=back${id ? '&id=' + id : ''}&${searchParams.toString()}`);
+        router.push(`/employees/adm004?${PARAM_MODE}=${MODE_BACK}${id ? '&' + PARAM_ID + '=' + id : ''}&${searchParams.toString()}`);
     };
 
     return {

@@ -40,3 +40,24 @@ export const CODE_ER014 = 'ER014';
 export const CODE_ER018 = 'ER018';
 export const CODE_ER019 = 'ER019';
 export const CODE_ER021 = 'ER021';
+
+// Các chế độ thực hiện tác vụ (ADM006)
+export const MODE_ADD = 'add';
+export const MODE_EDIT = 'edit';
+export const MODE_DELETE = 'delete';
+
+// Các tham số query string
+export const PARAM_ID = 'id';
+export const PARAM_MODE = 'mode';
+export const PARAM_TYPE = 'type';
+
+// Các tham số tìm kiếm và sắp xếp (ADM002)
+export const PARAM_NAME = 'name';
+export const PARAM_DEPT = 'dept';
+export const PARAM_PAGE = 'page';
+export const PARAM_SORT_NAME = 'sortName';
+export const PARAM_SORT_CERT = 'sortCert';
+export const PARAM_SORT_DATE = 'sortDate';
+
+// Các giá trị đặc biệt của tham số
+export const MODE_BACK = 'back';
