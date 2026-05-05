@@ -52,7 +52,8 @@ public class DataLoader implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        // Thực hiện xóa dữ liệu cũ để tránh xung đột hoặc lỗi phông chữ khi khởi tạo lại
+        // Thực hiện xóa dữ liệu cũ để tránh xung đột hoặc lỗi phông chữ khi khởi tạo
+        // lại
         // Sử dụng Native Query để TRUNCATE vì nó nhanh và reset cả AI (Auto Increment)
         entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE employees_certifications").executeUpdate();
@@ -73,7 +74,7 @@ public class DataLoader implements CommandLineRunner {
             dept2 = departmentRepository.save(dept2);
 
             Department dept3 = new Department();
-            dept3.setDepartmentName("Phòng Nhân Sự");
+            dept3.setDepartmentName("Phòng Nhân Sự Nhân Nhân Nhân Nhân Nhân ");
             dept3 = departmentRepository.save(dept3);
 
             Department dept4 = new Department();

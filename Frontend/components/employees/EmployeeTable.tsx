@@ -7,7 +7,22 @@
 
 import Link from 'next/link';
 import React from 'react';
-import { EmployeeTableProps, SortDirection, SortKey } from '@/types/employee';
+import { EmployeeTableProps, SortDirection } from '@/types/employee';
+
+/**
+ * Hàm hiển thị văn bản giới hạn độ dài và có tooltip.
+ * Giới hạn 20 ký tự, sau đó là dấu ...
+ * 
+ * @param text Văn bản cần hiển thị
+ * @returns React node hiển thị văn bản đã cắt kèm title làm tooltip
+ */
+const limitText = (text: string | null | undefined) => {
+  const content = text || '';
+  if (content.length <= 25) {
+    return <span>{content}</span>;
+  }
+  return <span title={content}>{content.substring(0, 25)}...</span>;
+};
 
 /**
  * Hàm hiển thị icon sắp xếp.
@@ -80,12 +95,12 @@ export default function EmployeeTable({ data, sort, onSort, currentQueryString }
                   {emp.employeeId}
                 </Link>
               </div>
-              <div>{emp.employeeName}</div>
+              <div>{limitText(emp.employeeName)}</div>
               <div>{emp.employeeBirthDate || ''}</div>
-              <div>{emp.departmentName || ''}</div>
-              <div>{emp.employeeEmail || ''}</div>
+              <div>{limitText(emp.departmentName)}</div>
+              <div>{limitText(emp.employeeEmail)}</div>
               <div>{emp.employeeTelephone || ''}</div>
-              <div>{emp.certificationName || ''}</div>
+              <div>{limitText(emp.certificationName)}</div>
               <div>{emp.certificationEndDate || ''}</div>
               <div>{emp.score ?? ''}</div>
             </React.Fragment>

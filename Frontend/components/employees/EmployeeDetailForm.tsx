@@ -4,7 +4,6 @@
  * EmployeeDetailForm.tsx, April 24, 2026 nxplong
  */
 import React from 'react';
-
 import { EmployeeDetailFormProps } from '@/types/employee';
 
 /**
@@ -59,7 +58,7 @@ export default function EmployeeDetailForm({
           <li className="title mt-12"><a href="#!">日本語能力</a></li>
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">資格</label>
-            <div className="col-sm col-sm-10">{employee.certificationName || ''}</div>
+            <div className="col-sm col-sm-10">{employee.certificationName}</div>
           </li>
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">資格交付日</label>

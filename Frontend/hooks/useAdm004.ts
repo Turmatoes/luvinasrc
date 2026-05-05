@@ -118,10 +118,6 @@ export function useAdm004() {
           }
           // Xóa session ngay sau khi dữ liệu được load thành công lên màn adm004
           clearSessionData(STORAGE_KEY);
-
-          // Xóa mode=back khỏi URL để tránh F5 bị lặp lại logic back
-          const newUrl = employeeId ? `/employees/adm004?${PARAM_ID}=${employeeId}` : '/employees/adm004';
-          router.replace(newUrl);
         } else if (isEditMode) {
           // Trường hợp KHÔNG phải quay lại từ confirm và đang ở chế độ Chỉnh sửa (Edit): 
           // Luôn fetch mới từ API (đúng logic "đẩy data từ DB lên")
