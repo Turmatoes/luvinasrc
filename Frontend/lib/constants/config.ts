@@ -40,6 +40,7 @@ export const CODE_ER014 = 'ER014';
 export const CODE_ER018 = 'ER018';
 export const CODE_ER019 = 'ER019';
 export const CODE_ER021 = 'ER021';
+export const CODE_ER022 = 'ER022';
 
 // Các chế độ thực hiện tác vụ (ADM006)
 export const MODE_ADD = 'add';
