@@ -24,6 +24,7 @@ import { getAdm002ReturnUrl } from '@/lib/utils/queryHelper';
 // Key cho storage
 const STORAGE_KEY = getStorageKey('ADM004');
 
+// Form dữ liệu trống mặc định cho màn adm004
 const DEFAULT_FORM_VALUES: EmployeeFormValues = {
   employeeLoginId: '',
   departmentId: '',
@@ -101,6 +102,7 @@ export function useAdm004() {
   /**
    * Logic khởi tạo màn hình (ADM004).
    * Hỗ trợ khôi phục từ session khi quay lại từ ADM005.
+   * Logic xử lý các trường hợp từ màn adm002, adm003 và adm005
    */
   useEffect(() => {
     const initialize = async () => {
@@ -108,7 +110,7 @@ export function useAdm004() {
       try {
         // Tải dữ liệu danh mục phòng ban và chứng chỉ
         await loadMasterData();
-        // 2. Xử lý logic khởi tạo dữ liệu Form
+        // Xử lý logic khởi tạo dữ liệu Form
         if (isBackFromADM005) {
           // Trường hợp quay lại từ màn hình xác nhận (ADM005 -> ADM004): 
           // Chỉ lúc này mới dùng dữ liệu từ session
@@ -162,6 +164,8 @@ export function useAdm004() {
 
     initialize();
   }, [employeeId, isEditMode, isBackFromADM005, reset]);
+
+  // --- Các hàm xử lý sự kiện (Actions) ---
 
   /**
    * Xử lý gửi form tới trang xác nhận (adm004 -> adm005)
@@ -222,9 +226,6 @@ export function useAdm004() {
    * Điều hướng người dùng về màn hình phù hợp tùy theo chế độ (Add/Edit).
    */
   const handleBack = () => {
-    // Xóa sạch dữ liệu tạm lưu trong session storage của màn hình ADM004
-    clearSessionData(STORAGE_KEY);
-    
     // Tạo đối tượng params từ searchParams hiện tại
     const params = new URLSearchParams(searchParams.toString());
     // Luôn xóa mode=back khi điều hướng thoát khỏi ADM004
