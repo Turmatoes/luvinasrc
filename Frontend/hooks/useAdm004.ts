@@ -220,10 +220,17 @@ export function useAdm004() {
   const handleBack = () => {
     // Xóa sạch dữ liệu tạm lưu trong session storage của màn hình ADM004
     clearSessionData(STORAGE_KEY);
+    
+    // Tạo đối tượng params từ searchParams hiện tại
+    const params = new URLSearchParams(searchParams.toString());
+    // Luôn xóa mode=back khi điều hướng thoát khỏi ADM004
+    params.delete(PARAM_MODE);
 
     if (isEditMode) {
-      // Nếu đang chỉnh sửa: Quay lại màn hình Chi tiết nhân viên (ADM003) và giữ nguyên các tham số
-      router.push(`/employees/adm003?${PARAM_ID}=${employeeId}&${searchParams.toString()}`);
+      // Nếu đang chỉnh sửa: Quay lại màn hình Chi tiết nhân viên (ADM003)
+      // Đảm bảo ID chỉ xuất hiện một lần và đã xóa mode=back
+      params.set(PARAM_ID, employeeId!);
+      router.push(`/employees/adm003?${params.toString()}`);
     } else {
       // Nếu đang thêm mới: Quay lại màn hình Danh sách nhân viên (ADM002) và khôi phục trạng thái tìm kiếm
       router.push(getAdm002ReturnUrl(searchParams));

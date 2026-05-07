@@ -74,7 +74,7 @@ public class DataLoader implements CommandLineRunner {
             dept2 = departmentRepository.save(dept2);
 
             Department dept3 = new Department();
-            dept3.setDepartmentName("Phòng Nhân Sự Nhân Nhân Nhân Nhân Nhân ");
+            dept3.setDepartmentName("Phòng Nhân Sự");
             dept3 = departmentRepository.save(dept3);
 
             Department dept4 = new Department();

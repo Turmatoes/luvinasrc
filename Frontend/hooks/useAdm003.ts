@@ -10,8 +10,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { employeeApi } from '@/lib/api/employee.api';
 import { MESSAGES } from '@/lib/constants/messages';
 import { redirectToSystemError } from '@/lib/utils/errorHelper';
-import { ERR_SYSTEM, ERR_SUCCESS, PARAM_ID, PARAM_TYPE, MODE_DELETE } from '@/lib/constants/config';
+import { ERR_SYSTEM, ERR_SUCCESS, PARAM_ID, PARAM_TYPE, MODE_DELETE, PARAM_MODE } from '@/lib/constants/config';
 import { getAdm002ReturnUrl } from '@/lib/utils/queryHelper';
+import { getStorageKey, clearSessionData } from '@/lib/utils/sessionStorage';
 
 /**
  * Custom Hook useAdm003 quản lý logic cho màn hình Chi tiết nhân viên.
@@ -65,7 +66,18 @@ export function useAdm003() {
    * Điều hướng sang màn hình chỉnh sửa.
    */
   const handleEdit = () => {
-    router.push(`/employees/adm004?${PARAM_ID}=${id}&${searchParams.toString()}`);
+    // Xóa sạch dữ liệu tạm lưu trong session storage trước khi vào màn hình chỉnh sửa mới
+    // Điều này đảm bảo khi nhấn "編集" từ ADM003, ADM004 sẽ luôn lấy dữ liệu mới nhất từ API
+    clearSessionData(getStorageKey('ADM004'));
+
+    // Tạo đối tượng params từ searchParams hiện tại để giữ các tham số tìm kiếm/sắp xếp
+    const params = new URLSearchParams(searchParams.toString());
+    // Đảm bảo ID chỉ xuất hiện một lần
+    params.set(PARAM_ID, id!);
+    // Xóa tham số mode (đặc biệt là mode=back) để ADM004 biết cần fetch lại dữ liệu từ API
+    params.delete(PARAM_MODE);
+    
+    router.push(`/employees/adm004?${params.toString()}`);
   };
 
   /**
