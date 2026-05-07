@@ -199,11 +199,15 @@ export function useAdm004() {
 
       // Nếu Validate OK (Nút 確認) -> Lưu session và chuyển trang
       setEmployeeToSession(STORAGE_KEY, payload);
-      // Chuyển sang màn hình xác nhận, đính kèm ID (nếu có) và giữ các tham số tìm kiếm/sắp xếp
-      const nextPath = employeeId
-        ? `/employees/adm005?${PARAM_ID}=${employeeId}&${searchParams.toString()}`
-        : `/employees/adm005?${searchParams.toString()}`;
-      router.push(nextPath);
+      // Chuyển sang màn hình xác nhận
+      const params = new URLSearchParams(searchParams.toString());
+      if (employeeId) {
+        params.set(PARAM_ID, employeeId);
+      }
+      // Xóa mode=back nếu có (vì đây là chiều đi tới ADM005)
+      params.delete(PARAM_MODE);
+
+      router.push(`/employees/adm005?${params.toString()}`);
     } catch (err) {
       console.error('Lỗi validate:', err);
       // Redirect sang màn hình system_error với mã lỗi ER014

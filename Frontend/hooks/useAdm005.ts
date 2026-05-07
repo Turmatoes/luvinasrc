@@ -125,8 +125,15 @@ export function useAdm005() {
      */
     const handleBack = () => {
         // Không xóa session ở đây - để ADM004 đọc và xóa sau
-        // Thêm mode=back để ADM004 biết là quay về từ ADM005, đính kèm ID và các tham số tìm kiếm
-        router.push(`/employees/adm004?${PARAM_MODE}=${MODE_BACK}${id ? '&' + PARAM_ID + '=' + id : ''}&${searchParams.toString()}`);
+        const params = new URLSearchParams(searchParams.toString());
+        // Thêm mode=back để ADM004 biết là quay về từ ADM005
+        params.set(PARAM_MODE, MODE_BACK);
+        // Đảm bảo ID được set đúng (nếu có)
+        if (id) {
+            params.set(PARAM_ID, id);
+        }
+        
+        router.push(`/employees/adm004?${params.toString()}`);
     };
 
     return {
