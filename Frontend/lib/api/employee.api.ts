@@ -4,8 +4,7 @@
  * employee.api.ts, April 13, 2026 nxplong
  */
 import { apiClient } from './client';
-import { EmployeeListResponse, EmployeeFormValues } from '@/types/employee';
-import { SortDirection } from '@/components/employees/EmployeeTable';
+import { EmployeeListResponse, EmployeeFormValues, SortDirection } from '@/types/employee';
 
 /**
  * Tham số truy vấn cho API danh sách nhân viên.
@@ -40,6 +39,9 @@ export const employeeApi = {
 
   /**
    * Lấy chi tiết một nhân viên.
+   * 
+   * @param id ID nhân viên
+   * @returns Promise chứa thông tin chi tiết nhân viên
    */
   getEmployeeDetail: async (id: number): Promise<any> => {
     const response = await apiClient.get(`/employees/${id}`);
@@ -48,6 +50,9 @@ export const employeeApi = {
 
   /**
    * Validate dữ liệu nhân viên.
+   * 
+   * @param data Dữ liệu nhân viên
+   * @returns Promise chứa thông tin lỗi
    */
   validateEmployee: async (data: EmployeeFormValues): Promise<any> => {
     const { employeeLoginPasswordConfirm, ...rest } = data;
@@ -57,6 +62,9 @@ export const employeeApi = {
 
   /**
    * Thêm mới nhân viên.
+   * 
+   * @param data Dữ liệu nhân viên
+   * @returns Promise chứa thông tin lỗi
    */
   addEmployee: async (data: EmployeeFormValues): Promise<any> => {
     const { employeeLoginPasswordConfirm, ...rest } = data;
@@ -66,6 +74,10 @@ export const employeeApi = {
 
   /**
    * Cập nhật nhân viên
+   * 
+   * @param id ID nhân viên
+   * @param data Dữ liệu nhân viên
+   * @returns Promise chứa thông tin lỗi
    */
   updateEmployee: async (id: number, data: EmployeeFormValues): Promise<any> => {
     const { employeeLoginPasswordConfirm, ...rest } = data;
@@ -75,6 +87,9 @@ export const employeeApi = {
 
   /**
    * Xóa nhân viên.
+   * 
+   * @param id ID nhân viên
+   * @returns Promise chứa thông tin lỗi
    */
   deleteEmployee: async (id: number): Promise<any> => {
     const response = await apiClient.delete(`/employees/${id}`);
