@@ -225,7 +225,7 @@ export default function EmployeeInputForm({
           {!isEditMode && (
             <li className="form-group row d-flex">
               <label className="col-form-label col-sm-2">
-                <i className="relative">パスワード（確認）:</i>
+                <i className="relative">パスワード（確認）:<span className="note-red">*</span></i>
               </label>
               <div className="col-sm col-sm-10">
                 <input
@@ -311,7 +311,7 @@ export default function EmployeeInputForm({
           {/* 点数 */}
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
-              <i className="relative">点数:</i>
+              <i className="relative">点数:<span className="note-red">*</span></i>
             </label>
             <div className="col-sm col-sm-10">
               <input
