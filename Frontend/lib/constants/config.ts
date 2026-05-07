@@ -11,7 +11,8 @@ export const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 phút tính bằng ms
 
 // Độ dài các trường
 export const MAX_LOGIN_ID_LENGTH = 50;
-export const MAX_EMPLOYEE_NAME_LENGTH = 100;
+export const MAX_EMPLOYEE_NAME_LENGTH = 125;
+export const MAX_EMPLOYEE_NAME_KANA_LENGTH = 125;
 export const MAX_EMAIL_LENGTH = 100;
 export const MAX_TELEPHONE_LENGTH = 50;
 export const MIN_PASSWORD_LENGTH = 8;

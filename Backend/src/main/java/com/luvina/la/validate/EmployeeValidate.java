@@ -519,6 +519,9 @@ public class EmployeeValidate {
             // Check [score] format (ER018)
         } else if (!isHalfsizeNumber(request.getScore())) {
             return ErrorResponse.build(Constants.CODE_ER018, Arrays.asList(Constants.PARAM_SCORE));
+            // Check [score] length (ER006)
+        } else if (request.getScore().length() > 3) {
+            return ErrorResponse.build(Constants.CODE_ER006, Arrays.asList(Constants.PARAM_SCORE, "3"));
         } else {
             // Check [certification_end_date] after [certification_start_date] (ER012)
             DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy/MM/dd");

@@ -9,6 +9,7 @@ import { LABELS } from '../constants/messages';
 import {
   MAX_LOGIN_ID_LENGTH,
   MAX_EMPLOYEE_NAME_LENGTH,
+  MAX_EMPLOYEE_NAME_KANA_LENGTH,
   MAX_EMAIL_LENGTH,
   MAX_TELEPHONE_LENGTH,
   MIN_PASSWORD_LENGTH,
@@ -54,7 +55,7 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
 
     employeeNameKana: z.string()
       .min(1, getMessage(CODE_ER001, [LABELS.KANA_NAME]))
-      .max(MAX_EMPLOYEE_NAME_LENGTH, getMessage(CODE_ER006, [LABELS.KANA_NAME, String(MAX_EMPLOYEE_NAME_LENGTH)]))
+      .max(MAX_EMPLOYEE_NAME_KANA_LENGTH, getMessage(CODE_ER006, [LABELS.KANA_NAME, String(MAX_EMPLOYEE_NAME_KANA_LENGTH)]))
       .regex(KATAKANA_REGEX, getMessage(CODE_ER009, [LABELS.KANA_NAME])),
 
     employeeBirthDate: z.string()
@@ -98,9 +99,13 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
     }),
     certificationStartDate: z.string().optional(),
     certificationEndDate: z.string().optional(),
-    score: z.string().optional().refine(val => !val || NUMERIC_REGEX.test(val), {
-      message: getMessage(CODE_ER018, [LABELS.SCORE]),
-    }),
+    score: z.string().optional()
+      .refine(val => !val || NUMERIC_REGEX.test(val), {
+        message: getMessage(CODE_ER018, [LABELS.SCORE]),
+      })
+      .refine(val => !val || val.length <= 3, {
+        message: getMessage(CODE_ER006, [LABELS.SCORE, '3']),
+      }),
   }).superRefine((data, ctx) => {
     // 1. Kiểm tra xác nhận mật khẩu
     // Trường hợp Add mode: Bắt buộc nhập confirm nếu có password
