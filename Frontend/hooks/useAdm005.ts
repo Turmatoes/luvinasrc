@@ -68,13 +68,13 @@ export function useAdm005() {
                 if (employeeData) {
                     setFormData(employeeData);
                 } else {
-                    // Nếu không có dữ liệu, quay lại màn hình nhập liệu
-                    router.push('/employees/adm004');
+                    // Nếu không có dữ liệu (truy cập trực tiếp qua URL), chuyển đến màn hình System Error
+                    redirectToSystemError(ERR_SYSTEM);
                 }
             } catch (err) {
                 console.error('Lỗi khởi tạo ADM005:', err);
-                // redirect lại màn hình adm004 nếu có lỗi xảy ra
-                router.push('/employees/adm004');
+                // Redirect sang màn hình System Error nếu có lỗi xảy ra
+                redirectToSystemError(ERR_SYSTEM);
             } finally {
                 setLoading(false);
             }
@@ -132,7 +132,7 @@ export function useAdm005() {
         if (id) {
             params.set(PARAM_ID, id);
         }
-        
+
         router.push(`/employees/adm004?${params.toString()}`);
     };
 
