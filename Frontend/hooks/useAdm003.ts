@@ -1,7 +1,7 @@
 /*
  * Copyright(C) 2010 Luvina Software Company
  *
- * useAdm003.ts, April 20, 2026 nxplong
+ * useAdm003.ts, May 08, 2026 nxplong
  */
 'use client';
 
@@ -15,9 +15,7 @@ import { getAdm002ReturnUrl } from '@/lib/utils/queryHelper';
 import { getStorageKey, clearSessionData } from '@/lib/utils/sessionStorage';
 
 /**
- * Custom Hook useAdm003 quản lý logic cho màn hình Chi tiết nhân viên.
- * 
- * @returns Object chứa dữ liệu nhân viên, trạng thái loading và các hàm điều hướng
+ * Custom Hook useAdm003 quản lý logic cho màn hình Chi tiết nhân viên (ADM003).
  */
 export function useAdm003() {
   const router = useRouter();
@@ -28,12 +26,17 @@ export function useAdm003() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // ---------------------------------------------------------
+  // 4.1 HIỂN THỊ BAN ĐẦU
+  // ---------------------------------------------------------
+  
   /**
-   * Tải thông tin chi tiết nhân viên từ Backend.
+   * Kiểm tra ID và tải thông tin chi tiết nhân viên từ Backend.
    */
   const fetchDetail = useCallback(async () => {
-    if (!id) {
-      // Redirect sang màn hình system_error với mã lỗi ER013
+    // Kiểm tra xem ID có hợp lệ không (dạng số)
+    if (!id || isNaN(Number(id))) {
+      // Nếu ko có hoặc ko hợp lệ redirect sang màn hình system error
       redirectToSystemError(ERR_SYSTEM);
       return;
     }
@@ -43,11 +46,10 @@ export function useAdm003() {
       const res = await employeeApi.getEmployeeDetail(parseInt(id));
 
       if (res.code === ERR_SUCCESS) {
-        // res lúc này là EmployeeDetailResponse, chứa employeeDTO
+        // TH API trả về 200: Binding data employee vào các hạng mục
         setEmployee(res.employeeDTO);
       } else {
-        // Xử lý lỗi từ Backend (ER013, ER023...)
-        // Redirect sang màn hình system_error với mã lỗi tương ứng
+        // TH API trả về lỗi hoặc ko tồn tại data: Di chuyển sang màn hình system error
         redirectToSystemError(res.code);
       }
     } catch (err) {
@@ -62,35 +64,56 @@ export function useAdm003() {
     fetchDetail();
   }, [fetchDetail]);
 
+  // ---------------------------------------------------------
+  // 4.2 ACTION CANCEL (Nút Back)
+  // ---------------------------------------------------------
+  
   /**
-   * Điều hướng sang màn hình chỉnh sửa.
+   * Quay lại màn hình danh sách ADM002, giữ nguyên trạng thái tìm kiếm/phân trang.
+   */
+  const handleBack = () => {
+    router.push(getAdm002ReturnUrl(searchParams));
+  };
+
+  // ---------------------------------------------------------
+  // 4.3 ACTION EDIT
+  // ---------------------------------------------------------
+
+  /**
+   * Chuyển sang màn hình chỉnh sửa ADM004.
    */
   const handleEdit = () => {
-    // Xóa sạch dữ liệu tạm lưu trong session storage trước khi vào màn hình chỉnh sửa mới
-    // Điều này đảm bảo khi nhấn "編集" từ ADM003, ADM004 sẽ luôn lấy dữ liệu mới nhất từ API
+    // Xóa sạch dữ liệu tạm lưu trước khi vào màn hình chỉnh sửa
     clearSessionData(getStorageKey('ADM004'));
 
-    // Tạo đối tượng params từ searchParams hiện tại để giữ các tham số tìm kiếm/sắp xếp
     const params = new URLSearchParams(searchParams.toString());
-    // Đảm bảo ID chỉ xuất hiện một lần
     params.set(PARAM_ID, id!);
-    // Xóa tham số mode (đặc biệt là mode=back) để ADM004 biết cần fetch lại dữ liệu từ API
-    params.delete(PARAM_MODE);
+    params.delete(PARAM_MODE); // Xóa mode để ADM004 fetch lại data mới nhất
     
+    // Di chuyển sang MH ADM004 gửi kèm ID tương ứng qua router
     router.push(`/employees/adm004?${params.toString()}`);
   };
+
+  // ---------------------------------------------------------
+  // 4.4 ACTION DELETE
+  // ---------------------------------------------------------
 
   /**
    * Xử lý xóa nhân viên.
    */
   const handleDelete = async () => {
+    // Hiển thị message confirm MSG004
     if (window.confirm(MESSAGES.MSG004)) {
       setLoading(true);
       try {
+        // Gọi API để xóa data nhân viên trong database
         const res = await employeeApi.deleteEmployee(parseInt(id!));
+        
         if (res.code === ERR_SUCCESS) {
+          // TH API trả về thành công: Di chuyển sang MH complete (ADM006)
           router.push(`/employees/adm006?${PARAM_TYPE}=${MODE_DELETE}`);
         } else {
+          // TH API trả về lỗi: Hiển thị ở vùng thông báo lỗi hoặc system error tùy mã trả về
           redirectToSystemError(res.code);
         }
       } catch (err) {
@@ -99,14 +122,6 @@ export function useAdm003() {
         setLoading(false);
       }
     }
-  };
-
-  /**
-   * Quay lại màn hình danh sách.
-   */
-  const handleBack = () => {
-    // Quay lại màn hình danh sách và giữ nguyên trạng thái tìm kiếm/sắp xếp
-    router.push(getAdm002ReturnUrl(searchParams));
   };
 
   return {

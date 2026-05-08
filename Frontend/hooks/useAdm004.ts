@@ -1,7 +1,7 @@
 /*
  * Copyright(C) 2010 Luvina Software Company
  *
- * useAdm004.ts, April 20, 2026 nxplong
+ * useAdm004.ts, May 08, 2026 nxplong
  */
 'use client';
 
@@ -21,10 +21,10 @@ import { ERR_SYSTEM, ERR_SUCCESS, CODE_ER003, CODE_ER004, CODE_ER012, PARAM_ID, 
 import { LABELS } from '@/lib/constants/messages';
 import { getAdm002ReturnUrl } from '@/lib/utils/queryHelper';
 
-// Key cho storage
+// Key cho storage lưu tạm dữ liệu khi di chuyển giữa các màn hình (ADM004 <-> ADM005)
 const STORAGE_KEY = getStorageKey('ADM004');
 
-// Form dữ liệu trống mặc định cho màn adm004
+// Giá trị mặc định cho form
 const DEFAULT_FORM_VALUES: EmployeeFormValues = {
   employeeLoginId: '',
   departmentId: '',
@@ -42,26 +42,24 @@ const DEFAULT_FORM_VALUES: EmployeeFormValues = {
 };
 
 /**
- * Custom Hook useAdm004 quản lý logic cho màn hình Nhập liệu nhân viên (Add/Edit).
- * Tích hợp React Hook Form, Zod và sessionStorage.
- * 
- * @returns Object chứa các trạng thái và hàm xử lý form
+ * Custom Hook useAdm004 quản lý logic cho màn hình Nhập liệu nhân viên (ADM004).
  */
 export function useAdm004() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const employeeId = searchParams.get(PARAM_ID);
   const modeBack = searchParams.get(PARAM_MODE);
+
+  // Xác định MH là Edit hay Add dựa trên ID trong router (5.1)
   const isEditMode = !!employeeId;
   const isBackFromADM005 = modeBack === MODE_BACK;
 
   const [departments, setDepartments] = useState<DepartmentDTO[]>([]);
   const [certifications, setCertifications] = useState<CertificationDTO[]>([]);
   const [loading, setLoading] = useState(false);
-
   const [initialized, setInitialized] = useState(false);
 
-  // Khởi tạo React Hook Form
+  // Khởi tạo React Hook Form với Zod (Xử lý tương tác và validate tức thì - 5.2)
   const {
     register,
     handleSubmit,
@@ -73,13 +71,106 @@ export function useAdm004() {
   } = useForm<EmployeeFormValues>({
     resolver: zodResolver(createEmployeeSchema(isEditMode)),
     defaultValues: DEFAULT_FORM_VALUES,
+    mode: 'onChange', // Thực hiện validate ngay khi user tương tác (5.2)
   });
 
+  // ---------------------------------------------------------
+  // 5.1 HIỂN THỊ BAN ĐẦU
+  // ---------------------------------------------------------
+
   /**
-   * Xử lý khi thay đổi chứng chỉ.
-   * Nếu người dùng bỏ chọn chứng chỉ, xóa giá trị các trường liên quan.
+   * Tải dữ liệu danh mục phòng ban và chứng chỉ để binding vào các dropdown list.
+   */
+  const loadMasterData = async () => {
+    try {
+      const [depts, certs] = await Promise.all([
+        departmentApi.getDepartments(),
+        certificationApi.getCertifications(),
+      ]);
+      setDepartments(depts);
+      setCertifications(certs);
+    } catch (err) {
+      console.error('Lỗi tải Master Data:', err);
+      // TH API trả về lỗi: Hiển thị thông báo lỗi lên MH
+    }
+  };
+
+  /**
+   * Khởi tạo dữ liệu Form theo các luồng nghiệp vụ.
+   */
+  const initializeFormData = useCallback(async () => {
+    // Trường hợp 1: Không phải từ MH confirm quay về (Lần đầu vào MH)
+    if (!isBackFromADM005) {
+      if (isEditMode) {
+        // Nếu là mode edit: Gọi API get employee tương ứng với ID
+        const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId!));
+        if (detail.code === ERR_SUCCESS) {
+          const dto = detail.employeeDTO;
+          const formattedDetail: EmployeeFormValues = {
+            employeeName: dto.employeeName,
+            employeeNameKana: dto.employeeNameKana,
+            employeeBirthDate: dto.employeeBirthDate ? dto.employeeBirthDate.replace(/-/g, '/') : '',
+            employeeEmail: dto.employeeEmail,
+            employeeTelephone: dto.employeeTelephone,
+            employeeLoginId: dto.employeeLoginId,
+            employeeLoginPassword: '', // Edit hiển thị ban đầu ko yêu cầu nhập password (5.2)
+            employeeLoginPasswordConfirm: '',
+            departmentId: dto.departmentId ? dto.departmentId.toString() : '',
+            certificationId: dto.certificationId ? dto.certificationId.toString() : '',
+            certificationStartDate: dto.certificationStartDate ? dto.certificationStartDate.replace(/-/g, '/') : '',
+            certificationEndDate: dto.certificationEndDate ? dto.certificationEndDate.replace(/-/g, '/') : '',
+            score: dto.score ? dto.score.toString() : '',
+          };
+          reset(formattedDetail);
+        } else {
+          // TH API trả về lỗi hoặc ko tồn tại data: Di chuyển sang MH system error
+          redirectToSystemError(detail.code);
+        }
+      } else {
+        // Nếu là mode add: Để rỗng các hạng mục nhập trên MH
+        reset(DEFAULT_FORM_VALUES);
+      }
+    }
+    // Trường hợp 2: Từ MH confirm quay về (Nhấn nút "Quay lại" tại ADM005)
+    else {
+      // Lấy data từ MH confirm trả lại (qua session), binding lên các hạng mục nhập
+      const savedData = getSessionData(STORAGE_KEY);
+      if (savedData) {
+        reset(savedData);
+      }
+      clearSessionData(STORAGE_KEY);
+    }
+  }, [isEditMode, isBackFromADM005, employeeId, reset]);
+
+  useEffect(() => {
+    const initialize = async () => {
+      setLoading(true);
+      try {
+        // Tải dữ liệu danh mục phòng ban và chứng chỉ
+        await loadMasterData();
+        // Khởi tạo dữ liệu cho MH ADM004
+        await initializeFormData();
+        setInitialized(true);
+      } catch (err) {
+        // TH API trả về lỗi: Di chuyển sang MH system error
+        redirectToSystemError(ERR_SYSTEM);
+      } finally {
+        setLoading(false);
+      }
+    };
+    initialize();
+  }, [initializeFormData]);
+
+  // ---------------------------------------------------------
+  // 5.2 TƯƠNG TÁC VỚI CÁC HẠNG MỤC NHẬP
+  // ---------------------------------------------------------
+
+  /**
+   * Xử lý chứng chỉ tiếng Nhật (Enable/Disable các trường liên quan).
    */
   const handleCertificationChange = (value: string) => {
+    // Khi dropdown tên loại chứng chỉ thay đổi từ có giá trị về rỗng: 
+    // Disable và clear data 3 hạng mục ngày, điểm (thực hiện qua UI binding)
     if (!value) {
       setValue('certificationStartDate', '');
       setValue('certificationEndDate', '');
@@ -87,183 +178,79 @@ export function useAdm004() {
     }
   };
 
-  /**
-   * Tải dữ liệu danh mục phòng ban và chứng chỉ
-   */
-  const loadMasterData = async () => {
-    const [depts, certs] = await Promise.all([
-      departmentApi.getDepartments(),
-      certificationApi.getCertifications(),
-    ]);
-    setDepartments(depts);
-    setCertifications(certs);
-  };
+  // ---------------------------------------------------------
+  // 5.3 ACTION CANCEL (Nút 戻る)
+  // ---------------------------------------------------------
 
-  /**
-   * Hàm helper để khởi tạo dữ liệu cho Form dựa trên luồng di chuyển của người dùng.
-   * Tách ra ngoài để useEffect ngắn gọn và dễ theo dõi theo requirement.
-   */
-  const initializeFormData = useCallback(async () => {
-    // Luồng 1: Từ màn hình Danh sách (ADM002) sang màn hình Thêm mới (ADM004)
-    // Đặc điểm: Không ở chế độ Edit và không phải quay lại từ màn hình xác nhận
-    if (!isEditMode && !isBackFromADM005) {
-      reset(DEFAULT_FORM_VALUES);
-    } 
-    
-    // Luồng 2: Từ màn hình Chi tiết (ADM003) sang màn hình Chỉnh sửa (ADM004)
-    // Đặc điểm: Đang ở chế độ Edit và không phải quay lại từ màn hình xác nhận
-    else if (isEditMode && !isBackFromADM005) {
-      const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId!));
-      if (detail.code === ERR_SUCCESS) {
-        const dto = detail.employeeDTO;
-        const formattedDetail: EmployeeFormValues = {
-          employeeName: dto.employeeName,
-          employeeNameKana: dto.employeeNameKana,
-          employeeBirthDate: dto.employeeBirthDate ? dto.employeeBirthDate.replace(/-/g, '/') : '',
-          employeeEmail: dto.employeeEmail,
-          employeeTelephone: dto.employeeTelephone,
-          employeeLoginId: dto.employeeLoginId,
-          employeeLoginPassword: '',
-          employeeLoginPasswordConfirm: '',
-          departmentId: dto.departmentId ? dto.departmentId.toString() : '',
-          certificationId: dto.certificationId ? dto.certificationId.toString() : '',
-          certificationStartDate: dto.certificationStartDate ? dto.certificationStartDate.replace(/-/g, '/') : '',
-          certificationEndDate: dto.certificationEndDate ? dto.certificationEndDate.replace(/-/g, '/') : '',
-          score: dto.score ? dto.score.toString() : '',
-        };
-        reset(formattedDetail);
-      } else {
-        redirectToSystemError(detail.code);
-      }
-    }
-
-    // Luồng 3: Từ màn hình Xác nhận (ADM005) quay về màn hình Nhập liệu (ADM004)
-    // Đặc điểm: Có tham số mode=back trên URL, lấy lại dữ liệu từ session
-    else if (isBackFromADM005) {
-      const savedData = getSessionData(STORAGE_KEY);
-      if (savedData) {
-        reset(savedData);
-      }
-      // Xóa session ngay sau khi dữ liệu được khôi phục thành công
-      clearSessionData(STORAGE_KEY);
-    }
-  }, [isEditMode, isBackFromADM005, employeeId, reset]);
-
-  /**
-   * Logic khởi tạo màn hình (ADM004).
-   * Hỗ trợ khôi phục từ session khi quay lại từ ADM005.
-   */
-  useEffect(() => {
-    const initialize = async () => {
-      setLoading(true);
-      try {
-        // 1. Tải dữ liệu danh mục phòng ban và chứng chỉ
-        await loadMasterData();
-        
-        // 2. Khởi tạo dữ liệu Form theo các luồng nghiệp vụ (Requirement)
-        await initializeFormData();
-
-        setInitialized(true);
-      } catch (err) {
-        console.error('Lỗi khởi tạo:', err);
-        redirectToSystemError(ERR_SYSTEM);
-        setInitialized(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initialize();
-  }, [initializeFormData]);
-
-  // --- Các hàm xử lý sự kiện (Actions) ---
-
-  /**
-   * Xử lý gửi form tới trang xác nhận (adm004 -> adm005)
-   */
-  const onSubmit: SubmitHandler<EmployeeFormValues> = async (values) => {
-    setLoading(true);
-    try {
-      // Đính kèm employeeId nếu đang ở chế độ Edit
-      const payload = isEditMode ? { ...values, employeeId: parseInt(employeeId!) } : values;
-
-      // Gọi API Validate từ Backend
-      const res = await employeeApi.validateEmployee(payload);
-
-      if (res.code !== ERR_SUCCESS) {
-        // Thông báo lỗi từ Backend (Format chuẩn: {code: "ERxxx", params: [...]})
-        const errorCode = res.code;
-        const errorParams = res.params || [];
-        const errorMessage = getMessage(errorCode, errorParams);
-
-        // Map lỗi về đúng field
-        if (errorCode === CODE_ER003) {
-          setError('employeeLoginId', { message: errorMessage });
-        } else if (errorCode === CODE_ER004) {
-          if (errorParams.includes(LABELS.GROUP)) setError('departmentId', { message: errorMessage });
-          else setError('certificationId', { message: errorMessage });
-        } else if (errorCode === CODE_ER012) {
-          setError('certificationEndDate', { message: errorMessage });
-        } else {
-          // Lỗi hệ thống hoặc các lỗi khác không map được -> Redirect sang màn hình lỗi
-          redirectToSystemError(errorCode);
-        }
-        setLoading(false);
-        return;
-      }
-
-      // Nếu Validate OK (Nút 確認) -> Lưu session và chuyển trang
-      setEmployeeToSession(STORAGE_KEY, payload);
-      // Chuyển sang màn hình xác nhận
-      const params = new URLSearchParams(searchParams.toString());
-      if (employeeId) {
-        params.set(PARAM_ID, employeeId);
-      }
-      // Xóa mode=back nếu có (vì đây là chiều đi tới ADM005)
-      params.delete(PARAM_MODE);
-
-      router.push(`/employees/adm005?${params.toString()}`);
-    } catch (err) {
-      console.error('Lỗi validate:', err);
-      // Redirect sang màn hình system_error với mã lỗi ER014
-      redirectToSystemError(ERR_SYSTEM);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Xử lý khi nhấn nút "Quay lại" (戻る).
-   * Điều hướng người dùng về màn hình phù hợp tùy theo chế độ (Add/Edit).
-   */
   const handleBack = () => {
-    // Tạo đối tượng params từ searchParams hiện tại
     const params = new URLSearchParams(searchParams.toString());
-    // Luôn xóa mode=back khi điều hướng thoát khỏi ADM004
     params.delete(PARAM_MODE);
 
     if (isEditMode) {
-      // Nếu đang chỉnh sửa: Quay lại màn hình Chi tiết nhân viên (ADM003)
-      // Đảm bảo ID chỉ xuất hiện một lần và đã xóa mode=back
+      // TH edit: Di chuyển về MH view chi tiết (gửi kèm ID qua router)
       params.set(PARAM_ID, employeeId!);
       router.push(`/employees/adm003?${params.toString()}`);
     } else {
-      // Nếu đang thêm mới: Quay lại màn hình Danh sách nhân viên (ADM002) và khôi phục trạng thái tìm kiếm
+      // TH add mới: Di chuyển về MH list ADM002, page như trước khi di chuyển
       router.push(getAdm002ReturnUrl(searchParams));
+    }
+  };
+
+  // ---------------------------------------------------------
+  // 5.4 ACTION CONFIRM (Nút 確認)
+  // ---------------------------------------------------------
+
+  const onSubmit: SubmitHandler<EmployeeFormValues> = async (values) => {
+    setLoading(true);
+    try {
+      const payload = isEditMode ? { ...values, employeeId: parseInt(employeeId!) } : values;
+
+      // Gọi API Validate từ Backend để kiểm tra dữ liệu tổng thể trước khi sang Confirm
+      const res = await employeeApi.validateEmployee(payload);
+
+      if (res.code !== ERR_SUCCESS) {
+        // Nếu có lỗi thông báo lỗi: Hiển thị ngay dưới hạng mục (xử lý qua setError của Hook Form)
+        const errorMessage = getMessage(res.code, res.params || []);
+
+        if (res.code === CODE_ER003) {
+          setError('employeeLoginId', { message: errorMessage });
+        } else if (res.code === CODE_ER004) {
+          if ((res.params || []).includes(LABELS.GROUP)) setError('departmentId', { message: errorMessage });
+          else setError('certificationId', { message: errorMessage });
+        } else if (res.code === CODE_ER012) {
+          setError('certificationEndDate', { message: errorMessage });
+        } else {
+          // Các lỗi hệ thống khác
+          redirectToSystemError(res.code);
+        }
+        return;
+      }
+
+      // Nếu ko lỗi: Lưu dữ liệu vào session và di chuyển sang MH confirm ADM005
+      setEmployeeToSession(STORAGE_KEY, payload);
+      const params = new URLSearchParams(searchParams.toString());
+      if (isEditMode) params.set(PARAM_ID, employeeId!);
+      params.delete(PARAM_MODE);
+      // Di chuyển sang MH confirm ADM005 gửi kèm ID tương ứng qua router
+      router.push(`/employees/adm005?${params.toString()}`);
+    } catch (err) {
+      // TH API trả về lỗi: Di chuyển sang MH system error
+      redirectToSystemError(ERR_SYSTEM);
+    } finally {
+      // Dừng hiển thị trạng thái loading
+      setLoading(false);
     }
   };
 
   return {
     register,
-    handleSubmit: handleSubmit(onSubmit, (error) => {
-    }),
+    handleSubmit: handleSubmit(onSubmit),
     errors,
     setValue,
     watch,
     departments,
     certifications,
     loading,
-
     isEditMode,
     handleBack,
     handleCertificationChange,

@@ -1,15 +1,13 @@
 /*
  * Copyright(C) 2010 Luvina Software Company
  *
- * useAdm005.ts, April 21, 2026 nxplong
+ * useAdm005.ts, May 08, 2026 nxplong
  */
 'use client';
 
 import { useState, useEffect } from 'react';
-
 import { useRouter, useSearchParams } from 'next/navigation';
 import { EmployeeFormValues } from '@/types/employee';
-
 import { getStorageKey, getSessionData, clearSessionData } from '@/lib/utils/sessionStorage';
 import { employeeApi } from '@/lib/api/employee.api';
 import { departmentApi } from '@/lib/api/department.api';
@@ -17,83 +15,75 @@ import { certificationApi } from '@/lib/api/certification.api';
 import { redirectToSystemError } from '@/lib/utils/errorHelper';
 import { ERR_SYSTEM, ERR_SUCCESS, MODE_ADD, MODE_EDIT, PARAM_ID, PARAM_TYPE, PARAM_MODE, MODE_BACK } from '@/lib/constants/config';
 
-// Key cho storage (phải match với ADM004)
+// Key cho storage (phải match với ADM004 để lấy dữ liệu đã nhập)
 const STORAGE_KEY = getStorageKey('ADM004');
 
 /**
- * Custom Hook useAdm005 quản lý logic cho màn hình Xác nhận Thông tin nhân viên (ADM005).
- * - Đọc dữ liệu từ sessionStorage (từ ADM004)
- * - Hiển thị dữ liệu confirm
- * - Xử lý nút OK (submit) và 戻る (back)
- * 
- * @returns Object chứa formData, departments, certifications, và handler functions
+ * Custom Hook useAdm005 quản lý logic cho màn hình Xác nhận (ADM005).
  */
 export function useAdm005() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const id = searchParams.get(PARAM_ID);
+
     const [formData, setFormData] = useState<EmployeeFormValues | null>(null);
     const [departments, setDepartments] = useState<{ [key: string]: string }>({});
     const [certifications, setCertifications] = useState<{ [key: string]: string }>({});
     const [loading, setLoading] = useState(true);
 
-    /**
-     * Thực hiện lấy dữ liệu từ sessionStorage và Master data (Phòng ban, Chứng chỉ)
-     */
+    // ---------------------------------------------------------
+    // 6.1 HIỂN THỊ BAN ĐẦU
+    // ---------------------------------------------------------
+
     useEffect(() => {
         const initialize = async () => {
             setLoading(true);
             try {
-                // 1. Tải dữ liệu danh mục để hiển thị Tên thay vì ID
-                // Vì SessionStorage chỉ lưu ID, nhưng UI cần hiển thị Tên
+                // Xác định MH là confirm cho edit hay add dựa trên ID trong router (6.1)
+                // Nếu là mode edit: Có thể bổ sung logic kiểm tra sự tồn tại của employee ở đây nếu cần
+
+                // 1. Tải Master data (Phòng ban, Chứng chỉ) để binding tên hiển thị
                 const [depts, certs] = await Promise.all([
                     departmentApi.getDepartments(),
                     certificationApi.getCertifications(),
                 ]);
 
-                // Chuyển đổi danh sách sang Object Map để hiển thị tên phòng ban thay vì ID
                 const deptMap: { [key: string]: string } = {};
-                depts.forEach(d => {
-                    deptMap[d.departmentId.toString()] = d.departmentName;
-                });
+                depts.forEach(d => { deptMap[d.departmentId.toString()] = d.departmentName; });
                 setDepartments(deptMap);
 
-                // Chuyển đổi danh sách sang Object Map để hiển thị tên chứng chỉ thay vì ID
                 const certMap: { [key: string]: string } = {};
-                certs.forEach(c => {
-                    certMap[c.certificationId.toString()] = c.certificationName;
-                });
+                certs.forEach(c => { certMap[c.certificationId.toString()] = c.certificationName; });
                 setCertifications(certMap);
 
-                // 2. Đọc dữ liệu nhân viên từ sessionStorage (do ADM004 truyền sang)
+                // 2. Binding data từ MH edit/add gửi sang lên màn hình (Lấy từ session storage)
                 const employeeData = getSessionData(STORAGE_KEY);
                 if (employeeData) {
                     setFormData(employeeData);
                 } else {
-                    // Nếu không có dữ liệu (truy cập trực tiếp qua URL), chuyển đến màn hình System Error
+                    // Nếu không có dữ liệu (truy cập trực tiếp), chuyển đến màn hình System Error
                     redirectToSystemError(ERR_SYSTEM);
                 }
             } catch (err) {
                 console.error('Lỗi khởi tạo ADM005:', err);
-                // Redirect sang màn hình System Error nếu có lỗi xảy ra
                 redirectToSystemError(ERR_SYSTEM);
             } finally {
                 setLoading(false);
             }
         };
-
         initialize();
-    }, [router]);
+    }, [id]);
 
-    /**
-     * Xử lý nút OK - Đẩy dữ liệu vào DB và chuyển hướng sang ADM006
-     */
+    // ---------------------------------------------------------
+    // 6.2 ACTION UPDATE (Nút OK)
+    // ---------------------------------------------------------
+
     const handleOK = async () => {
         if (!formData) return;
 
         setLoading(true);
         try {
-            // Validation đã được thực hiện bên trong các API này tại Backend
+            // Gọi API add nếu là MH confirm Add hoặc update nếu là MH confirm edit
             let res;
             if (id) {
                 res = await employeeApi.updateEmployee(parseInt(id), formData);
@@ -102,41 +92,34 @@ export function useAdm005() {
             }
 
             // Kiểm tra kết quả trả về từ API
-            if (res.code !== ERR_SUCCESS) {
-                // Xóa session storage khi gặp lỗi hệ thống trước khi chuyển hướng sang màn hình lỗi
+            if (res.code === ERR_SUCCESS) {
+                // TH API trả về thành công: Xóa session và di chuyển sang MH complete ADM006
+                clearSessionData(STORAGE_KEY);
+                const nextPath = `/employees/adm006?${PARAM_TYPE}=${id ? MODE_EDIT : MODE_ADD}`;
+                router.push(nextPath);
+            } else {
+                // TH API trả về lỗi: Hiển thị thông báo lỗi ở vùng Thông báo lỗi (hoặc System Error)
                 clearSessionData(STORAGE_KEY);
                 redirectToSystemError(res.code, res.message);
-                return;
             }
-
-            // Xóa sessionStorage khi hoàn tất thành công và chuyển sang màn hình thông báo (ADM006)
-            // Truyền type để ADM006 biết hiển thị thông báo "Đăng ký" hay "Cập nhật"
-            clearSessionData(STORAGE_KEY);
-            const nextPath = `/employees/adm006?${PARAM_TYPE}=${id ? MODE_EDIT : MODE_ADD}`;
-            router.push(nextPath);
         } catch (err) {
             console.error('Lỗi khi lưu dữ liệu:', err);
-            // Xóa session storage khi gặp lỗi hệ thống
             clearSessionData(STORAGE_KEY);
-            // Redirect sang màn hình system_error với mã lỗi ER014
             redirectToSystemError(ERR_SYSTEM);
         } finally {
             setLoading(false);
         }
     };
 
-    /**
-     * Xử lý nút 戻る - Quay lại ADM004 (GIỮ session để khôi phục)
-     */
+    // ---------------------------------------------------------
+    // 6.3 ACTION CANCEL (Nút 戻る)
+    // ---------------------------------------------------------
+
     const handleBack = () => {
-        // Không xóa session ở đây - để ADM004 đọc và xóa sau
+        // Redirect về MH add/edit ADM004: gửi lại data đã truyền sang về MH add/edit ADM004 qua router
         const params = new URLSearchParams(searchParams.toString());
-        // Thêm mode=back để ADM004 biết là quay về từ ADM005
         params.set(PARAM_MODE, MODE_BACK);
-        // Đảm bảo ID được set đúng (nếu có)
-        if (id) {
-            params.set(PARAM_ID, id);
-        }
+        if (id) params.set(PARAM_ID, id);
 
         router.push(`/employees/adm004?${params.toString()}`);
     };
