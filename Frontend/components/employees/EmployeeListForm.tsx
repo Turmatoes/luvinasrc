@@ -3,7 +3,6 @@
  *
  * EmployeeListForm.tsx, April 24, 2026 nxplong
  */
-import React from 'react';
 import SearchForm from '@/components/employees/SearchForm';
 import EmployeeTable from '@/components/employees/EmployeeTable';
 import Pagination from '@/components/employees/Pagination';
@@ -13,30 +12,12 @@ import { useAdm002 } from '@/hooks/useAdm002';
 type EmployeeListFormProps = ReturnType<typeof useAdm002>;
 
 /**
- * Component hiển thị form danh sách nhân viên (ADM002).
- * @param data - Đối tượng chứa dữ liệu danh sách nhân viên
- * @param departments - Đối tượng chứa thông tin phòng ban
- * @param loading - Trạng thái loading
- * @param departmentError - Lỗi khi lấy danh sách phòng ban
- * @param employeeError - Lỗi khi lấy danh sách nhân viên
- * @param employeeNameError - Lỗi khi tìm kiếm tên nhân viên
- * @param searchForm - Form tìm kiếm
- * @param filters - Bộ lọc
- * @param totalPages - Tổng số trang
- * @param pageNumbers - Danh sách số trang
- * @param handleSearch - Hàm xử lý khi tìm kiếm
- * @param handlePageChange - Hàm xử lý khi thay đổi trang
- * @param handleSort - Hàm xử lý khi sắp xếp
- * @param handleDepartmentChange - Hàm xử lý khi thay đổi phòng ban
- * @param handleEmployeeNameChange - Hàm xử lý khi thay đổi tên nhân viên
- * @param searchParams - Tham số tìm kiếm
+ * Component hiển thị màn hình danh sách nhân viên (ADM002).
  */
 export default function EmployeeListForm({
   data,
   departments,
   loading,
-  departmentError,
-  employeeError,
   employeeNameError,
   searchForm,
   filters,
@@ -59,13 +40,6 @@ export default function EmployeeListForm({
 
   return (
     <>
-      {/* Hiển thị lỗi chung (phòng ban hoặc nhân viên) */}
-      {(departmentError || employeeError) && (
-        <div className="alert alert-danger" role="alert">
-          {departmentError || employeeError}
-        </div>
-      )}
-
       {/* Form tìm kiếm */}
       <SearchForm
         departments={departments}

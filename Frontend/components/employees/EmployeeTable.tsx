@@ -11,7 +11,7 @@ import { EmployeeTableProps, SortDirection } from '@/types/employee';
 
 /**
  * Hàm hiển thị văn bản giới hạn độ dài và có tooltip.
- * Giới hạn 20 ký tự, sau đó là dấu ...
+ * Giới hạn 25 ký tự, sau đó là dấu ...
  * 
  * @param text Văn bản cần hiển thị
  * @returns React node hiển thị văn bản đã cắt kèm title làm tooltip
@@ -88,9 +88,19 @@ export default function EmployeeTable({ data, sort, onSort, currentQueryString }
           <div>点数</div>
         </div>
         <div className="css-grid-table-body">
+          {/* 
+            LOGIC DUYỆT DANH SÁCH: 
+            Duyệt qua mảng employees được trả về từ API để render từng hàng (row) dữ liệu nhân viên.
+          */}
           {data.employees.map((emp, idx) => (
             <React.Fragment key={`${emp.employeeId}-${idx}`}>
               <div className="bor-l-none text-center">
+                {/* 
+                  ĐƯỜNG DẪN ĐẾN MÀN HÌNH CHI TIẾT (ADM003):
+                  - href: Chuyển hướng tới trang chi tiết nhân viên.
+                  - id: Truyền ID nhân viên cần xem.
+                  - currentQueryString: Đính kèm các tham số tìm kiếm/phân trang hiện tại để có thể quay lại đúng vị trí cũ.
+                */}
                 <Link href={`/employees/adm003?id=${emp.employeeId}${currentQueryString ? `&${currentQueryString}` : ''}`}>
                   {emp.employeeId}
                 </Link>
