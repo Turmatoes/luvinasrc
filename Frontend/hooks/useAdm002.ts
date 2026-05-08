@@ -123,39 +123,53 @@ export function useAdm002() {
 
   /**
    * Logic chính để tải danh sách nhân viên từ API Service.
+   * Hàm này sẽ được gọi mỗi khi URL thay đổi (tìm kiếm, phân trang, sắp xếp).
    */
   const loadEmployees = useCallback(async () => {
+    // 1. Reset thông báo lỗi cũ trước khi bắt đầu tải dữ liệu mới
     setEmployeeError(null);
+    
     try {
+      // 2. Gọi API getEmployees với các tham số được ánh xạ từ URL (urlParams)
       const response = await employeeApi.getEmployees({
-        employeeName: urlParams.employeeName.trim() || null,
-        departmentId: urlParams.departmentId,
+        employeeName: urlParams.employeeName.trim() || null, // Lọc theo tên nhân viên
+        departmentId: urlParams.departmentId,             // Lọc theo phòng ban
+        // Tính toán vị trí bắt đầu lấy dữ liệu (0-indexed) dựa trên trang hiện tại
         offset: (urlParams.currentPage - 1) * LIMIT_PER_PAGE,
-        limit: LIMIT_PER_PAGE,
+        limit: LIMIT_PER_PAGE,                            // Số lượng bản ghi trên một trang
+        // Các tham số điều khiển hướng sắp xếp (ASC/DESC) cho các cột
         sortEmployeeName: urlParams.sort.employeeName,
         sortCertificationName: urlParams.sort.certificationName,
         sortEndDate: urlParams.sort.certificationEndDate,
       });
       
       const employees = response.employees ?? [];
+      // Tính toán tổng số trang dựa trên tổng số bản ghi từ Backend
       const totalPages = response.totalRecords > 0 ? Math.ceil(response.totalRecords / LIMIT_PER_PAGE) : 0;
 
-      // Nếu trang hiện tại vượt quá tổng số trang (do xóa dữ liệu), quay về trang cuối
+      // 3. Xử lý trường hợp "trang trống":
+      // Nếu đang ở một trang vượt quá tổng số trang (do dữ liệu bị xóa hoặc lọc lại),
+      // Hệ thống sẽ tự động quay về trang cuối cùng có dữ liệu.
       if (response.totalRecords > 0 && employees.length === 0 && urlParams.currentPage > totalPages) {
         updateUrl({ page: totalPages });
         return;
       }
 
+      // 4. Lưu dữ liệu vào state để hiển thị lên bảng và phân trang
       setData({
         ...response,
         employees,
       });
     } catch (err: unknown) {
+      // 5. Xử lý các lỗi phát sinh trong quá trình gọi API
       console.error('Lỗi khi tải danh sách nhân viên:', err);
       const errorCode = (err as any)?.response?.data?.code ?? ERR_SYSTEM;
+      
       if (errorCode === ERR_SYSTEM) {
+        // Nếu là lỗi hệ thống (ER023) -> Đẩy người dùng sang màn hình System Error
         redirectToSystemError(ERR_SYSTEM);
       } else {
+        // Nếu là lỗi nghiệp vụ cụ thể -> Hiển thị thông báo lỗi ngay trên đầu danh sách
         setEmployeeError(getMessage(errorCode));
       }
       setData(null);
