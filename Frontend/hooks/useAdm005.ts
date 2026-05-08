@@ -45,18 +45,20 @@ export function useAdm005() {
             setLoading(true);
             try {
                 // 1. Tải dữ liệu danh mục để hiển thị Tên thay vì ID
+                // Vì SessionStorage chỉ lưu ID, nhưng UI cần hiển thị Tên
                 const [depts, certs] = await Promise.all([
                     departmentApi.getDepartments(),
                     certificationApi.getCertifications(),
                 ]);
 
-                // Chuyển đổi danh sách sang Object Map để lookup nhanh theo ID
+                // Chuyển đổi danh sách sang Object Map để hiển thị tên phòng ban thay vì ID
                 const deptMap: { [key: string]: string } = {};
                 depts.forEach(d => {
                     deptMap[d.departmentId.toString()] = d.departmentName;
                 });
                 setDepartments(deptMap);
 
+                // Chuyển đổi danh sách sang Object Map để hiển thị tên chứng chỉ thay vì ID
                 const certMap: { [key: string]: string } = {};
                 certs.forEach(c => {
                     certMap[c.certificationId.toString()] = c.certificationName;
