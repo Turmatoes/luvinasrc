@@ -103,7 +103,8 @@ export function useAdm005() {
 
             // Kiểm tra kết quả trả về từ API
             if (res.code !== ERR_SUCCESS) {
-                // Nếu có lỗi (bao gồm cả lỗi validate hoặc lỗi hệ thống), chuyển hướng sang màn hình lỗi
+                // Xóa session storage khi gặp lỗi hệ thống trước khi chuyển hướng sang màn hình lỗi
+                clearSessionData(STORAGE_KEY);
                 redirectToSystemError(res.code, res.message);
                 return;
             }
@@ -115,6 +116,8 @@ export function useAdm005() {
             router.push(nextPath);
         } catch (err) {
             console.error('Lỗi khi lưu dữ liệu:', err);
+            // Xóa session storage khi gặp lỗi hệ thống
+            clearSessionData(STORAGE_KEY);
             // Redirect sang màn hình system_error với mã lỗi ER014
             redirectToSystemError(ERR_SYSTEM);
         } finally {
