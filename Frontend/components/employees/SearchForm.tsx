@@ -7,6 +7,8 @@
 
 import { useRouter } from 'next/navigation';
 import { SearchFormProps } from '@/types/employee';
+import type { ChangeEvent, FormEvent } from 'react';
+
 
 /**
  * Component hiển thị form tìm kiếm nhân viên.
@@ -31,16 +33,16 @@ export default function SearchForm({
 }: SearchFormProps) {
   const router = useRouter();
 
-  const handleFullnameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFullnameChange = (e: ChangeEvent<HTMLInputElement>) => {
     onEmployeeNameChange(e.target.value);
   };
 
-  const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleDepartmentChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     onDepartmentChange(value === '' ? null : Number(value));
   };
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     onSearch(employeeName, selectedDepartmentId);
   };
