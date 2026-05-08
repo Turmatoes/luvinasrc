@@ -100,57 +100,68 @@ export function useAdm004() {
   };
 
   /**
+   * Hàm helper để khởi tạo dữ liệu cho Form dựa trên luồng di chuyển của người dùng.
+   * Tách ra ngoài để useEffect ngắn gọn và dễ theo dõi theo requirement.
+   */
+  const initializeFormData = useCallback(async () => {
+    // Luồng 1: Từ màn hình Danh sách (ADM002) sang màn hình Thêm mới (ADM004)
+    // Đặc điểm: Không ở chế độ Edit và không phải quay lại từ màn hình xác nhận
+    if (!isEditMode && !isBackFromADM005) {
+      reset(DEFAULT_FORM_VALUES);
+    } 
+    
+    // Luồng 2: Từ màn hình Chi tiết (ADM003) sang màn hình Chỉnh sửa (ADM004)
+    // Đặc điểm: Đang ở chế độ Edit và không phải quay lại từ màn hình xác nhận
+    else if (isEditMode && !isBackFromADM005) {
+      const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId!));
+      if (detail.code === ERR_SUCCESS) {
+        const dto = detail.employeeDTO;
+        const formattedDetail: EmployeeFormValues = {
+          employeeName: dto.employeeName,
+          employeeNameKana: dto.employeeNameKana,
+          employeeBirthDate: dto.employeeBirthDate ? dto.employeeBirthDate.replace(/-/g, '/') : '',
+          employeeEmail: dto.employeeEmail,
+          employeeTelephone: dto.employeeTelephone,
+          employeeLoginId: dto.employeeLoginId,
+          employeeLoginPassword: '',
+          employeeLoginPasswordConfirm: '',
+          departmentId: dto.departmentId ? dto.departmentId.toString() : '',
+          certificationId: dto.certificationId ? dto.certificationId.toString() : '',
+          certificationStartDate: dto.certificationStartDate ? dto.certificationStartDate.replace(/-/g, '/') : '',
+          certificationEndDate: dto.certificationEndDate ? dto.certificationEndDate.replace(/-/g, '/') : '',
+          score: dto.score ? dto.score.toString() : '',
+        };
+        reset(formattedDetail);
+      } else {
+        redirectToSystemError(detail.code);
+      }
+    }
+
+    // Luồng 3: Từ màn hình Xác nhận (ADM005) quay về màn hình Nhập liệu (ADM004)
+    // Đặc điểm: Có tham số mode=back trên URL, lấy lại dữ liệu từ session
+    else if (isBackFromADM005) {
+      const savedData = getSessionData(STORAGE_KEY);
+      if (savedData) {
+        reset(savedData);
+      }
+      // Xóa session ngay sau khi dữ liệu được khôi phục thành công
+      clearSessionData(STORAGE_KEY);
+    }
+  }, [isEditMode, isBackFromADM005, employeeId, reset]);
+
+  /**
    * Logic khởi tạo màn hình (ADM004).
    * Hỗ trợ khôi phục từ session khi quay lại từ ADM005.
-   * Logic xử lý các trường hợp từ màn adm002, adm003 và adm005
    */
   useEffect(() => {
     const initialize = async () => {
       setLoading(true);
       try {
-        // Tải dữ liệu danh mục phòng ban và chứng chỉ
+        // 1. Tải dữ liệu danh mục phòng ban và chứng chỉ
         await loadMasterData();
-        // Xử lý logic khởi tạo dữ liệu Form
-        if (isBackFromADM005) {
-          // Trường hợp quay lại từ màn hình xác nhận (ADM005 -> ADM004): 
-          // Chỉ lúc này mới dùng dữ liệu từ session
-          const savedData = getSessionData(STORAGE_KEY);
-          if (savedData) {
-            reset(savedData);
-          }
-          // Xóa session ngay sau khi dữ liệu được load thành công lên màn adm004
-          clearSessionData(STORAGE_KEY);
-        } else if (isEditMode) {
-          // Trường hợp KHÔNG phải quay lại từ confirm và đang ở chế độ Chỉnh sửa (Edit): 
-          // Luôn fetch mới từ API (đúng logic "đẩy data từ DB lên")
-          const detail = await employeeApi.getEmployeeDetail(parseInt(employeeId!));
-
-          if (detail.code === ERR_SUCCESS) {
-            const dto = detail.employeeDTO;
-            // Ánh xạ từ EmployeeDTO (Backend) sang EmployeeFormValues (Frontend)
-            const formattedDetail: EmployeeFormValues = {
-              employeeName: dto.employeeName,
-              employeeNameKana: dto.employeeNameKana,
-              employeeBirthDate: dto.employeeBirthDate ? dto.employeeBirthDate.replace(/-/g, '/') : '',
-              employeeEmail: dto.employeeEmail,
-              employeeTelephone: dto.employeeTelephone,
-              employeeLoginId: dto.employeeLoginId,
-              employeeLoginPassword: '', // Mật khẩu không trả về từ API
-              employeeLoginPasswordConfirm: '',
-              departmentId: dto.departmentId ? dto.departmentId.toString() : '',
-              certificationId: dto.certificationId ? dto.certificationId.toString() : '',
-              certificationStartDate: dto.certificationStartDate ? dto.certificationStartDate.replace(/-/g, '/') : '',
-              certificationEndDate: dto.certificationEndDate ? dto.certificationEndDate.replace(/-/g, '/') : '',
-              score: dto.score ? dto.score.toString() : '',
-            };
-            reset(formattedDetail);
-          } else {
-            redirectToSystemError(detail.code);
-          }
-        } else {
-          // Trường hợp Thêm mới (Add) và không phải back từ confirm: Form trống
-          reset(DEFAULT_FORM_VALUES);
-        }
+        
+        // 2. Khởi tạo dữ liệu Form theo các luồng nghiệp vụ (Requirement)
+        await initializeFormData();
 
         setInitialized(true);
       } catch (err) {
@@ -163,7 +174,7 @@ export function useAdm004() {
     };
 
     initialize();
-  }, [employeeId, isEditMode, isBackFromADM005, reset]);
+  }, [initializeFormData]);
 
   // --- Các hàm xử lý sự kiện (Actions) ---
 
