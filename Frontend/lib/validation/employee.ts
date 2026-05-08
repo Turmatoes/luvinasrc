@@ -41,36 +41,63 @@ import {
  */
 export const createEmployeeSchema = (isEditMode: boolean) => {
   return z.object({
+    // 1. Tài khoản (Login ID)
+    // - Bắt buộc (ER001)
+    // - Tối đa 50 ký tự (ER006)
+    // - Định dạng: Ký tự đầu là chữ, không chứa ký tự đặc biệt (ER019)
     employeeLoginId: z.string()
       .min(1, getMessage(CODE_ER001, [LABELS.ACCOUNT_NAME]))
       .max(MAX_LOGIN_ID_LENGTH, getMessage(CODE_ER006, [LABELS.ACCOUNT_NAME, String(MAX_LOGIN_ID_LENGTH)]))
       .regex(LOGIN_ID_REGEX, getMessage(CODE_ER019)),
 
+    // 2. Nhóm (Department)
+    // - Bắt buộc chọn từ danh sách (ER002)
     departmentId: z.string()
       .min(1, getMessage(CODE_ER002, [LABELS.GROUP])),
 
+    // 3. Tên nhân viên (Full Name)
+    // - Bắt buộc (ER001)
+    // - Tối đa 125 ký tự (ER006)
     employeeName: z.string()
       .min(1, getMessage(CODE_ER001, [LABELS.FULL_NAME]))
       .max(MAX_EMPLOYEE_NAME_LENGTH, getMessage(CODE_ER006, [LABELS.FULL_NAME, String(MAX_EMPLOYEE_NAME_LENGTH)])),
 
+    // 4. Tên Katakana (Kana Name)
+    // - Bắt buộc (ER001)
+    // - Tối đa 125 ký tự (ER006)
+    // - Định dạng: Chỉ cho phép ký tự Katakana nửa chiều (ER009)
     employeeNameKana: z.string()
       .min(1, getMessage(CODE_ER001, [LABELS.KANA_NAME]))
       .max(MAX_EMPLOYEE_NAME_KANA_LENGTH, getMessage(CODE_ER006, [LABELS.KANA_NAME, String(MAX_EMPLOYEE_NAME_KANA_LENGTH)]))
       .regex(KATAKANA_REGEX, getMessage(CODE_ER009, [LABELS.KANA_NAME])),
 
+    // 5. Ngày sinh (Birth Date)
+    // - Bắt buộc (ER001)
     employeeBirthDate: z.string()
       .min(1, getMessage(CODE_ER001, [LABELS.BIRTH_DATE])),
 
+    // 6. Email
+    // - Bắt buộc (ER001)
+    // - Tối đa 100 ký tự (ER006)
+    // - Định dạng: Email hợp lệ (ER005)
     employeeEmail: z.string()
       .min(1, getMessage(CODE_ER001, [LABELS.EMAIL]))
       .max(MAX_EMAIL_LENGTH, getMessage(CODE_ER006, [LABELS.EMAIL, String(MAX_EMAIL_LENGTH)]))
       .email(getMessage(CODE_ER005, [LABELS.EMAIL, 'Email'])),
 
+    // 7. Số điện thoại (Telephone)
+    // - Bắt buộc (ER001)
+    // - Tối đa 50 ký tự (ER006)
+    // - Định dạng: Số nửa chiều (ER008)
     employeeTelephone: z.string()
       .min(1, getMessage(CODE_ER001, [LABELS.TELEPHONE]))
       .max(MAX_TELEPHONE_LENGTH, getMessage(CODE_ER006, [LABELS.TELEPHONE, String(MAX_TELEPHONE_LENGTH)]))
       .regex(TELEPHONE_REGEX, getMessage(CODE_ER008, [LABELS.TELEPHONE])),
 
+    // 8. Mật khẩu (Password)
+    // - Thêm mới: Bắt buộc (ER001)
+    // - Chỉnh sửa: Có thể để trống nếu không đổi mật khẩu
+    // - Độ dài: 8 đến 50 ký tự (ER007)
     employeeLoginPassword: z.string().optional().superRefine((val, ctx) => {
       // Khi Add mode: bắt buộc
       if (!isEditMode && (!val || val.length === 0)) {
@@ -92,13 +119,19 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
       }
     }),
 
+    // 9. Xác nhận mật khẩu
     employeeLoginPasswordConfirm: z.string().optional(),
 
+    // --- Các trường liên quan đến Chứng chỉ (Không bắt buộc) ---
     certificationId: z.string().optional().refine(val => !val || val === '' || NUMERIC_REGEX.test(val), {
       message: getMessage(CODE_ER018, [LABELS.CERTIFICATION]),
     }),
     certificationStartDate: z.string().optional(),
     certificationEndDate: z.string().optional(),
+    
+    // 10. Điểm số (Score)
+    // - Định dạng: Số nửa chiều (ER018)
+    // - Tối đa 3 chữ số (0-999) (ER006)
     score: z.string().optional()
       .refine(val => !val || NUMERIC_REGEX.test(val), {
         message: getMessage(CODE_ER018, [LABELS.SCORE]),
@@ -117,7 +150,7 @@ export const createEmployeeSchema = (isEditMode: boolean) => {
       });
     }
 
-    // So khớp mật khẩu
+    // So khớp mật khẩu (11. Kiểm tra khớp mật khẩu - ER017)
     if (data.employeeLoginPassword !== data.employeeLoginPasswordConfirm) {
       if (data.employeeLoginPassword || data.employeeLoginPasswordConfirm) {
         ctx.addIssue({
