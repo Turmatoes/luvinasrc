@@ -84,12 +84,12 @@ export function useAdm002() {
     sort?: Record<SortKey, SortDirection>;
   }) => {
     const newParams = new URLSearchParams(searchParams.toString());
-    
+
     if (params.name !== undefined) {
       if (params.name) newParams.set(PARAM_NAME, params.name);
       else newParams.delete(PARAM_NAME);
     }
-    
+
     if (params.dept !== undefined) {
       if (params.dept) newParams.set(PARAM_DEPT, params.dept.toString());
       else newParams.delete(PARAM_DEPT);
@@ -128,7 +128,7 @@ export function useAdm002() {
   const loadEmployees = useCallback(async () => {
     // 1. Reset thông báo lỗi cũ trước khi bắt đầu tải dữ liệu mới
     setEmployeeError(null);
-    
+
     try {
       // 2. Gọi API getEmployees với các tham số được ánh xạ từ URL (urlParams)
       const response = await employeeApi.getEmployees({
@@ -142,7 +142,7 @@ export function useAdm002() {
         sortCertificationName: urlParams.sort.certificationName,
         sortEndDate: urlParams.sort.certificationEndDate,
       });
-      
+
       const employees = response.employees ?? [];
       // Tính toán tổng số trang dựa trên tổng số bản ghi từ Backend
       const totalPages = response.totalRecords > 0 ? Math.ceil(response.totalRecords / LIMIT_PER_PAGE) : 0;
@@ -164,7 +164,7 @@ export function useAdm002() {
       // 5. Xử lý các lỗi phát sinh trong quá trình gọi API
       console.error('Lỗi khi tải danh sách nhân viên:', err);
       const errorCode = (err as any)?.response?.data?.code ?? ERR_SYSTEM;
-      
+
       if (errorCode === ERR_SYSTEM) {
         // Nếu là lỗi hệ thống (ER023) -> Đẩy người dùng sang màn hình System Error
         redirectToSystemError(ERR_SYSTEM);
@@ -204,16 +204,16 @@ export function useAdm002() {
    * Xử lý tìm kiếm nhân viên.
    */
   const handleSearch = (name: string, deptId: number | null) => {
-    const normalizedName = name.trim();
+    const searchingName = name.trim();
 
-    if (normalizedName.length > MAX_EMPLOYEE_NAME_LENGTH) {
+    if (searchingName.length > MAX_EMPLOYEE_NAME_LENGTH) {
       setEmployeeNameError(getMessage(CODE_ER006, [LABELS.FULL_NAME, MAX_EMPLOYEE_NAME_LENGTH]));
       return;
     }
 
     setEmployeeNameError(null);
     updateUrl({
-      name: normalizedName,
+      name: searchingName,
       dept: deptId,
       page: 1, // Reset về trang 1 khi tìm kiếm mới
     });
