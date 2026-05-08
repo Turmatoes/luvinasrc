@@ -117,7 +117,7 @@ export function useAdm002() {
       setDepartments(depts);
     } catch (err) {
       console.error('Lỗi khi tải danh sách phòng ban:', err);
-      // TH API trả về lỗi: Hiển thị message lỗi "部門を取得できません" (handled via system error per general rules)
+      // TH API trả về lỗi: Hiển thị message lỗi "部門を取得できません" 
       redirectToSystemError(ERR_SYSTEM);
     }
   };
