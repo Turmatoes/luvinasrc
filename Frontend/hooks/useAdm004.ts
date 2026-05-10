@@ -186,7 +186,7 @@ export function useAdm004() {
   const handleBack = () => {
     // Xóa session data trước khi quay lại để đảm bảo trạng thái sạch
     clearSessionData(STORAGE_KEY);
-    
+
     const params = new URLSearchParams(searchParams.toString());
     params.delete(PARAM_MODE);
 
@@ -216,6 +216,7 @@ export function useAdm004() {
         // Nếu có lỗi thông báo lỗi: Hiển thị ngay dưới hạng mục (xử lý qua setError của Hook Form)
         const errorMessage = getMessage(res.code, res.params || []);
 
+        // Xử lý lỗi: hiển thị lỗi ngay dưới input tương ứng với lỗi validate trùng tại Backend
         if (res.code === CODE_ER003) {
           setError('employeeLoginId', { message: errorMessage });
         } else if (res.code === CODE_ER004) {

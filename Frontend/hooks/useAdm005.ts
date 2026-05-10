@@ -41,9 +41,7 @@ export function useAdm005() {
             setLoading(true);
             try {
                 // Xác định MH là confirm cho edit hay add dựa trên ID trong router (6.1)
-                // Nếu là mode edit: Có thể bổ sung logic kiểm tra sự tồn tại của employee ở đây nếu cần
-
-                // 1. Tải Master data (Phòng ban, Chứng chỉ) để binding tên hiển thị
+                // 1. Tải Master data (Phòng ban, Chứng chỉ) để binding tên hiển thị vì session storage chỉ lưu ID
                 const [depts, certs] = await Promise.all([
                     departmentApi.getDepartments(),
                     certificationApi.getCertifications(),
@@ -62,7 +60,7 @@ export function useAdm005() {
                 if (employeeData) {
                     setFormData(employeeData);
                 } else {
-                    // Nếu không có dữ liệu (truy cập trực tiếp), chuyển đến màn hình System Error
+                    // Nếu không có dữ liệu (truy cập trực tiếp qua URL), chuyển đến màn hình System Error
                     redirectToSystemError(ERR_SYSTEM);
                 }
             } catch (err) {
@@ -98,7 +96,7 @@ export function useAdm005() {
                 const nextPath = `/employees/adm006?${PARAM_TYPE}=${id ? MODE_EDIT : MODE_ADD}`;
                 router.push(nextPath);
             } else {
-                // TH API trả về lỗi: Hiển thị thông báo lỗi ở vùng Thông báo lỗi (hoặc System Error)
+                // TH API trả về lỗi: chuyển hướng đến màn System Error và hiển thị lỗi
                 redirectToSystemError(res.code, res.message);
             }
         } catch (err) {

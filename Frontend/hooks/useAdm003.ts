@@ -12,7 +12,6 @@ import { MESSAGES } from '@/lib/constants/messages';
 import { redirectToSystemError } from '@/lib/utils/errorHelper';
 import { ERR_SYSTEM, ERR_SUCCESS, PARAM_ID, PARAM_TYPE, MODE_DELETE, PARAM_MODE } from '@/lib/constants/config';
 import { getAdm002ReturnUrl } from '@/lib/utils/queryHelper';
-import { getStorageKey, clearSessionData } from '@/lib/utils/sessionStorage';
 
 /**
  * Custom Hook useAdm003 quản lý logic cho màn hình Chi tiết nhân viên (ADM003).
@@ -29,7 +28,7 @@ export function useAdm003() {
   // ---------------------------------------------------------
   // 4.1 HIỂN THỊ BAN ĐẦU
   // ---------------------------------------------------------
-  
+
   /**
    * Kiểm tra ID và tải thông tin chi tiết nhân viên từ Backend.
    */
@@ -68,7 +67,7 @@ export function useAdm003() {
   // ---------------------------------------------------------
   // 4.2 ACTION CANCEL (Nút Back)
   // ---------------------------------------------------------
-  
+
   /**
    * Quay lại màn hình danh sách ADM002, giữ nguyên trạng thái tìm kiếm/phân trang.
    */
@@ -87,7 +86,7 @@ export function useAdm003() {
     const params = new URLSearchParams(searchParams.toString());
     params.set(PARAM_ID, id!);
     params.delete(PARAM_MODE); // Xóa mode để ADM004 fetch lại data mới nhất
-    
+
     // Di chuyển sang MH ADM004 gửi kèm ID tương ứng qua router
     router.push(`/employees/adm004?${params.toString()}`);
   };
@@ -106,7 +105,7 @@ export function useAdm003() {
       try {
         // Gọi API để xóa data nhân viên trong database
         const res = await employeeApi.deleteEmployee(parseInt(id!));
-        
+
         if (res.code === ERR_SUCCESS) {
           // TH API trả về thành công: Di chuyển sang MH complete (ADM006)
           router.push(`/employees/adm006?${PARAM_TYPE}=${MODE_DELETE}`);
