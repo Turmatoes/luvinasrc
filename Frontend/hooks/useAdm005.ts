@@ -35,6 +35,7 @@ export function useAdm005() {
     // 6.1 HIỂN THỊ BAN ĐẦU
     // ---------------------------------------------------------
 
+    // Khởi tạo Master data và lấy dữ liệu nhân viên từ session storage khi màn hình được load
     useEffect(() => {
         const initialize = async () => {
             setLoading(true);
@@ -93,20 +94,19 @@ export function useAdm005() {
 
             // Kiểm tra kết quả trả về từ API
             if (res.code === ERR_SUCCESS) {
-                // TH API trả về thành công: Xóa session và di chuyển sang MH complete ADM006
-                clearSessionData(STORAGE_KEY);
+                // TH API trả về thành công: Di chuyển sang MH complete ADM006
                 const nextPath = `/employees/adm006?${PARAM_TYPE}=${id ? MODE_EDIT : MODE_ADD}`;
                 router.push(nextPath);
             } else {
                 // TH API trả về lỗi: Hiển thị thông báo lỗi ở vùng Thông báo lỗi (hoặc System Error)
-                clearSessionData(STORAGE_KEY);
                 redirectToSystemError(res.code, res.message);
             }
         } catch (err) {
             console.error('Lỗi khi lưu dữ liệu:', err);
-            clearSessionData(STORAGE_KEY);
             redirectToSystemError(ERR_SYSTEM);
         } finally {
+            // Luôn xóa session data trước khi chuyển trang hoặc báo lỗi hệ thống
+            clearSessionData(STORAGE_KEY);
             setLoading(false);
         }
     };

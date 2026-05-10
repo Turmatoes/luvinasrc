@@ -60,6 +60,7 @@ export function useAdm003() {
     }
   }, [id]);
 
+  // Khởi tạo dữ liệu khi màn hình được load
   useEffect(() => {
     fetchDetail();
   }, [fetchDetail]);
@@ -83,9 +84,6 @@ export function useAdm003() {
    * Chuyển sang màn hình chỉnh sửa ADM004.
    */
   const handleEdit = () => {
-    // Xóa sạch dữ liệu tạm lưu trước khi vào màn hình chỉnh sửa
-    clearSessionData(getStorageKey('ADM004'));
-
     const params = new URLSearchParams(searchParams.toString());
     params.set(PARAM_ID, id!);
     params.delete(PARAM_MODE); // Xóa mode để ADM004 fetch lại data mới nhất

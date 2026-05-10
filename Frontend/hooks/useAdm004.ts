@@ -142,6 +142,7 @@ export function useAdm004() {
     }
   }, [isEditMode, isBackFromADM005, employeeId, reset]);
 
+  // Thực hiện tải Master data và khởi tạo Form data khi màn hình được load
   useEffect(() => {
     const initialize = async () => {
       setLoading(true);
@@ -183,6 +184,9 @@ export function useAdm004() {
   // ---------------------------------------------------------
 
   const handleBack = () => {
+    // Xóa session data trước khi quay lại để đảm bảo trạng thái sạch
+    clearSessionData(STORAGE_KEY);
+    
     const params = new URLSearchParams(searchParams.toString());
     params.delete(PARAM_MODE);
 

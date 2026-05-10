@@ -164,6 +164,7 @@ export function useAdm002() {
   /**
    * Khởi chạy logic hiển thị ban đầu
    */
+  // Khởi tạo Master data và tải danh sách nhân viên khi màn hình được load hoặc các tham số tìm kiếm thay đổi
   useEffect(() => {
     const initialize = async () => {
       setLoading(true);
