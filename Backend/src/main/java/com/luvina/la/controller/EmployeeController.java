@@ -9,7 +9,10 @@ package com.luvina.la.controller;
 import com.luvina.la.config.Constants;
 import com.luvina.la.dto.EmployeeDTO;
 import com.luvina.la.payload.EmployeeListResponse;
-import com.luvina.la.payload.ErrorResponse;
+import com.luvina.la.payload.BaseResponse;
+import com.luvina.la.payload.AddResponse;
+import com.luvina.la.payload.EditResponse;
+import com.luvina.la.payload.DeleteResponse;
 import com.luvina.la.service.EmployeeService;
 import com.luvina.la.validate.EmployeeValidate;
 import com.luvina.la.payload.EmployeeDetailResponse;
@@ -63,7 +66,7 @@ public class EmployeeController {
      * @return EmployeeListResponse chứa tổng số bản ghi và danh sách nhân viên
      */
     @GetMapping("/employees")
-    public ErrorResponse getEmployeeList(
+    public BaseResponse getEmployeeList(
             @RequestParam(value = "employeeName", required = false, defaultValue = "") String employeeName,
             @RequestParam(value = "departmentId", required = false) Long departmentId,
             @RequestParam(value = "sortEmployeeName", required = false, defaultValue = "asc") String sortEmployeeName,
@@ -76,7 +79,7 @@ public class EmployeeController {
             String normalizedEmployeeName = employeeName == null ? "" : employeeName.trim();
 
             // Validate parameter
-            ErrorResponse employeeResponse = employeeValidate.validateListParams(
+            BaseResponse employeeResponse = employeeValidate.validateListParams(
                     sortEmployeeName, sortCertificationName, sortEndDate, offset, limit, normalizedEmployeeName);
             if (employeeResponse != null) {
                 return employeeResponse;
@@ -119,7 +122,7 @@ public class EmployeeController {
 
         } catch (Exception e) {
             // Lỗi hệ thống (Mã lỗi ER023)
-            return ErrorResponse.build(Constants.CODE_ER023);
+            return BaseResponse.build(Constants.CODE_ER023);
         }
     }
 
@@ -130,12 +133,12 @@ public class EmployeeController {
      * @return EmployeeDetailResponse chứa thông tin nhân viên hoặc mã lỗi
      */
     @GetMapping("/employees/{id}")
-    public ErrorResponse getEmployeeDetail(@PathVariable("id") Long id) {
+    public BaseResponse getEmployeeDetail(@PathVariable("id") Long id) {
         try {
             EmployeeDTO employee = employeeService.getEmployeeById(id);
             if (employee == null) {
                 // Không tìm thấy nhân viên (Mã lỗi ER013)
-                return ErrorResponse.build(Constants.CODE_ER013);
+                return BaseResponse.build(Constants.CODE_ER013);
             }
 
             // Tạo dữ liệu response thành công
@@ -146,7 +149,7 @@ public class EmployeeController {
 
         } catch (Exception e) {
             // Lỗi hệ thống (Mã lỗi ER023)
-            return ErrorResponse.build(Constants.CODE_ER023);
+            return BaseResponse.build(Constants.CODE_ER023);
         }
     }
 
@@ -154,15 +157,15 @@ public class EmployeeController {
      * API Validate dữ liệu nhân viên trước khi xác nhận (nút 確認 tại màn adm004)
      * 
      * @param request EmployeeRequest chứa thông tin nhân viên
-     * @return ErrorResponse chứa thông tin nhân viên hoặc mã lỗi
+     * @return BaseResponse chứa thông tin kết quả validate
      */
     @PostMapping("/employees/validate")
-    public ErrorResponse validateEmployee(@RequestBody EmployeeRequest request) {
+    public BaseResponse validateEmployee(@RequestBody EmployeeRequest request) {
         try {
             return employeeValidate.validateExistenceOnly(request);
         } catch (Exception e) {
             // Lỗi hệ thống (Mã lỗi ER023)
-            return ErrorResponse.build(Constants.CODE_ER023);
+            return BaseResponse.build(Constants.CODE_ER023);
         }
     }
 
@@ -170,14 +173,14 @@ public class EmployeeController {
      * Thêm mới nhân viên.
      * 
      * @param request EmployeeRequest chứa thông tin nhân viên
-     * @return ErrorResponse chứa thông tin nhân viên hoặc mã lỗi
+     * @return AddResponse chứa kết quả thêm mới
      */
     @PostMapping("/employees")
-    public ErrorResponse addEmployee(@RequestBody EmployeeRequest request) {
+    public AddResponse addEmployee(@RequestBody EmployeeRequest request) {
         // Thực hiện lại validate trước khi lưu vào DB thông qua lớp EmployeeValidate
-        ErrorResponse validateRes = employeeValidate.validateEmployee(request);
+        BaseResponse validateRes = employeeValidate.validateEmployee(request);
         if (validateRes != null && !Constants.CODE_SUCCESS.equals(validateRes.getCode())) {
-            return validateRes;
+            return AddResponse.error(validateRes.getCode(), validateRes.getParams());
         }
         return employeeService.addEmployee(request);
     }
@@ -187,15 +190,15 @@ public class EmployeeController {
      * 
      * @param id      ID của nhân viên
      * @param request EmployeeRequest chứa thông tin nhân viên
-     * @return ErrorResponse chứa thông tin nhân viên hoặc mã lỗi
+     * @return EditResponse chứa kết quả cập nhật
      */
     @PutMapping("/employees/{id}")
-    public ErrorResponse updateEmployee(@PathVariable("id") Long id, @RequestBody EmployeeRequest request) {
+    public EditResponse updateEmployee(@PathVariable("id") Long id, @RequestBody EmployeeRequest request) {
         request.setEmployeeId(id);
         // Thực hiện lại validate trước khi lưu vào DB thông qua lớp EmployeeValidate
-        ErrorResponse validateRes = employeeValidate.validateEmployee(request);
+        BaseResponse validateRes = employeeValidate.validateEmployee(request);
         if (validateRes != null && !Constants.CODE_SUCCESS.equals(validateRes.getCode())) {
-            return validateRes;
+            return EditResponse.error(validateRes.getCode(), validateRes.getParams());
         }
         return employeeService.updateEmployee(request);
     }
@@ -204,10 +207,10 @@ public class EmployeeController {
      * Xóa thông tin nhân viên.
      * 
      * @param id ID của nhân viên
-     * @return ErrorResponse
+     * @return DeleteResponse chứa kết quả xóa
      */
     @DeleteMapping("/employees/{id}")
-    public ErrorResponse deleteEmployee(@PathVariable("id") Long id) {
+    public DeleteResponse deleteEmployee(@PathVariable("id") Long id) {
         return employeeService.deleteEmployee(id);
     }
 }

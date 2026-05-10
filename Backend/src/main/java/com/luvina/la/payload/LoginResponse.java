@@ -19,7 +19,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LoginResponse extends ErrorResponse {
+public class LoginResponse extends BaseResponse {
 
     /** Token truy cập JWT */
     private String accessToken;

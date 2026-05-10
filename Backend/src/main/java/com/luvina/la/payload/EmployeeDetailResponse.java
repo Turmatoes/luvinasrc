@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class EmployeeDetailResponse extends EmployeeResponse {
+public class EmployeeDetailResponse extends BaseResponse {
     private static final long serialVersionUID = 1L;
 
     private EmployeeDTO employeeDTO;

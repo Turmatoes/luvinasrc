@@ -8,7 +8,9 @@ package com.luvina.la.service;
 
 import com.luvina.la.dto.EmployeeDTO;
 import com.luvina.la.payload.EmployeeRequest;
-import com.luvina.la.payload.ErrorResponse;
+import com.luvina.la.payload.AddResponse;
+import com.luvina.la.payload.EditResponse;
+import com.luvina.la.payload.DeleteResponse;
 import java.util.List;
 
 /**
@@ -88,23 +90,23 @@ public interface EmployeeService {
      * Thêm mới một nhân viên vào database.
      * 
      * @param request EmployeeRequest chứa thông tin nhân viên
-     * @return EmployeeResponse chứa mã lỗi (SUCCESS hoặc mã lỗi cụ thể)
+     * @return AddResponse chứa kết quả thêm mới
      */
-    ErrorResponse addEmployee(EmployeeRequest request);
+    AddResponse addEmployee(EmployeeRequest request);
 
     /**
      * Cập nhật nhân viên.
      * 
      * @param request EmployeeRequest chứa thông tin nhân viên
-     * @return ErrorResponse chứa mã lỗi
+     * @return EditResponse chứa kết quả cập nhật
      */
-    ErrorResponse updateEmployee(EmployeeRequest request);
+    EditResponse updateEmployee(EmployeeRequest request);
 
     /**
      * Xóa nhân viên.
      * 
      * @param employeeId ID của nhân viên cần xóa
-     * @return ErrorResponse chứa kết quả xóa
+     * @return DeleteResponse chứa kết quả xóa
      */
-    ErrorResponse deleteEmployee(Long employeeId);
+    DeleteResponse deleteEmployee(Long employeeId);
 }

@@ -24,7 +24,7 @@ import lombok.EqualsAndHashCode;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class EmployeeListResponse extends EmployeeResponse {
+public class EmployeeListResponse extends BaseResponse {
     private static final long serialVersionUID = 1L;
 
     private Long totalRecords;

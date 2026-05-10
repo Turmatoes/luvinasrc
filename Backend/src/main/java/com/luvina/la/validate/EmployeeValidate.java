@@ -9,7 +9,7 @@ package com.luvina.la.validate;
 import com.luvina.la.config.Constants;
 import com.luvina.la.entity.Employee;
 import com.luvina.la.payload.EmployeeRequest;
-import com.luvina.la.payload.ErrorResponse;
+import com.luvina.la.payload.BaseResponse;
 import com.luvina.la.repository.CertificationRepository;
 import com.luvina.la.repository.DepartmentRepository;
 import com.luvina.la.repository.EmployeeRepository;
@@ -201,15 +201,15 @@ public class EmployeeValidate {
     // Các phương thức validate từ 1.1 đến 2.1
     // =====================================================================
 
-    public ErrorResponse validateEmployee(EmployeeRequest request) {
-        ErrorResponse employeeResponse;
+    public BaseResponse validateEmployee(EmployeeRequest request) {
+        BaseResponse employeeResponse;
 
         boolean isUpdate = request.getEmployeeId() != null;
 
         // Nếu là Update, Validate [employeeId]
         if (isUpdate) {
             if (!employeeRepository.existsById(request.getEmployeeId())) {
-                return ErrorResponse.build(Constants.CODE_ER013, Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
+                return BaseResponse.build(Constants.CODE_ER013, Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
             }
         }
 
@@ -260,7 +260,7 @@ public class EmployeeValidate {
         if (employeeResponse != null)
             return employeeResponse;
 
-        return ErrorResponse.build(Constants.CODE_SUCCESS);
+        return BaseResponse.build(Constants.CODE_SUCCESS);
     }
 
     /**
@@ -269,15 +269,15 @@ public class EmployeeValidate {
      * Dùng cho nút [確認] tại màn hình ADM004.
      * 
      * @param request EmployeeRequest
-     * @return ErrorResponse
+     * @return BaseResponse
      */
-    public ErrorResponse validateExistenceOnly(EmployeeRequest request) {
+    public BaseResponse validateExistenceOnly(EmployeeRequest request) {
         boolean isUpdate = request.getEmployeeId() != null;
 
         // 1. Kiểm tra tồn tại của Employee ID (nếu là Update) - ER013
         if (isUpdate) {
             if (!employeeRepository.existsById(request.getEmployeeId())) {
-                return ErrorResponse.build(Constants.CODE_ER013, Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
+                return BaseResponse.build(Constants.CODE_ER013, Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
             }
         }
 
@@ -287,7 +287,7 @@ public class EmployeeValidate {
                     .findByEmployeeLoginId(request.getEmployeeLoginId());
             if (existing.isPresent()) {
                 if (!isUpdate || !existing.get().getEmployeeId().equals(request.getEmployeeId())) {
-                    return ErrorResponse.build(Constants.CODE_ER003, Arrays.asList(Constants.PARAM_LOGIN_ID));
+                    return BaseResponse.build(Constants.CODE_ER003, Arrays.asList(Constants.PARAM_LOGIN_ID));
                 }
             }
         }
@@ -295,19 +295,19 @@ public class EmployeeValidate {
         // 3. Kiểm tra tồn tại của Department ID - ER004
         if (request.getDepartmentId() != null) {
             if (!departmentRepository.existsById(request.getDepartmentId())) {
-                return ErrorResponse.build(Constants.CODE_ER004, Arrays.asList(Constants.PARAM_DEPARTMENT));
+                return BaseResponse.build(Constants.CODE_ER004, Arrays.asList(Constants.PARAM_DEPARTMENT));
             }
         }
 
         // 4. Kiểm tra tồn tại của Certification ID (nếu có chọn) - ER004
         if (request.getCertificationId() != null) {
             if (!certificationRepository.existsById(request.getCertificationId())) {
-                return ErrorResponse.build(Constants.CODE_ER004,
+                return BaseResponse.build(Constants.CODE_ER004,
                         Arrays.asList(Constants.PARAM_CERTIFICATION));
             }
         }
 
-        return ErrorResponse.build(Constants.CODE_SUCCESS);
+        return BaseResponse.build(Constants.CODE_SUCCESS);
     }
 
     /**
@@ -315,25 +315,25 @@ public class EmployeeValidate {
      * 
      * @param loginId           Login ID cần validate
      * @param currentEmployeeId ID của employee đang cập nhật (null nếu là Add mới)
-     * @return ErrorResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có lỗi)
+     * @return BaseResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có lỗi)
      */
-    public ErrorResponse validateLoginId(String loginId, Long currentEmployeeId) {
+    public BaseResponse validateLoginId(String loginId, Long currentEmployeeId) {
         // Check [employee_login_id] required (ER001)
         if (loginId == null || loginId.isEmpty()) {
-            return ErrorResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_LOGIN_ID));
+            return BaseResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_LOGIN_ID));
             // Check [employee_login_id] max length (ER006)
         } else if (!isValidMaxLength(loginId, Constants.MAX_LOGIN_ID_LENGTH)) {
-            return ErrorResponse.build(Constants.CODE_ER006,
+            return BaseResponse.build(Constants.CODE_ER006,
                     Arrays.asList(Constants.PARAM_LOGIN_ID, String.valueOf(Constants.MAX_LOGIN_ID_LENGTH)));
             // Check [employee_login_id] format (ER019)
         } else if (!isValidLoginId(loginId)) {
-            return ErrorResponse.build(Constants.CODE_ER019);
+            return BaseResponse.build(Constants.CODE_ER019);
         } else {
             // Check [employee_login_id] existence (ER003)
             Optional<Employee> existing = employeeRepository.findByEmployeeLoginId(loginId);
             if (existing.isPresent()) {
                 if (currentEmployeeId == null || !existing.get().getEmployeeId().equals(currentEmployeeId)) {
-                    return ErrorResponse.build(Constants.CODE_ER003, Arrays.asList(Constants.PARAM_LOGIN_ID));
+                    return BaseResponse.build(Constants.CODE_ER003, Arrays.asList(Constants.PARAM_LOGIN_ID));
                 }
             }
         }
@@ -344,16 +344,16 @@ public class EmployeeValidate {
      * Validate Employee Name.
      * 
      * @param name Tên nhân viên cần validate
-     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     * @return BaseResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
      *         lỗi)
      */
-    public ErrorResponse validateEmployeeName(String name) {
+    public BaseResponse validateEmployeeName(String name) {
         // Check [employee_name] required (ER001)
         if (name == null || name.isEmpty()) {
-            return ErrorResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_EMPLOYEE_NAME));
+            return BaseResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_EMPLOYEE_NAME));
             // Check [employee_name] max length (ER006)
         } else if (!isValidMaxLength(name, Constants.MAX_EMPLOYEE_NAME_LENGTH)) {
-            return ErrorResponse.build(Constants.CODE_ER006, Arrays.asList(Constants.PARAM_EMPLOYEE_NAME,
+            return BaseResponse.build(Constants.CODE_ER006, Arrays.asList(Constants.PARAM_EMPLOYEE_NAME,
                     String.valueOf(Constants.MAX_EMPLOYEE_NAME_LENGTH)));
         }
         return null;
@@ -363,20 +363,20 @@ public class EmployeeValidate {
      * Validate Name Kana.
      * 
      * @param nameKana Tên nhân viên (Kana) cần validate
-     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     * @return BaseResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
      *         lỗi)
      */
-    public ErrorResponse validateNameKana(String nameKana) {
+    public BaseResponse validateNameKana(String nameKana) {
         // Check [employee_name_kana] required (ER001)
         if (nameKana == null || nameKana.isEmpty()) {
-            return ErrorResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_NAME_KANA));
+            return BaseResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_NAME_KANA));
             // Check [employee_name_kana] max length (ER006)
         } else if (!isValidMaxLength(nameKana, Constants.MAX_EMPLOYEE_NAME_KANA_LENGTH)) {
-            return ErrorResponse.build(Constants.CODE_ER006, Arrays.asList(Constants.PARAM_NAME_KANA,
+            return BaseResponse.build(Constants.CODE_ER006, Arrays.asList(Constants.PARAM_NAME_KANA,
                     String.valueOf(Constants.MAX_EMPLOYEE_NAME_KANA_LENGTH)));
             // Check [employee_name_kana] format Katakana (ER009)
         } else if (!isValidKatakana(nameKana)) {
-            return ErrorResponse.build(Constants.CODE_ER009, Arrays.asList(Constants.PARAM_NAME_KANA));
+            return BaseResponse.build(Constants.CODE_ER009, Arrays.asList(Constants.PARAM_NAME_KANA));
         }
         return null;
     }
@@ -385,16 +385,16 @@ public class EmployeeValidate {
      * Validate Birth Date.
      * 
      * @param birthDate Ngày sinh cần validate
-     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     * @return BaseResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
      *         lỗi)
      */
-    public ErrorResponse validateBirthDate(String birthDate) {
+    public BaseResponse validateBirthDate(String birthDate) {
         // Check [employee_birth_date] required (ER001)
         if (birthDate == null || birthDate.isEmpty()) {
-            return ErrorResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_BIRTH_DATE));
+            return BaseResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_BIRTH_DATE));
             // Check [employee_birth_date] format (ER011)
         } else if (!isValidDateFormat(birthDate)) {
-            return ErrorResponse.build(Constants.CODE_ER011, Arrays.asList(Constants.PARAM_BIRTH_DATE));
+            return BaseResponse.build(Constants.CODE_ER011, Arrays.asList(Constants.PARAM_BIRTH_DATE));
         }
         return null;
     }
@@ -403,20 +403,20 @@ public class EmployeeValidate {
      * Validate Email.
      * 
      * @param email Email cần validate
-     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     * @return BaseResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
      *         lỗi)
      */
-    public ErrorResponse validateEmail(String email) {
+    public BaseResponse validateEmail(String email) {
         // Check [employee_email] required (ER001)
         if (email == null || email.isEmpty()) {
-            return ErrorResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_EMAIL));
+            return BaseResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_EMAIL));
             // Check [employee_email] max length (ER006)
         } else if (!isValidMaxLength(email, Constants.MAX_EMAIL_LENGTH)) {
-            return ErrorResponse.build(Constants.CODE_ER006,
+            return BaseResponse.build(Constants.CODE_ER006,
                     Arrays.asList(Constants.PARAM_EMAIL, String.valueOf(Constants.MAX_EMAIL_LENGTH)));
             // Check [employee_email] format (ER005)
         } else if (!isValidEmail(email)) {
-            return ErrorResponse.build(Constants.CODE_ER005, Arrays.asList(Constants.PARAM_EMAIL));
+            return BaseResponse.build(Constants.CODE_ER005, Arrays.asList(Constants.PARAM_EMAIL));
         }
         return null;
     }
@@ -425,20 +425,20 @@ public class EmployeeValidate {
      * Validate Telephone.
      * 
      * @param telephone Số điện thoại cần validate
-     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     * @return BaseResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
      *         lỗi)
      */
-    public ErrorResponse validateTelephone(String telephone) {
+    public BaseResponse validateTelephone(String telephone) {
         // Check [employee_telephone] required (ER001)
         if (telephone == null || telephone.isEmpty()) {
-            return ErrorResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_TELEPHONE));
+            return BaseResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_TELEPHONE));
             // Check [employee_telephone] max length (ER006)
         } else if (!isValidMaxLength(telephone, Constants.MAX_TELEPHONE_LENGTH)) {
-            return ErrorResponse.build(Constants.CODE_ER006,
+            return BaseResponse.build(Constants.CODE_ER006,
                     Arrays.asList(Constants.PARAM_TELEPHONE, String.valueOf(Constants.MAX_TELEPHONE_LENGTH)));
             // Check [employee_telephone] format (ER008)
         } else if (!isHalfsizeNumber(telephone)) {
-            return ErrorResponse.build(Constants.CODE_ER008, Arrays.asList(Constants.PARAM_TELEPHONE));
+            return BaseResponse.build(Constants.CODE_ER008, Arrays.asList(Constants.PARAM_TELEPHONE));
         }
         return null;
     }
@@ -448,19 +448,19 @@ public class EmployeeValidate {
      * 
      * @param password Mật khẩu cần validate
      * @param isUpdate Cờ đánh dấu là chức năng Update
-     * @return ErrorResponse chứa mã lỗi (nếu có lỗi) hoặc null
+     * @return BaseResponse chứa mã lỗi (nếu có lỗi) hoặc null
      */
-    public ErrorResponse validatePassword(String password, boolean isUpdate) {
+    public BaseResponse validatePassword(String password, boolean isUpdate) {
         if (password == null || password.isEmpty()) {
             // Đối với Add mới thì required, Update thì allow blank (không sửa)
             if (!isUpdate) {
-                return ErrorResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_PASSWORD));
+                return BaseResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_PASSWORD));
             }
         } else {
             // Có nhập password, validate length
             if (!isValidMinLength(password, Constants.MIN_PASSWORD_LENGTH)
                     || !isValidMaxLength(password, Constants.MAX_PASSWORD_LENGTH)) {
-                return ErrorResponse.build(Constants.CODE_ER007, Arrays.asList(
+                return BaseResponse.build(Constants.CODE_ER007, Arrays.asList(
                         Constants.PARAM_PASSWORD,
                         String.valueOf(Constants.MIN_PASSWORD_LENGTH),
                         String.valueOf(Constants.MAX_PASSWORD_LENGTH)));
@@ -473,16 +473,16 @@ public class EmployeeValidate {
      * Validate Department.
      * 
      * @param departmentId ID phòng ban cần validate
-     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     * @return BaseResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
      *         lỗi)
      */
-    public ErrorResponse validateDepartment(Long departmentId) {
+    public BaseResponse validateDepartment(Long departmentId) {
         // Check [department_id] required (ER002)
         if (departmentId == null) {
-            return ErrorResponse.build(Constants.CODE_ER002, Arrays.asList(Constants.PARAM_DEPARTMENT));
+            return BaseResponse.build(Constants.CODE_ER002, Arrays.asList(Constants.PARAM_DEPARTMENT));
             // Check [department_id] existence (ER004)
         } else if (!departmentRepository.existsById(departmentId)) {
-            return ErrorResponse.build(Constants.CODE_ER004, Arrays.asList(Constants.PARAM_DEPARTMENT));
+            return BaseResponse.build(Constants.CODE_ER004, Arrays.asList(Constants.PARAM_DEPARTMENT));
         }
         return null;
     }
@@ -491,44 +491,44 @@ public class EmployeeValidate {
      * Validate Certification.
      * 
      * @param request EmployeeRequest chứa thông tin chứng chỉ
-     * @return EmployeeResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
+     * @return BaseResponse chứa mã lỗi (nếu có lỗi) hoặc null (nếu không có
      *         lỗi)
      */
-    public ErrorResponse validateCertification(EmployeeRequest request) {
+    public BaseResponse validateCertification(EmployeeRequest request) {
         // Check [certification_id] non-null (skip if null)
         if (request.getCertificationId() == null) {
             return null; // Không chọn chứng chỉ -> bỏ qua
             // Check [certification_id] existence (ER004)
         } else if (!certificationRepository.existsById(request.getCertificationId())) {
-            return ErrorResponse.build(Constants.CODE_ER004, Arrays.asList(Constants.PARAM_CERTIFICATION));
+            return BaseResponse.build(Constants.CODE_ER004, Arrays.asList(Constants.PARAM_CERTIFICATION));
             // Check [certification_start_date] required (ER001)
         } else if (request.getCertificationStartDate() == null || request.getCertificationStartDate().isEmpty()) {
-            return ErrorResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_START_DATE));
+            return BaseResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_START_DATE));
             // Check [certification_start_date] format (ER011)
         } else if (!isValidDateFormat(request.getCertificationStartDate())) {
-            return ErrorResponse.build(Constants.CODE_ER011, Arrays.asList(Constants.PARAM_START_DATE));
+            return BaseResponse.build(Constants.CODE_ER011, Arrays.asList(Constants.PARAM_START_DATE));
             // Check [certification_end_date] required (ER001)
         } else if (request.getCertificationEndDate() == null || request.getCertificationEndDate().isEmpty()) {
-            return ErrorResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_END_DATE));
+            return BaseResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_END_DATE));
             // Check [certification_end_date] format (ER011)
         } else if (!isValidDateFormat(request.getCertificationEndDate())) {
-            return ErrorResponse.build(Constants.CODE_ER011, Arrays.asList(Constants.PARAM_END_DATE));
+            return BaseResponse.build(Constants.CODE_ER011, Arrays.asList(Constants.PARAM_END_DATE));
             // Check [score] required (ER001)
         } else if (request.getScore() == null || request.getScore().isEmpty()) {
-            return ErrorResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_SCORE));
+            return BaseResponse.build(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_SCORE));
             // Check [score] format (ER018)
         } else if (!isHalfsizeNumber(request.getScore())) {
-            return ErrorResponse.build(Constants.CODE_ER018, Arrays.asList(Constants.PARAM_SCORE));
+            return BaseResponse.build(Constants.CODE_ER018, Arrays.asList(Constants.PARAM_SCORE));
             // Check [score] length (ER006)
         } else if (request.getScore().length() > 3) {
-            return ErrorResponse.build(Constants.CODE_ER006, Arrays.asList(Constants.PARAM_SCORE, "3"));
+            return BaseResponse.build(Constants.CODE_ER006, Arrays.asList(Constants.PARAM_SCORE, "3"));
         } else {
             // Check [certification_end_date] after [certification_start_date] (ER012)
             DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy/MM/dd");
             LocalDate start = LocalDate.parse(request.getCertificationStartDate(), fmt);
             LocalDate end = LocalDate.parse(request.getCertificationEndDate(), fmt);
             if (!end.isAfter(start)) {
-                return ErrorResponse.build(Constants.CODE_ER012, Arrays.asList(Constants.PARAM_START_DATE));
+                return BaseResponse.build(Constants.CODE_ER012, Arrays.asList(Constants.PARAM_START_DATE));
             }
         }
         return null;
@@ -543,9 +543,9 @@ public class EmployeeValidate {
      * @param offset                Offset
      * @param limit                 Limit
      * @param employeeName          Tên nhân viên
-     * @return EmployeeResponse chứa mã lỗi và tham số lỗi
+     * @return BaseResponse chứa mã lỗi và tham số lỗi
      */
-    public ErrorResponse validateListParams(
+    public BaseResponse validateListParams(
             String sortEmployeeName,
             String sortCertificationName,
             String sortEndDate,
@@ -556,19 +556,19 @@ public class EmployeeValidate {
         if (!isValidSort(sortEmployeeName)
                 || !isValidSort(sortCertificationName)
                 || !isValidSort(sortEndDate)) {
-            return ErrorResponse.build(Constants.CODE_ER021);
+            return BaseResponse.build(Constants.CODE_ER021);
         }
         // Validate offset (ER018)
         if (!isPositiveInteger(offset)) {
-            return ErrorResponse.build(Constants.CODE_ER018, Arrays.asList(Constants.PARAM_OFFSET));
+            return BaseResponse.build(Constants.CODE_ER018, Arrays.asList(Constants.PARAM_OFFSET));
         }
         // Validate limit (ER018)
         if (!isPositiveInteger(limit)) {
-            return ErrorResponse.build(Constants.CODE_ER018, Arrays.asList(Constants.PARAM_LIMIT));
+            return BaseResponse.build(Constants.CODE_ER018, Arrays.asList(Constants.PARAM_LIMIT));
         }
         // Validate độ dài employee_name (ER006)
         if (!isValidMaxLength(employeeName, Constants.MAX_EMPLOYEE_NAME_LENGTH)) {
-            return ErrorResponse.build(Constants.CODE_ER006,
+            return BaseResponse.build(Constants.CODE_ER006,
                     Arrays.asList(Constants.PARAM_EMPLOYEE_NAME,
                             String.valueOf(Constants.MAX_EMPLOYEE_NAME_LENGTH)));
         }

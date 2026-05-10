@@ -13,7 +13,9 @@ import com.luvina.la.entity.Department;
 import com.luvina.la.entity.Employee;
 import com.luvina.la.entity.EmployeeCertification;
 import com.luvina.la.payload.EmployeeRequest;
-import com.luvina.la.payload.ErrorResponse;
+import com.luvina.la.payload.AddResponse;
+import com.luvina.la.payload.EditResponse;
+import com.luvina.la.payload.DeleteResponse;
 import com.luvina.la.repository.CertificationRepository;
 import com.luvina.la.repository.DepartmentRepository;
 import com.luvina.la.repository.EmployeeCertificationRepository;
@@ -209,11 +211,11 @@ public class EmployeeServiceImpl implements EmployeeService {
      * Thêm nhân viên mới
      *
      * @param request EmployeeRequest chứa thông tin nhân viên
-     * @return EmployeeResponse chứa mã lỗi
+     * @return AddResponse chứa kết quả thêm mới
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ErrorResponse addEmployee(EmployeeRequest employeeRequest) {
+    public AddResponse addEmployee(EmployeeRequest employeeRequest) {
         try {
             // 1. Tạo entity Employee
             Employee employee = new Employee();
@@ -252,14 +254,12 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
 
             // 4. Trả về thành công employee mới được tạo
-            return ErrorResponse.build(Constants.CODE_SUCCESS, addEmployee.getEmployeeId(), Constants.CODE_MSG001,
-                    new java.util.ArrayList<>());
+            return AddResponse.success(addEmployee.getEmployeeId());
 
         } catch (Exception e) {
             // Nếu có lỗi thì Rollback transaction và trả về ER015
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, null, Constants.CODE_ER015,
-                    new java.util.ArrayList<>());
+            return AddResponse.error(Constants.CODE_ER015, new java.util.ArrayList<>());
         }
     }
 
@@ -267,17 +267,15 @@ public class EmployeeServiceImpl implements EmployeeService {
      * Cập nhật thông tin nhân viên
      *
      * @param request EmployeeRequest chứa thông tin nhân viên
-     * @return ErrorResponse chứa mã lỗi
+     * @return EditResponse chứa kết quả cập nhật
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ErrorResponse updateEmployee(EmployeeRequest employeeRequest) {
+    public EditResponse updateEmployee(EmployeeRequest employeeRequest) {
         try {
             Employee employee = employeeRepository.findById(employeeRequest.getEmployeeId()).orElse(null);
             if (employee == null) {
-                return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, employeeRequest.getEmployeeId(),
-                        Constants.CODE_ER013,
-                        Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
+                return EditResponse.error(Constants.CODE_ER013, Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
             }
 
             // Cập nhật thông tin cơ bản (không có Password)
@@ -316,15 +314,12 @@ public class EmployeeServiceImpl implements EmployeeService {
                 }
             }
 
-            return ErrorResponse.build(Constants.CODE_SUCCESS, employeeRequest.getEmployeeId(), Constants.CODE_MSG002,
-                    new java.util.ArrayList<>());
+            return EditResponse.success(employeeRequest.getEmployeeId());
 
         } catch (Exception e) {
             // Nếu có lỗi thì Rollback transaction và trả về ER015
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, employeeRequest.getEmployeeId(),
-                    Constants.CODE_ER015,
-                    new java.util.ArrayList<>());
+            return EditResponse.error(Constants.CODE_ER015, new java.util.ArrayList<>());
         }
     }
 
@@ -335,21 +330,19 @@ public class EmployeeServiceImpl implements EmployeeService {
      * 3. Xóa thông tin nhân viên
      * 
      * @param employeeId ID nhân viên cần xóa
-     * @return ErrorResponse chứa kết quả
+     * @return DeleteResponse chứa kết quả xóa
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ErrorResponse deleteEmployee(Long employeeId) {
+    public DeleteResponse deleteEmployee(Long employeeId) {
         // 1. Validate parameter
         if (employeeId == null) {
-            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, null, Constants.CODE_ER001,
-                    Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
+            return DeleteResponse.error(Constants.CODE_ER001, Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
         }
 
         Employee employee = employeeRepository.findById(employeeId).orElse(null);
         if (employee == null) {
-            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, employeeId, Constants.CODE_ER014,
-                    Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
+            return DeleteResponse.error(Constants.CODE_ER014, Arrays.asList(Constants.PARAM_EMPLOYEE_ID));
         }
 
         try {
@@ -361,15 +354,13 @@ public class EmployeeServiceImpl implements EmployeeService {
             employeeRepository.deleteEmployeeById(employeeId);
 
             // 4. Tạo dữ liệu response cho API (Trường hợp không có lỗi xảy ra)
-            return ErrorResponse.build(Constants.CODE_SUCCESS, employeeId, Constants.CODE_MSG003,
-                    new java.util.ArrayList<>());
+            return DeleteResponse.success(employeeId);
 
         } catch (Exception e) {
             // Nếu có lỗi khi xóa thì Rollback transaction
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             // Trả về lỗi với mã lỗi ER015 và chuyển sang bước 4
-            return ErrorResponse.build(Constants.CODE_SYSTEM_ERROR, employeeId, Constants.CODE_ER015,
-                    new java.util.ArrayList<>());
+            return DeleteResponse.error(Constants.CODE_ER015, new java.util.ArrayList<>());
         }
     }
 
